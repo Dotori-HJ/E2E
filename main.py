@@ -58,8 +58,6 @@ def main(args):
         mode = 'train'
     else:
         mode = 'test'
-    print(mode)
-    exit()
 
     # Logs will be saved in log_path
     log_path = os.path.join(cfg.output_dir, mode + '.log')
