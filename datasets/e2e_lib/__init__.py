@@ -65,17 +65,17 @@ def make_img_transform(is_training, resize=110, crop=96, mean=127.5, std=127.5, 
     ]
     if is_training:
         print(transforms)
-            transforms += [
-                GroupPhotoMetricDistortion(brightness_delta=32,
-                    contrast_range=(0.5, 1.5),
-                    saturation_range=(0.5, 1.5),
-                    hue_delta=18,
-                    p=0.5),
-                GroupRotate(limit=(-45, 45),
-                    border_mode='reflect101',
-                    p=0.5),
-                GroupRandomHorizontalFlip(0.5),
-            ]
+        transforms += [
+            GroupPhotoMetricDistortion(brightness_delta=32,
+                contrast_range=(0.5, 1.5),
+                saturation_range=(0.5, 1.5),
+                hue_delta=18,
+                p=0.5),
+            GroupRotate(limit=(-45, 45),
+                border_mode='reflect101',
+                p=0.5),
+            GroupRandomHorizontalFlip(0.5),
+        ]
 
     transforms.append(GroupNormalize(mean, std, to_rgb=True))
     return Compose(transforms)
