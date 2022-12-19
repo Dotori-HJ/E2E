@@ -54,6 +54,7 @@ def main(args):
 
     utils.init_distributed_mode(args)
 
+    print(args.eval)
     if not args.eval:
         mode = 'train'
     else:
