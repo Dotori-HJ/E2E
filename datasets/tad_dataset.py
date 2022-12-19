@@ -284,7 +284,7 @@ def build(dataset, subset, args, mode):
             mode=='train', mean=mean, std=std, resize=args.img_resize, crop=args.img_crop_size, keep_asr=args.resize_keep_asr)
     else:
         transforms = None
-    print(transforms)
+    print(transforms, args.fix_transform)
     exit()
 
     return TADDataset(
