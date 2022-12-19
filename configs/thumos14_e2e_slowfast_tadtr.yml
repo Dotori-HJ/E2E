@@ -27,9 +27,11 @@ fix_encoder: false
 fix_transform: false
 
 # Image
-img_resize: 256
-img_crop_size: 224
+# img_resize: 256
+img_resize: 110
+# img_crop_size: 224
+img_crop_size: 96
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_reproduce_256
+output_dir: outputs/thumos14_e2e_slowfast_reproduce_110
 
