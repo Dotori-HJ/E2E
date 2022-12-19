@@ -54,11 +54,12 @@ def main(args):
 
     utils.init_distributed_mode(args)
 
-    print(args.eval)
     if not args.eval:
         mode = 'train'
     else:
         mode = 'test'
+    print(mode)
+    exit()
 
     # Logs will be saved in log_path
     log_path = os.path.join(cfg.output_dir, mode + '.log')
