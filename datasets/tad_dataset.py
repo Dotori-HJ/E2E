@@ -283,8 +283,7 @@ def build(dataset, subset, args, mode):
             is_training=is_training, mean=mean, std=std, resize=args.img_resize, crop=args.img_crop_size, keep_asr=args.resize_keep_asr)
     else:
         transforms = None
-    print(transforms, args.fix_transform)
-    exit()
+    print(transforms)
 
     return TADDataset(
         subset_mapping[subset], mode, feature_info, ann_file, ft_info_file, transforms,
