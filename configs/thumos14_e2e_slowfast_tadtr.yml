@@ -24,7 +24,7 @@ lr: 0.0001
 batch_size: 4
 
 fix_encoder: false
-fix_transform: false
+fix_transform: true
 
 # Image
 img_resize: 256
