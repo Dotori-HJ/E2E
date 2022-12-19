@@ -31,5 +31,5 @@ img_resize: 256
 img_crop_size: 224
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_reproduce
+output_dir: outputs/thumos14_e2e_slowfast_reproduce_256
 
