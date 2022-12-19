@@ -64,7 +64,6 @@ def make_img_transform(is_training, resize=110, crop=96, mean=127.5, std=127.5, 
         GroupRandomCrop(crop) if is_training else GroupCenterCrop(crop),
     ]
     if is_training:
-        print(transforms)
         transforms += [
             GroupPhotoMetricDistortion(brightness_delta=32,
                 contrast_range=(0.5, 1.5),
