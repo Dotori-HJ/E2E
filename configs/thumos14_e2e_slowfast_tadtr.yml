@@ -23,15 +23,15 @@ input_type: image
 lr: 0.0001
 batch_size: 4
 
-fix_encoder: false
-fix_transform: false
+fix_encoder: true
+fix_transform: true
 
 # Image
-# img_resize: 256
-img_resize: 110
-# img_crop_size: 224
-img_crop_size: 96
+img_resize: 256
+# img_resize: 110
+img_crop_size: 224
+# img_crop_size: 96
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_reproduce_110
+output_dir: outputs/thumos14_e2e_slowfast_all_fix_256
 
