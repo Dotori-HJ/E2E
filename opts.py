@@ -180,6 +180,7 @@ cfg.frozen_stages = -1
 
 cfg.pretrained_model = ''
 cfg.fix_encoder = False
+cfg.fix_transform = False
 cfg.tsm_base_model = 'resnet50'
 cfg.slowfast_depth = 50
 cfg.slow_upsample = 2
