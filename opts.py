@@ -142,7 +142,7 @@ cfg.lr = 2e-4
 # specify the name pattern of the backbone layers.
 cfg.lr_backbone_names = ['backbone.backbone']
 # learning rate of backbone layers
-cfg.lr_backbone = 1e-5
+cfg.lr_backbone = 5e-6
 
 # special linear projection layers that need to use smaller lr
 cfg.lr_linear_proj_names = ['reference_points', 'sampling_offsets']
