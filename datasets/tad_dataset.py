@@ -280,6 +280,7 @@ def build(dataset, subset, args, mode):
             mean, std = ([123.675, 116.28, 103.53], [58.395, 57.12, 57.375])
         if args.fix_transform:
             mode = 'eval'
+        print(mode)
         transforms = make_img_transform(
             mode=='train', mean=mean, std=std, resize=args.img_resize, crop=args.img_crop_size, keep_asr=args.resize_keep_asr)
     else:
