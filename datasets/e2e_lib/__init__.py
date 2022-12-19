@@ -63,6 +63,7 @@ def make_img_transform(is_training, resize=110, crop=96, mean=127.5, std=127.5, 
         resize_trans,
         GroupRandomCrop(crop) if is_training else GroupCenterCrop(crop),
     ]
+    print(is_training)
     if is_training:
         print(transforms)
         transforms += [
