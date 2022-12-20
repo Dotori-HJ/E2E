@@ -1,9 +1,12 @@
-import numpy as np
 import numbers
 import random
+
 import cv2
-from . import image_utils
+import numpy as np
 import torch
+
+from . import image_utils
+
 
 class GroupRandomCrop(object):
     """Crop the given video sequences (t x h x w) at a random location.
@@ -38,7 +41,6 @@ class GroupRandomCrop(object):
         return i, j, th, tw
 
     def __call__(self, imgs):
-        
         i, j, h, w = self.get_params(imgs, self.size)
 
         imgs = imgs[:, i:i+h, j:j+w, :]
@@ -137,7 +139,7 @@ class GroupResize(object):
         else:
             new_h = max(self.new_size)
             new_w = min(self.new_size)
-        
+
         imgs = [cv2.resize(img, dsize=(new_w, new_h)) for img in imgs]
         return np.asarray(imgs, dtype=np.float32)
 
@@ -228,7 +230,7 @@ class GroupNormalize(object):
         repr_str += f'(mean={self.mean}, std={self.std}, to_rgb={self.to_rgb})'
         return repr_str
 
-    
+
 def group_inv_transform(imgs, normalizer):
     if isinstance(imgs, torch.Tensor):
         imgs = imgs.numpy()
@@ -395,7 +397,6 @@ class GroupRotate(object):
 
         if np.random.uniform(0, 1) <= self.p:
             angle = np.random.uniform(*self.limit)
-            
             imgs = [
                 image_utils.imrotate(
                     img,
