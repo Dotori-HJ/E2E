@@ -6,8 +6,8 @@ pretrained_model: https://download.openmmlab.com/mmaction/recognition/slowfast/s
 # model setting
 enc_layers: 4
 dec_layers: 4
-dim_feedforward: 1024
-num_queries: 40
+dim_feedforward: 2048
+num_queries: 50
 dropout: 0.1
 
 # data setting
@@ -20,11 +20,11 @@ test_slice_overlap: 0.25
 input_type: image
 
 # training setting (not finialized)
-lr: 0.0001
+lr: 0.0002
 batch_size: 2
 # batch_size: 2
 
-fix_encoder: true
+fix_encoder: false
 fix_transform: false
 
 # Image
@@ -39,4 +39,4 @@ img_crop_size: 384
 # img_crop_size: 96
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_large
+output_dir: outputs/thumos14_e2e_slowfast_ddp
