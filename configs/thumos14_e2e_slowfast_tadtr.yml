@@ -14,7 +14,7 @@ dropout: 0.1
 dataset_name: thumos14
 feature: img10fps
 online_slice: true
-slice_len: 512
+slice_len: 256
 slice_overlap: 0.75
 test_slice_overlap: 0.25
 input_type: image
@@ -37,6 +37,7 @@ img_crop_size: 224
 # Training
 # act_reg: false
 # set_cost_class: 2
+activation: 'gelu'
 
 # output
 output_dir: outputs/thumos14_e2e_slowfast_no_act_reg
