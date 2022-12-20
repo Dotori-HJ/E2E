@@ -35,5 +35,5 @@ img_crop_size: 224
 # img_crop_size: 96
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_reproduce_half_feedforword
+output_dir: outputs/thumos14_e2e_slowfast_reproduce_half_feedforword_query50
 
