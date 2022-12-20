@@ -24,7 +24,7 @@ lr: 0.0001
 batch_size: 4
 
 fix_encoder: false
-fix_transform: false
+fix_transform: true
 
 # Image
 img_resize: 256
@@ -33,5 +33,5 @@ img_crop_size: 224
 # img_crop_size: 96
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_reproduce_256_half
+output_dir: outputs/thumos14_e2e_slowfast_fix_transform_256_half
 
