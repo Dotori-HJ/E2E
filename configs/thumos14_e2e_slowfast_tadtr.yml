@@ -20,20 +20,20 @@ test_slice_overlap: 0.25
 input_type: image
 
 # training setting (not finialized)
-lr: 0.0001
-batch_size: 4
+lr: 0.0002
+batch_size: 2
 
 fix_encoder: false
-fix_transform: true
+fix_transform: false
 
 # Image
-# img_resize: 440
-img_resize: 256
+img_resize: 440
+# img_resize: 256
 # img_resize: 110
-# img_crop_size: 384
-img_crop_size: 224
+img_crop_size: 384
+# img_crop_size: 224
 # img_crop_size: 96
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_reproduce_half_feedforword_query50
+output_dir: outputs/thumos14_e2e_slowfast_ddp
 
