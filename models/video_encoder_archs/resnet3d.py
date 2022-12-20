@@ -1,13 +1,11 @@
+import warnings
+
+import torch
 import torch.nn as nn
 import torch.utils.checkpoint as cp
 from torch.nn.modules.batchnorm import _BatchNorm
 from torch.nn.modules.conv import _ConvNd
 from torch.nn.modules.utils import _ntuple, _triple
-
-import warnings
-
-import torch
-
 
 
 def constant_init(module, val, bias=0):
@@ -16,7 +14,7 @@ def constant_init(module, val, bias=0):
     if hasattr(module, 'bias') and module.bias is not None:
         nn.init.constant_(module.bias, bias)
 
-    
+
 def kaiming_init(module,
                  a=0,
                  mode='fan_out',
@@ -901,12 +899,13 @@ def measure_time(model, x, repeat=20, warmup=10):
 
 
 if __name__ == '__main__':
-    from torchvision.models.utils import load_state_dict_from_url
     # import torch.utils
     import os
     import pdb
     import time
+
     from flop_count import flop_count
+    from torchvision.models.utils import load_state_dict_from_url
 
     os.environ['CUDA_VISIBLE_DEVICES'] = '3'
 
@@ -940,5 +939,3 @@ if __name__ == '__main__':
 
     for _ in range(10):
         y = model(x)
-
-    
