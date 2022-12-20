@@ -890,7 +890,7 @@ class ResNet3d(nn.Module):
 def measure_time(model, x, repeat=20, warmup=10):
     for _ in range(warmup):
         y = model(x)
-    
+
     s = time.time()
     for _ in range(repeat):
         y = model(x)

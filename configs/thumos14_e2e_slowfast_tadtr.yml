@@ -8,7 +8,7 @@ enc_layers: 4
 dec_layers: 4
 dim_feedforward: 2048
 num_queries: 40
-dropout: 0.1
+dropout: 0.0
 
 # data setting
 dataset_name: thumos14
@@ -35,5 +35,5 @@ img_crop_size: 224
 # img_crop_size: 96
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_feedforward
+output_dir: outputs/thumos14_e2e_slowfast_feedforward_nodrop
 
