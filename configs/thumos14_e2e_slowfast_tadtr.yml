@@ -6,7 +6,7 @@ pretrained_model: https://download.openmmlab.com/mmaction/recognition/slowfast/s
 # model setting
 enc_layers: 4
 dec_layers: 4
-dim_feedforward: 1024
+dim_feedforward: 2048
 num_queries: 40
 dropout: 0.1
 
@@ -27,11 +27,13 @@ fix_encoder: false
 fix_transform: true
 
 # Image
+# img_resize: 440
 img_resize: 256
 # img_resize: 110
+# img_crop_size: 384
 img_crop_size: 224
 # img_crop_size: 96
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_fix_transform_256_half
+output_dir: outputs/thumos14_e2e_slowfast_reproduce_half_feedforword
 
