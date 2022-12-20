@@ -4,11 +4,11 @@ slowfast_depth: 50
 pretrained_model: https://download.openmmlab.com/mmaction/recognition/slowfast/slowfast_r50_256p_4x16x1_256e_kinetics400_rgb/slowfast_r50_256p_4x16x1_256e_kinetics400_rgb_20200728-145f1097.pth
 
 # model setting
-enc_layers: 6
-dec_layers: 6
-dim_feedforward: 2048
+enc_layers: 4
+dec_layers: 4
+dim_feedforward: 1024
 num_queries: 40
-dropout: 0.0
+dropout: 0.1
 
 # data setting
 dataset_name: thumos14
@@ -34,6 +34,10 @@ img_resize: 256
 img_crop_size: 224
 # img_crop_size: 96
 
+# Training
+act_reg: false
+# set_cost_class: 2
+
 # output
-output_dir: outputs/thumos14_e2e_slowfast_feedforward_nodrop
+output_dir: outputs/thumos14_e2e_slowfast_no_act_reg
 
