@@ -93,7 +93,7 @@ def make_img_transform(is_training, resize=110, crop=96, mean=127.5, std=127.5, 
         KA.RandomAffine(30, translate=0.1, shear=0.3, p=0.5, same_on_batch=True),
         KA.ColorJiggle(0.1, 0.1, 0.1, 0.1, p=0.5, same_on_batch=True),
         KA.RandomHorizontalFlip(p=0.5, same_on_batch=True),
-        KE.Normalize(mean=mean / 255, std=std / 255),
+        KE.Normalize(mean=torch.tensor(mean) / 255, std=torch.tensor(std) / 255),
     ])
     # gpu_transform = kornia.augmentation
     return Compose(transforms), gpu_transforms
