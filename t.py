@@ -70,12 +70,30 @@ img = np.transpose(img, [2, 0, 1]).astype(np.float32)
 img /= 255.
 img = torch.from_numpy(img).contiguous().to("cuda")
 
-transform = RandAugment(2, 7)
+
+class GPUAugment:
+    def __init__(self, transforms):
+        self.transforms = transforms
+
+    def __call__(self, x):
+        for op in self.transforms:
+            x = torch.stack([op(_) for _ in x])
+        return x
+
+# transform = RandAugment(2, 7)
+import kornia.augmentation as KA
+
+gpu_transforms = GPUAugment([
+    KA.RandomAffine(30, translate=0.1, shear=0.3, p=0.5, same_on_batch=True),
+    KA.ColorJiggle(0.1, 0.1, 0.1, 0.1, p=0.5, same_on_batch=True),
+    KA.RandomHorizontalFlip(p=0.5, same_on_batch=True),
+    # KE.Normalize(mean=mean / 255, std=std / 255),
+])
 
 from einops import rearrange, repeat
 
 img = repeat(img, "c h w -> b t c h w", b=4, t=8)
-img = transform(img)
+img = gpu_transforms(img)
 
 from torchvision.utils import save_image
 
