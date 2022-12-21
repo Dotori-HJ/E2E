@@ -8,22 +8,23 @@
 """
 Train and eval functions used in main.py
 """
+import logging
 import math
 import os.path as osp
+import pickle
 import sys
 from typing import Iterable
-import tqdm
-import logging
 
 import torch
+import tqdm
 
 import util.misc as utils
 from datasets.tad_eval import TADEvaluator
-import pickle
+
 
 def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
                     data_loader: Iterable, optimizer: torch.optim.Optimizer,
-                    device: torch.device, epoch: int, cfg, max_norm: float = 0):
+                    device: torch.device, epoch: int, cfg, max_norm: float = 0, gpu_transform=None):
     model.train()
     criterion.train()
 
@@ -36,6 +37,8 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
 
     for samples, targets in metric_logger.log_every(data_loader, print_freq, header):
         samples = samples.to(device)
+        if gpu_transform is not None:
+            samples = gpu_transform(samples)
         targets = [{k: v.to(device) if k in ['segments', 'labels']
                     else v for k, v in t.items()} for t in targets]
 

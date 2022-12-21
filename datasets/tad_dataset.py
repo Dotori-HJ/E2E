@@ -279,14 +279,14 @@ def build(dataset, subset, args, mode):
         elif args.encoder == 'slowfast' or 'video_mae' in args.encoder or args.backbone.startswith('ts'):
             mean, std = ([123.675, 116.28, 103.53], [58.395, 57.12, 57.375])
         is_training = mode == 'train' and not args.fix_transform
-        transforms = make_img_transform(
+        transforms, gpu_transform = make_img_transform(
             is_training=is_training, mean=mean, std=std, resize=args.img_resize, crop=args.img_crop_size, keep_asr=args.resize_keep_asr)
     else:
         transforms = None
-    print(transforms)
+        gpu_transform = None
 
     return TADDataset(
         subset_mapping[subset], mode, feature_info, ann_file, ft_info_file, transforms,
         online_slice=args.online_slice, slice_len=args.slice_len, slice_overlap=args.slice_overlap if mode=='train' else args.test_slice_overlap,
         binary=args.binary,
-        input_type=args.input_type)
+        input_type=args.input_type), gpu_transform

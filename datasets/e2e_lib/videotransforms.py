@@ -205,7 +205,7 @@ class GroupNormalize(object):
     """
 
     def __init__(self, mean, std, to_rgb=False):
-        self.mean = np.array(mean, dtype=np.float32)  # 
+        self.mean = np.array(mean, dtype=np.float32)
         self.std = np.array(std, dtype=np.float32)
         self.to_rgb = to_rgb
 

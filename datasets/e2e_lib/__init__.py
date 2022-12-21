@@ -1,7 +1,11 @@
 import os
 
 import cv2
+import kornia
+import kornia.augmentation as KA
+import kornia.enhance as KE
 import numpy as np
+import torch.nn as nn
 
 
 def load_video_frames(frame_dir, start, seq_len, stride=1, fn_tmpl='img_%07d.jpg'):
@@ -68,16 +72,39 @@ def make_img_transform(is_training, resize=110, crop=96, mean=127.5, std=127.5, 
         GroupRandomCrop(crop) if is_training else GroupCenterCrop(crop),
     ]
     # TODO: Convert to Kornia (GPU) and AutoAugment version
-    if is_training:
-        transforms += [
-            GroupRotate(limit=(-45, 45), border_mode='reflect101', p=0.5),
-            GroupPhotoMetricDistortion(brightness_delta=32,
-                contrast_range=(0.5, 1.5),
-                saturation_range=(0.5, 1.5),
-                hue_delta=18,
-                p=0.5),
-            GroupRandomHorizontalFlip(0.5),
-        ]
+    # if is_training:
+    #     transforms += [
+    #         GroupRotate(limit=(-45, 45), border_mode='reflect101', p=0.5),
+    #         GroupPhotoMetricDistortion(brightness_delta=32,
+    #             contrast_range=(0.5, 1.5),
+    #             saturation_range=(0.5, 1.5),
+    #             hue_delta=18,
+    #             p=0.5),
+    #         GroupRandomHorizontalFlip(0.5),
+    #     ]
 
-    transforms.append(GroupNormalize(mean, std, to_rgb=True))
-    return Compose(transforms)
+    if is_training:
+        transforms.append(GroupNormalize(127.5, 127.5, to_rgb=True))
+    else:
+        transforms.append(GroupNormalize(mean, std, to_rgb=True))
+
+    gpu_transforms = None
+    gpu_transforms = GPUAugment([
+        KA.RandomRotation(30, same_on_batch=True),
+        # KA.,
+        KA.RandomHorizontalFlip(p=0.5, same_on_batch=True),
+        KE.Normalize(mean=mean / 255, std=std / 255),
+    ])
+    # gpu_transform = kornia.augmentation
+    return Compose(transforms), gpu_transforms
+import torch
+
+
+class GPUAugment:
+    def __init__(self, transforms):
+        self.transforms = transforms
+
+    def __call__(self, x):
+        for op in self.transforms:
+            x = torch.stack([op(_) for _ in x])
+        return x
