@@ -6,9 +6,9 @@ pretrained_model: https://download.openmmlab.com/mmaction/recognition/slowfast/s
 # model setting
 enc_layers: 4
 dec_layers: 4
-dim_feedforward: 2048
+dim_feedforward: 1024
 num_queries: 40
-dropout: 0.0
+dropout: 0.1
 
 # data setting
 dataset_name: thumos14
@@ -23,7 +23,7 @@ input_type: image
 lr: 0.0001
 batch_size: 4
 
-fix_encoder: true
+fix_encoder: false
 fix_transform: false
 
 # Image
@@ -40,5 +40,5 @@ img_crop_size: 224
 # activation: 'gelu'
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_fix_ori
+output_dir: outputs/thumos14_e2e_slowfast_aug
 
