@@ -59,19 +59,22 @@ def make_img_transform(is_training, resize=110, crop=96, mean=127.5, std=127.5, 
         else:
             resize_trans = GroupResize((resize, resize))
 
+    # if is_training:
+    #     transforms = [GroupRotate(limit=(-45, 45), border_mode='reflect101', p=0.5)]
+    # else:
+    #     transforms = []
     transforms = [
         resize_trans,
         GroupRandomCrop(crop) if is_training else GroupCenterCrop(crop),
     ]
+    # TODO: Convert to Kornia (GPU) and AutoAugment version
     if is_training:
         transforms += [
+            GroupRotate(limit=(-45, 45), border_mode='reflect101', p=0.5),
             GroupPhotoMetricDistortion(brightness_delta=32,
                 contrast_range=(0.5, 1.5),
                 saturation_range=(0.5, 1.5),
                 hue_delta=18,
-                p=0.5),
-            GroupRotate(limit=(-45, 45),
-                border_mode='reflect101',
                 p=0.5),
             GroupRandomHorizontalFlip(0.5),
         ]

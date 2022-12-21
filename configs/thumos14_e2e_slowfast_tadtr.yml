@@ -40,5 +40,5 @@ img_crop_size: 224
 # activation: 'gelu'
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_no_act_reg
+output_dir: outputs/thumos14_e2e_slowfast_reproduce
 
