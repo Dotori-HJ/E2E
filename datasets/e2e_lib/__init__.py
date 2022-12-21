@@ -105,6 +105,9 @@ class GPUAugment:
         self.transforms = transforms
 
     def __call__(self, x):
+        for _ in x:
+            print(_.shape)
+        exit()
         for op in self.transforms:
             x = torch.stack([op(_) for _ in x])
         return x
