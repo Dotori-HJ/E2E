@@ -98,16 +98,17 @@ def make_img_transform(is_training, resize=110, crop=96, mean=127.5, std=127.5, 
     # gpu_transform = kornia.augmentation
     return Compose(transforms), gpu_transforms
 import torch
+from einops import rearrange
 
 
 class GPUAugment:
     def __init__(self, transforms):
         self.transforms = transforms
 
-    def __call__(self, x):
-        for _ in x:
-            print(_.shape)
-        exit()
+    def __call__(self, tensors):
+        tensors = [rearrange(x, "c t h w -> t c h w") for x in tensors]
         for op in self.transforms:
-            x = torch.stack([op(_) for _ in x])
+            x = torch.stack([op(_) for x in tensors])
+
+        tensors = [rearrange(x, "c t h w -> t c h w") for x in tensors]
         return x
