@@ -106,9 +106,10 @@ class GPUAugment:
         self.transforms = transforms
 
     def __call__(self, tensors):
-        tensors = [rearrange(x, "c t h w -> t c h w") for x in tensors]
+        tensors = rearrange(tensors, "b c t h w -> b t c h w")
+        # tensors = [rearrange(x, "c t h w -> t c h w") for x in tensors]
         for op in self.transforms:
-            x = torch.stack([op(_) for x in tensors])
+            tensors = torch.stack([op(x) for x in tensors])
 
-        tensors = [rearrange(x, "c t h w -> t c h w") for x in tensors]
-        return x
+        tensors = rearrange(tensors, "b t c h w -> b c t h w")
+        return tensors
