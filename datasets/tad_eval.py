@@ -1,27 +1,28 @@
 # TadTR: End-to-end Temporal Action Detection with Transformer
 
-import json
-import os.path as osp
-import os
-import pandas as pd
-import time
-import numpy as np
-import logging
 import concurrent.futures
-import sys
+import json
 import logging
+import os
+import os.path as osp
+
 # import ipdb as pdb
 import pickle
+import sys
+import time
 
-from opts import cfg
-
-from Evaluation.eval_detection import compute_average_precision_detection
 # from Evaluation.eval_proposal import average_recall_vs_avg_nr_proposals
 import matplotlib.pyplot as plt
-# from util.proposal_utils import soft_nms
-from .data_utils import get_dataset_dict
+import numpy as np
+import pandas as pd
+
+from Evaluation.eval_detection import compute_average_precision_detection
+from opts import cfg
 from util.misc import all_gather
 from util.segment_ops import soft_nms, temporal_nms
+
+# from util.proposal_utils import soft_nms
+from .data_utils import get_dataset_dict
 
 
 def eval_ap(iou, cls, gt, predition):
@@ -70,11 +71,11 @@ class TADEvaluator(object):
             self.ignored_videos = ['video_test_0000270', 'video_test_0001292', 'video_test_0001496']
         else:
             raise NotImplementedError
-            
+
         anno_dict = json.load(open(anno_file))
         classes = self._get_classes(anno_dict)
         num_classes = len(classes)
-        
+
         database = anno_dict['database']
         all_gt = []
 
@@ -93,7 +94,7 @@ class TADEvaluator(object):
         # per class ground truth
         gt_by_cls = []
         for cls in range(num_classes):
-            gt_by_cls.append(all_gt[all_gt.cls == cls].reset_index(drop=True).drop('cls', 1))
+            gt_by_cls.append(all_gt[all_gt.cls == cls].reset_index(drop=True).drop(columns='cls'))
 
         self.gt_by_cls = gt_by_cls
         self.all_pred = {k: [] for k in self.nms_mode}
@@ -110,7 +111,7 @@ class TADEvaluator(object):
         if 'classes' in anno_dict:
             classes = anno_dict['classes']
         else:
-            
+
             database = anno_dict['database']
             all_gts = []
             for vid in database:
@@ -127,7 +128,7 @@ class TADEvaluator(object):
             # pdb.set_trace()
             if 'window' not in k:
                 this_dets = [
-                    [v['segments'][i, 0], 
+                    [v['segments'][i, 0],
                      v['segments'][i, 1],
                      v['scores'][i], v['labels'][i]]
                      for i in range(len(v['scores']))]
@@ -136,17 +137,17 @@ class TADEvaluator(object):
                 window_start = self.video_dict[k]['time_offset']
                 video_id = self.video_dict[k]['src_vid_name']
                 this_dets = [
-                    [v['segments'][i, 0] + window_start, 
-                     v['segments'][i, 1] + window_start, 
+                    [v['segments'][i, 0] + window_start,
+                     v['segments'][i, 1] + window_start,
                      v['scores'][i],
                      v['labels'][i]]
                     for i in range(len(v['scores']))]
-            
+
             # ignore videos that are not in ground truth set
             if video_id not in self.video_ids:
                 continue
             this_dets = np.array(this_dets)   # start, end, score, label
-            
+
             for nms_mode in self.nms_mode:
                 input_dets = np.copy(this_dets)
                 # if nms_mode == 'nms' and not (cfg.TEST_SLICE_OVERLAP > 0 and self.dataset_name == 'thumos14'):  # when cfg.TEST_SLICE_OVERLAP > 0, only do nms at summarization
@@ -170,7 +171,7 @@ class TADEvaluator(object):
         all_pred = []
         for vid in video_ids:
             this_dets = self.all_pred['nms'][self.all_pred['nms']['video-id'] == vid][['t-start', 't-end', 'score', 'cls']].values
-            
+
             this_dets = apply_nms(this_dets)[:200, ...]
             this_dets = [[vid] + x.tolist() for x in this_dets]
             all_pred += this_dets
@@ -191,7 +192,7 @@ class TADEvaluator(object):
             slice_ids = this_dets['slice-id'].unique().tolist()
             if len(slice_ids) > 1:
                 slice_sorted = sorted(slice_ids, key=lambda k: int(k.split('_')[4]))
-               
+
                 overlap_region_time_list = []
                 for i in range(0, len(slice_sorted) - 1):
                     slice_name = slice_sorted[i]
@@ -204,7 +205,7 @@ class TADEvaluator(object):
                     # add time offset of each window/slice
                     overlap_region_time = [time_base + overlap_region_time[iii] / feature_fps for iii in range(2)]
                     overlap_region_time_list.append(overlap_region_time)
-                
+
                 mask_union = None
                 processed_dets = []
                 for overlap_region_time in overlap_region_time_list:
@@ -216,7 +217,7 @@ class TADEvaluator(object):
                     if len(overlap_dets) > 0:
                         kept_dets_arr = apply_nms(np.concatenate((overlap_dets_arr, np.arange(len(overlap_dets_arr))[:, None]), axis=1))
                         processed_dets.append(overlap_dets.iloc[kept_dets_arr[:, -1].astype('int64')])
-                    
+
                     if mask_union is not None:
                         mask_union = mask_union | mask
                     else:
@@ -234,7 +235,7 @@ class TADEvaluator(object):
         '''accumulate detections in all videos'''
         for nms_mode in self.nms_mode:
             self.all_pred[nms_mode] = pd.DataFrame(self.all_pred[nms_mode], columns=["video-id", "slice-id", "t-start", "t-end", "score", "cls"])
-        
+
         self.pred_by_cls = {}
         for nms_mode in self.nms_mode:
             if self.dataset_name == 'thumos14' and nms_mode == 'raw' and test_slice_overlap > 0:
@@ -243,7 +244,7 @@ class TADEvaluator(object):
             if self.dataset_name == 'thumos14' and nms_mode == 'nms' and test_slice_overlap > 0:
                 self.nms_whole_dataset()
 
-            self.pred_by_cls[nms_mode] = [self.all_pred[nms_mode][self.all_pred[nms_mode].cls == cls].reset_index(drop=True).drop('cls', 1) for cls in range(self.num_classes)]
+            self.pred_by_cls[nms_mode] = [self.all_pred[nms_mode][self.all_pred[nms_mode].cls == cls].reset_index(drop=True).drop(columns='cls') for cls in range(self.num_classes)]
 
     def import_prediction(self):
         pass
@@ -268,7 +269,7 @@ class TADEvaluator(object):
         else:
             # 0.5 0.75 0.95 avg
             display_iou_thr_inds = [0, 5, 9]
-        
+
         for nms_mode in self.nms_mode:
             logging.info(
                 'mode={} {} predictions from {} videos'.format(
@@ -320,7 +321,7 @@ class TADEvaluator(object):
         per_iou_ap = ap_values.mean(axis=0)
         per_cls_ap = ap_values.mean(axis=1)
         mAP = per_cls_ap.mean()
-       
+
         self.stats[nms_mode]['mAP'] = mAP
         self.stats[nms_mode]['ap_values'] = ap_values
         self.stats[nms_mode]['per_iou_ap'] = per_iou_ap
@@ -337,7 +338,7 @@ class TADEvaluator(object):
                 det_list.append(
                     {'segment': [float(row['t-start']), float(row['t-end'])], 'label': self.classes[int(row['cls'])], 'score': float(row['score'])}
                 )
-            
+
             video_id = video[2:] if video.startswith('v_') else video
             result_dict[video_id] = det_list
 
@@ -364,7 +365,7 @@ class TADEvaluator(object):
 def merge_distributed(all_pred):
     '''gather outputs from different nodes at distributed mode'''
     all_pred_gathered = all_gather(all_pred)
-    
+
     merged_all_pred = {k: [] for k in all_pred}
     for p in all_pred_gathered:
         for k in p:
@@ -372,7 +373,7 @@ def merge_distributed(all_pred):
 
     return merged_all_pred
 
-    
+
 if __name__ == '__main__':
     pass
 
