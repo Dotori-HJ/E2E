@@ -82,7 +82,7 @@ class TADDataset(torch.utils.data.Dataset):
                                            std=[0.229, 0.224, 0.225])
             ])
 
-    def _train_transfrom(self, imgs):
+    def _train_transform(self, imgs):
         transform = create_random_augment(224, "rand-m7-n4-mstd0.5-inc1", "bilinear")
 
         imgs = transform(imgs)
