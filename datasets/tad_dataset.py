@@ -68,10 +68,10 @@ class TADDataset(torch.utils.data.Dataset):
         self.mem_cache = mem_cache
         self.img_stride = img_stride
 
-        self.short_side_size = 110
-        self.crop_size = 96
-        # self.short_side_size = 256
-        # self.crop_size = 224
+        # self.short_side_size = 110
+        # self.crop_size = 96
+        self.short_side_size = 256
+        self.crop_size = 224
         self._prepare()
         if mode == 'train':
             self.transform = self._train_transform
