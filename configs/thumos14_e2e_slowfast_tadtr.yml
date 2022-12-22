@@ -21,7 +21,7 @@ input_type: image
 
 # training setting (not finialized)
 lr: 0.0001
-batch_size: 4
+batch_size: 8
 
 fix_encoder: false
 fix_transform: false
