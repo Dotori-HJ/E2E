@@ -258,7 +258,7 @@ class TADDataset(torch.utils.data.Dataset):
 
             if len(imgs) < dst_sample_frames:
                 # try:
-                if isinstance(imgs, np.array):
+                if isinstance(imgs, np.ndarray):
                     imgs = np.pad(imgs, ((0, dst_sample_frames - len(imgs)), (0, 0), (0, 0), (0, 0)), mode='constant', constant_values=128)
                 else:
                     tmp = Image.new("RGB", imgs[0].size, (128, 128, 128))
@@ -282,7 +282,7 @@ class TADDataset(torch.utils.data.Dataset):
                 dst_sample_frames = dst_clip_length // self.img_stride
 
                 if len(imgs) < dst_sample_frames:
-                    if isinstance(imgs, np.array):
+                    if isinstance(imgs, np.ndarray):
                         imgs = np.pad(imgs, ((0, dst_sample_frames - len(imgs)), (0, 0), (0, 0), (0, 0)), mode='constant', constant_values=128)
                     else:
                         tmp = Image.new("RGB", imgs[0].size, (128, 128, 128))
@@ -296,7 +296,7 @@ class TADDataset(torch.utils.data.Dataset):
         #     # traceback.print_exc()
         #     raise IOError("failed to transform {} from {}".format(video_name, frame_dir))
         imgs = self.transforms(imgs)
-        if isinstance(imgs, np.array):
+        if isinstance(imgs, np.ndarray):
             imgs = torch.from_numpy(np.ascontiguousarray(imgs.transpose([3,0,1,2]))).float()   # thwc -> cthw
         return imgs
 
