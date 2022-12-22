@@ -80,9 +80,9 @@ class TADDataset(torch.utils.data.Dataset):
         self.rand_augment_param = rand_augment_param
         self._prepare()
         # if mode == 'train':
-        #     self.transform = self._train_transform
+        #     self.transforms = self._train_transform
         # else:
-        #     self.transform = video_transforms.Compose([
+        #     self.transforms = video_transforms.Compose([
         #         video_transforms.Resize(self.short_side_size, interpolation='bilinear'),
         #         video_transforms.CenterCrop(size=(self.crop_size, self.crop_size)),
         #         volume_transforms.ClipToTensor(),
@@ -295,7 +295,7 @@ class TADDataset(torch.utils.data.Dataset):
         # except Exception as e:
         #     # traceback.print_exc()
         #     raise IOError("failed to transform {} from {}".format(video_name, frame_dir))
-        imgs = self.transform(imgs)
+        imgs = self.transforms(imgs)
         # imgs = torch.from_numpy(np.ascontiguousarray(imgs.transpose([3,0,1,2]))).float()   # thwc -> cthw
         return imgs
 
