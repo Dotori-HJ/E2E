@@ -85,7 +85,7 @@ class TADDataset(torch.utils.data.Dataset):
             ])
 
     def _train_transform(self, imgs):
-        transform = create_random_augment(224, "rand-m7-n4-mstd0.5-inc1", "bilinear")
+        transform = create_random_augment(imgs[0].size, "rand-m7-n4-mstd0.5-inc1", "bilinear")
 
         imgs = transform(imgs)
         imgs = [transforms.ToTensor()(img) for img in imgs]

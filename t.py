@@ -24,6 +24,8 @@ transform = create_transform(
 import cv2
 import numpy as np
 import torch
+import torchvision.transforms as transforms
+from einops import rearrange, repeat
 from PIL import Image
 
 from datasets.utils import spatial_sampling, tensor_normalize
@@ -68,7 +70,7 @@ from video_transforms import create_random_augment
 
 
 
-transform =create_random_augment(224, "rand-m7-n4-mstd0.5-inc1", "bilinear")
+
 
 # img = cv2.imread("000000.png")
 # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -104,17 +106,19 @@ transform =create_random_augment(224, "rand-m7-n4-mstd0.5-inc1", "bilinear")
 #     # KE.Normalize(mean=mean / 255, std=std / 255),
 # ])
 
-import torchvision.transforms as transforms
-from einops import rearrange, repeat
 
 img = Image.open("000000.png")
 buffer = [img for i in range(16)]
 # AugmentOp()
 # img = repeat(img, "c h w -> b t c h w", b=4, t=8)
+print(buffer[0].size)
+transform = create_random_augment(buffer[0].size, "rand-m7-n4-mstd0.5-inc1", "bilinear")
 buffer = transform(buffer)
 
 buffer = [transforms.ToTensor()(img) for img in buffer]
 buffer = torch.stack(buffer) # T C H W
+print(buffer.size(), buffer[0].size)
+exit()
 
 buffer = buffer.permute(0, 2, 3, 1) # T H W C
 
