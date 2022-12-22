@@ -24,7 +24,7 @@ from datasets.tad_eval import TADEvaluator
 
 def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
                     data_loader: Iterable, optimizer: torch.optim.Optimizer,
-                    device: torch.device, epoch: int, cfg, max_norm: float = 0, gpu_transform=None):
+                    device: torch.device, epoch: int, cfg, max_norm: float = 0):
     model.train()
     criterion.train()
 
@@ -37,8 +37,6 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
 
     for samples, targets in metric_logger.log_every(data_loader, print_freq, header):
         samples = samples.to(device)
-        # if gpu_transform is not None:
-        #     samples.tensors = gpu_transform(samples.tensors)
         targets = [{k: v.to(device) if k in ['segments', 'labels']
                     else v for k, v in t.items()} for t in targets]
 

@@ -36,7 +36,10 @@ from .video_transforms import create_random_augment
 
 
 class TADDataset(torch.utils.data.Dataset):
-    def __init__(self, subset, mode, feature_info, ann_file, ft_info_file, transforms, mem_cache=False, online_slice=False, slice_len=None, slice_overlap=0, binary=False, padding=True, input_type='feature', img_stride=1):
+    def __init__(self, subset, mode, feature_info, ann_file, ft_info_file, transforms,
+                 mem_cache=False, online_slice=False, slice_len=None, slice_overlap=0,
+                 binary=False, padding=True, input_type='feature', img_stride=1,
+                 resize=256, crop_size=224):
         '''TADDataset
         Parameters:
             subset: train/val/test
@@ -68,10 +71,10 @@ class TADDataset(torch.utils.data.Dataset):
         self.mem_cache = mem_cache
         self.img_stride = img_stride
 
-        self.short_side_size = 110
-        self.crop_size = 96
-        # self.short_side_size = 256
-        # self.crop_size = 224
+        # self.short_side_size = 110
+        # self.crop_size = 96
+        self.short_side_size = resize
+        self.crop_size = crop_size
         self._prepare()
         if mode == 'train':
             self.transform = self._train_transform
@@ -351,14 +354,15 @@ def build(dataset, subset, args, mode):
         elif args.encoder == 'slowfast' or 'video_mae' in args.encoder or args.backbone.startswith('ts'):
             mean, std = ([123.675, 116.28, 103.53], [58.395, 57.12, 57.375])
         is_training = mode == 'train' and not args.fix_transform
-        transforms, gpu_transform = make_img_transform(
+        transforms = make_img_transform(
             is_training=is_training, mean=mean, std=std, resize=args.img_resize, crop=args.img_crop_size, keep_asr=args.resize_keep_asr)
     else:
         transforms = None
-        gpu_transform = None
 
     return TADDataset(
         subset_mapping[subset], mode, feature_info, ann_file, ft_info_file, transforms,
         online_slice=args.online_slice, slice_len=args.slice_len, slice_overlap=args.slice_overlap if mode=='train' else args.test_slice_overlap,
         binary=args.binary,
-        input_type=args.input_type), gpu_transform
+        input_type=args.input_type,
+        resize=args.img_resize,
+        crop_size=args.img_crop_size,)

@@ -429,7 +429,7 @@ class PostProcess(nn.Module):
             topk_values, topk_indexes = torch.topk(prob.view(
                 out_logits.shape[0], -1), min(cfg.postproc_ins_topk, prob.shape[1]*prob.shape[2]), dim=1)
             scores = topk_values
-            topk_segments = topk_indexes // out_logits.shape[2]
+            topk_segments = torch.div(topk_indexes, out_logits.shape[2], rounding_mode='trunc')
             labels = topk_indexes % out_logits.shape[2]
 
             # bs, nq, 2; bs, num, 2

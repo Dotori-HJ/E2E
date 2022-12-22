@@ -164,9 +164,9 @@ def main(args):
     lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(
         optimizer, cfg.lr_step, last_epoch=last_epoch)
 
-    dataset_val, _ = build_dataset(subset=cfg.test_set, args=cfg, mode='val')
+    dataset_val = build_dataset(subset=cfg.test_set, args=cfg, mode='val')
     if not args.eval:
-        dataset_train, gpu_transform = build_dataset(subset='train', args=cfg, mode='train')
+        dataset_train = build_dataset(subset='train', args=cfg, mode='train')
 
     if args.distributed:
         if not args.eval:
