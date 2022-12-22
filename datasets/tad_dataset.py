@@ -296,7 +296,8 @@ class TADDataset(torch.utils.data.Dataset):
         #     # traceback.print_exc()
         #     raise IOError("failed to transform {} from {}".format(video_name, frame_dir))
         imgs = self.transforms(imgs)
-        # imgs = torch.from_numpy(np.ascontiguousarray(imgs.transpose([3,0,1,2]))).float()   # thwc -> cthw
+        if isinstance(imgs, np.array):
+            imgs = torch.from_numpy(np.ascontiguousarray(imgs.transpose([3,0,1,2]))).float()   # thwc -> cthw
         return imgs
 
     def _get_train_label(self, video_name):
