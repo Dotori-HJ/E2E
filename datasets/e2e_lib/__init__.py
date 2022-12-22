@@ -6,6 +6,7 @@ import kornia.augmentation as KA
 import kornia.enhance as KE
 import numpy as np
 import torch.nn as nn
+from PIL import Image
 
 
 def load_video_frames(frame_dir, start, seq_len, stride=1, fn_tmpl='img_%07d.jpg'):
@@ -31,13 +32,17 @@ def load_video_frames(frame_dir, start, seq_len, stride=1, fn_tmpl='img_%07d.jpg
         #     # img = img[:, :, [2, 1, 0]]  # BGR => RGB, moved to video_transforms.Normalize
         #     # img = (img/255.)*2 - 1
         #     frames.append(img)
-        frames = [cv2.imread(os.path.join(frame_dir, fn_tmpl % i))
+        # frames = [cv2.imread(os.path.join(frame_dir, fn_tmpl % i))
+        #     for i in range(start + stride // 2, start + seq_len, stride)]
+        frames = [Image.open(os.path.join(frame_dir, fn_tmpl % i))
             for i in range(start + stride // 2, start + seq_len, stride)]
     else:
         # load all frames
         num_imgs = len(os.listdir(frame_dir))
-        frames = [cv2.imread(os.path.join(frame_dir, fn_tmpl % (i+1))) for i in range(num_imgs)]
-    return np.asarray(frames, dtype=np.float32)  # NHWC
+        # frames = [cv2.imread(os.path.join(frame_dir, fn_tmpl % (i+1))) for i in range(num_imgs)]
+        frames = [Image.open(os.path.join(frame_dir, fn_tmpl % (i+1))) for i in range(num_imgs)]
+    # return np.asarray(frames, dtype=np.float32)  # NHWC
+    return frames
 
 
 def make_img_transform(is_training, resize=110, crop=96, mean=127.5, std=127.5, keep_asr=True):

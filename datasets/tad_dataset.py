@@ -17,16 +17,22 @@ import pandas as pd
 import torch
 import torch.nn.functional as F
 import torch.utils.data
+import torchvision.transforms as transforms
 import tqdm
 
+# from util.config import cfg
+from einops import rearrange, repeat
+from PIL import Image
+
+import datasets.video_transforms as video_transforms
+import datasets.volume_transforms as volume_transforms
 from util.segment_ops import segment_t1t2_to_cw
 
 from .data_utils import get_dataset_dict, get_dataset_info, load_feature
 from .e2e_lib import load_video_frames, make_img_transform
-
-# from util.config import cfg
-
-
+from .random_erasing import RandomErasing
+from .utils import spatial_sampling, tensor_normalize
+from .video_transforms import create_random_augment
 
 
 class TADDataset(torch.utils.data.Dataset):
@@ -63,6 +69,63 @@ class TADDataset(torch.utils.data.Dataset):
         self.img_stride = img_stride
 
         self._prepare()
+        if mode == 'train':
+            self.transform = self._train_transform
+        else:
+            self.transform = video_transforms.Compose([
+                video_transforms.Resize(self.short_side_size, interpolation='bilinear'),
+                video_transforms.CenterCrop(size=(self.crop_size, self.crop_size)),
+                volume_transforms.ClipToTensor(),
+                video_transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                           std=[0.229, 0.224, 0.225])
+            ])
+
+    def _train_transfrom(self, imgs):
+        transform = create_random_augment(224, "rand-m7-n4-mstd0.5-inc1", "bilinear")
+
+        imgs = transform(imgs)
+        imgs = [transforms.ToTensor()(img) for img in imgs]
+        imgs = torch.stack(imgs) # T C H W
+        imgs = imgs.permute(0, 2, 3, 1) # T H W C
+
+        # T H W C
+        imgs = tensor_normalize(
+            imgs, [0.485, 0.456, 0.406], [0.229, 0.224, 0.225]
+        )
+        # T H W C -> C T H W.
+        imgs = imgs.permute(3, 0, 1, 2)
+        # Perform data augmentation.
+        scl, asp = (
+            [0.08, 1.0],
+            [0.75, 1.3333],
+        )
+        imgs = spatial_sampling(
+            imgs,
+            spatial_idx=-1,
+            min_scale=256,
+            max_scale=320,
+            crop_size=self.crop_size,
+            random_horizontal_flip=True,
+            inverse_uniform_sampling=False,
+            aspect_ratio=asp,
+            scale=scl,
+            motion_shift=False
+        )
+
+        # if self.rand_erase:
+        #     erase_transform = RandomErasing(
+        #         args.reprob,
+        #         mode=args.remode,
+        #         max_count=args.recount,
+        #         num_splits=args.recount,
+        #         device="cpu",
+        #     )
+        #     imgs = imgs.permute(1, 0, 2, 3)
+        #     imgs = erase_transform(imgs)
+        #     imgs = imgs.permute(1, 0, 2, 3)
+
+        return imgs
+
 
     def _get_classes(self, anno_dict):
         '''get class list from the annotation dict'''
@@ -185,7 +248,10 @@ class TADDataset(torch.utils.data.Dataset):
 
             if len(imgs) < dst_sample_frames:
                 # try:
-                imgs = np.pad(imgs, ((0, dst_sample_frames - len(imgs)), (0, 0), (0, 0), (0, 0)), mode='constant', constant_values=128)
+                # imgs = np.pad(imgs, ((0, dst_sample_frames - len(imgs)), (0, 0), (0, 0), (0, 0)), mode='constant', constant_values=128)
+
+                tmp = Image.new("RGB", imgs[0].size, (128, 128, 128))
+                imgs += [tmp for i in range(dst_sample_frames - len(imgs))]
                 # except:
                 #     pdb.set_trace()
                 self.video_dict[video_name]['feature_length'] = self.slice_len
@@ -205,17 +271,19 @@ class TADDataset(torch.utils.data.Dataset):
                 dst_sample_frames = dst_clip_length // self.img_stride
 
                 if len(imgs) < dst_sample_frames:
-                    imgs = np.pad(imgs, ((0, dst_sample_frames - len(imgs)), (0, 0), (0, 0), (0, 0)), mode='constant', constant_values=128)
+                    # imgs = np.pad(imgs, ((0, dst_sample_frames - len(imgs)), (0, 0), (0, 0), (0, 0)), mode='constant', constant_values=128)
+                    tmp = Image.new("RGB", imgs[0].size, (128, 128, 128))
+                    imgs += [tmp for i in range(dst_sample_frames - len(imgs))]
 
                 else:
-                    imgs = imgs[:dst_sample_frames, ...]
-        try:
-            imgs = self.transforms(imgs)
-        except Exception as e:
-            # traceback.print_exc()
-            raise IOError("failed to transform {} from {}".format(video_name, frame_dir))
-
-        imgs = torch.from_numpy(np.ascontiguousarray(imgs.transpose([3,0,1,2]))).float()   # thwc -> cthw
+                    imgs = imgs[:dst_sample_frames]
+        # try:
+        #     imgs = self.transforms(imgs)
+        # except Exception as e:
+        #     # traceback.print_exc()
+        #     raise IOError("failed to transform {} from {}".format(video_name, frame_dir))
+        imgs = self.transform(imgs)
+        # imgs = torch.from_numpy(np.ascontiguousarray(imgs.transpose([3,0,1,2]))).float()   # thwc -> cthw
         return imgs
 
     def _get_train_label(self, video_name):
