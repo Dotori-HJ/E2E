@@ -12,6 +12,8 @@ import os.path as osp
 
 import h5py
 import ipdb as pdb
+import kornia.augmentation as KA
+import kornia.enhance as KE
 import numpy as np
 import pandas as pd
 import torch
@@ -77,16 +79,16 @@ class TADDataset(torch.utils.data.Dataset):
         self.crop_size = crop_size
         self.rand_augment_param = rand_augment_param
         self._prepare()
-        if mode == 'train':
-            self.transform = self._train_transform
-        else:
-            self.transform = video_transforms.Compose([
-                video_transforms.Resize(self.short_side_size, interpolation='bilinear'),
-                video_transforms.CenterCrop(size=(self.crop_size, self.crop_size)),
-                volume_transforms.ClipToTensor(),
-                video_transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                           std=[0.229, 0.224, 0.225])
-            ])
+        # if mode == 'train':
+        #     self.transform = self._train_transform
+        # else:
+        #     self.transform = video_transforms.Compose([
+        #         video_transforms.Resize(self.short_side_size, interpolation='bilinear'),
+        #         video_transforms.CenterCrop(size=(self.crop_size, self.crop_size)),
+        #         volume_transforms.ClipToTensor(),
+        #         video_transforms.Normalize(mean=[0.485, 0.456, 0.406],
+        #                                    std=[0.229, 0.224, 0.225])
+        #     ])
 
     def _train_transform(self, imgs):
         transform = create_random_augment(imgs[0].size, self.rand_augment_param, "bilinear")
@@ -256,10 +258,11 @@ class TADDataset(torch.utils.data.Dataset):
 
             if len(imgs) < dst_sample_frames:
                 # try:
-                # imgs = np.pad(imgs, ((0, dst_sample_frames - len(imgs)), (0, 0), (0, 0), (0, 0)), mode='constant', constant_values=128)
-
-                tmp = Image.new("RGB", imgs[0].size, (128, 128, 128))
-                imgs += [tmp for i in range(dst_sample_frames - len(imgs))]
+                if isinstance(imgs, np.array):
+                    imgs = np.pad(imgs, ((0, dst_sample_frames - len(imgs)), (0, 0), (0, 0), (0, 0)), mode='constant', constant_values=128)
+                else:
+                    tmp = Image.new("RGB", imgs[0].size, (128, 128, 128))
+                    imgs += [tmp for i in range(dst_sample_frames - len(imgs))]
                 # except:
                 #     pdb.set_trace()
                 self.video_dict[video_name]['feature_length'] = self.slice_len
@@ -279,9 +282,11 @@ class TADDataset(torch.utils.data.Dataset):
                 dst_sample_frames = dst_clip_length // self.img_stride
 
                 if len(imgs) < dst_sample_frames:
-                    # imgs = np.pad(imgs, ((0, dst_sample_frames - len(imgs)), (0, 0), (0, 0), (0, 0)), mode='constant', constant_values=128)
-                    tmp = Image.new("RGB", imgs[0].size, (128, 128, 128))
-                    imgs += [tmp for i in range(dst_sample_frames - len(imgs))]
+                    if isinstance(imgs, np.array):
+                        imgs = np.pad(imgs, ((0, dst_sample_frames - len(imgs)), (0, 0), (0, 0), (0, 0)), mode='constant', constant_values=128)
+                    else:
+                        tmp = Image.new("RGB", imgs[0].size, (128, 128, 128))
+                        imgs += [tmp for i in range(dst_sample_frames - len(imgs))]
 
                 else:
                     imgs = imgs[:dst_sample_frames]
@@ -345,6 +350,20 @@ class TADDataset(torch.utils.data.Dataset):
         return video_data, target
 
 
+class GPUAugment:
+    def __init__(self, transforms):
+        self.transforms = transforms
+
+    def __call__(self, tensors):
+        tensors = rearrange(tensors, "b c t h w -> b t c h w")
+        # tensors = [rearrange(x, "c t h w -> t c h w") for x in tensors]
+        for op in self.transforms:
+            tensors = torch.stack([op(x) for x in tensors])
+
+        tensors = rearrange(tensors, "b t c h w -> b c t h w")
+        return tensors
+
+
 def build(dataset, subset, args, mode):
     '''build TADDataset'''
     subset_mapping, feature_info, ann_file, ft_info_file = get_dataset_info(dataset, args.feature)
@@ -355,10 +374,18 @@ def build(dataset, subset, args, mode):
         elif args.encoder == 'slowfast' or 'video_mae' in args.encoder or args.backbone.startswith('ts'):
             mean, std = ([123.675, 116.28, 103.53], [58.395, 57.12, 57.375])
         is_training = mode == 'train' and not args.fix_transform
-        transforms = make_img_transform(
+        transforms, gpu_transforms = make_img_transform(
             is_training=is_training, mean=mean, std=std, resize=args.img_resize, crop=args.img_crop_size, keep_asr=args.resize_keep_asr)
+        # transforms = None
+        # gpu_transforms = GPUAugment([
+        #     KA.RandomAffine(30, translate=0.1, shear=0.3, p=0.5, same_on_batch=True),
+        #     KA.ColorJiggle(0.125, 0.5, 0.5, 0.1, p=0.5, same_on_batch=True),
+        #     KA.RandomHorizontalFlip(p=0.5, same_on_batch=True),
+        #     KE.Normalize(mean=torch.tensor(mean) / 255, std=torch.tensor(std) / 255),
+        # ])
     else:
         transforms = None
+        gpu_transforms = None
 
     return TADDataset(
         subset_mapping[subset], mode, feature_info, ann_file, ft_info_file, transforms,
@@ -367,4 +394,4 @@ def build(dataset, subset, args, mode):
         input_type=args.input_type,
         resize=args.img_resize,
         crop_size=args.img_crop_size,
-        rand_augment_param=args.rand_augment_param)
+        rand_augment_param=args.rand_augment_param), gpu_transforms

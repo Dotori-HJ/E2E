@@ -113,7 +113,7 @@ buffer = [img for i in range(16)]
 # AugmentOp()
 # img = repeat(img, "c h w -> b t c h w", b=4, t=8)
 # transform = create_random_augment(buffer[0].size, "rand-m7-n4-mstd0.5-inc1", "bilinear")
-transform = create_random_augment(buffer[0].size, "rand-m1-n4-mstd0.5-inc1", "bilinear")
+transform = create_random_augment(buffer[0].size, "rand-m4-n3-mstd0.5-inc1", "bilinear")
 buffer = transform(buffer)
 
 buffer = [transforms.ToTensor()(img) for img in buffer]
