@@ -28,6 +28,14 @@ import torchvision.transforms as transforms
 from einops import rearrange, repeat
 from PIL import Image
 
+# gpu_transforms = GPUAugment([
+#     KA.RandomAffine(30, translate=0.1, shear=0.3, p=0.5, same_on_batch=True),
+#     KA.ColorJiggle(0.1, 0.1, 0.1, 0.1, p=0.5, same_on_batch=True),
+#     KA.RandomHorizontalFlip(p=0.5, same_on_batch=True),
+#     # KE.Normalize(mean=mean / 255, std=std / 255),
+# ])
+from torchvision.utils import save_image
+
 from datasets.utils import spatial_sampling, tensor_normalize
 from video_transforms import create_random_augment
 
@@ -99,29 +107,19 @@ from video_transforms import create_random_augment
 # transform = RandAugment(2, 7)
 # import kornia.augmentation as KA
 
-# gpu_transforms = GPUAugment([
-#     KA.RandomAffine(30, translate=0.1, shear=0.3, p=0.5, same_on_batch=True),
-#     KA.ColorJiggle(0.1, 0.1, 0.1, 0.1, p=0.5, same_on_batch=True),
-#     KA.RandomHorizontalFlip(p=0.5, same_on_batch=True),
-#     # KE.Normalize(mean=mean / 255, std=std / 255),
-# ])
-
 
 img = Image.open("000000.png")
 buffer = [img for i in range(16)]
 # AugmentOp()
 # img = repeat(img, "c h w -> b t c h w", b=4, t=8)
-print(buffer[0].size)
-transform = create_random_augment(buffer[0].size, "rand-m7-n4-mstd0.5-inc1", "bilinear")
+# transform = create_random_augment(buffer[0].size, "rand-m7-n4-mstd0.5-inc1", "bilinear")
+transform = create_random_augment(buffer[0].size, "rand-m1-n4-mstd0.5-inc1", "bilinear")
 buffer = transform(buffer)
 
 buffer = [transforms.ToTensor()(img) for img in buffer]
 buffer = torch.stack(buffer) # T C H W
-print(buffer.size(), buffer[0].size)
-exit()
-
+save_image(buffer.cpu(), "samples/before_sample.png", nrow=8, normalize=False)
 buffer = buffer.permute(0, 2, 3, 1) # T H W C
-
 # T H W C
 buffer = tensor_normalize(
     buffer, [0.485, 0.456, 0.406], [0.229, 0.224, 0.225]
@@ -130,14 +128,14 @@ buffer = tensor_normalize(
 buffer = buffer.permute(3, 0, 1, 2)
 # Perform data augmentation.
 scl, asp = (
-    [0.08, 1.0],
+    [0.8, 1.0],
     [0.75, 1.3333],
 )
 buffer = spatial_sampling(
     buffer,
     spatial_idx=-1,
-    min_scale=256,
-    max_scale=320,
+    min_scale=-1,
+    max_scale=-1,
     crop_size=224,
     random_horizontal_flip=True,
     inverse_uniform_sampling=False,
@@ -158,10 +156,8 @@ buffer = spatial_sampling(
 #     buffer = erase_transform(buffer)
 #     buffer = buffer.permute(1, 0, 2, 3)
 
-from torchvision.utils import save_image
 
-# for i in range(4):
-    # save_image(buffer[i], f"samples/sample_{i}.png")
-print(buffer.size())
-# buffer = rearrange(buffer, "b t c h w -> (b t) c h w")
-save_image(buffer.permute(1, 0, 2, 3).cpu(), "samples/sample.png", nrow=8)
+buffer *= torch.tensor([0.229, 0.224, 0.225])[:, None, None, None]
+buffer += torch.tensor([0.485, 0.456, 0.406])[:, None, None, None]
+
+save_image(buffer.permute(1, 0, 2, 3).cpu(), "samples/sample.png", nrow=8, normalize=False)

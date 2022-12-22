@@ -211,7 +211,7 @@ cfg.postproc_ins_topk = 100
 # IoU threshold for NMS. Note that NMS is not necessary.
 cfg.nms_thr = 0.4
 
-
+cfg.rand_augment_param = "rand-m7-n4-mstd0.5-inc1"
 
 def update_cfg_with_args(cfg, arg_list):
     from ast import literal_eval

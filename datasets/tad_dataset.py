@@ -39,7 +39,7 @@ class TADDataset(torch.utils.data.Dataset):
     def __init__(self, subset, mode, feature_info, ann_file, ft_info_file, transforms,
                  mem_cache=False, online_slice=False, slice_len=None, slice_overlap=0,
                  binary=False, padding=True, input_type='feature', img_stride=1,
-                 resize=256, crop_size=224):
+                 resize=256, crop_size=224, rand_augment_param=None):
         '''TADDataset
         Parameters:
             subset: train/val/test
@@ -75,6 +75,7 @@ class TADDataset(torch.utils.data.Dataset):
         # self.crop_size = 96
         self.short_side_size = resize
         self.crop_size = crop_size
+        self.rand_augment_param = rand_augment_param
         self._prepare()
         if mode == 'train':
             self.transform = self._train_transform
@@ -88,7 +89,7 @@ class TADDataset(torch.utils.data.Dataset):
             ])
 
     def _train_transform(self, imgs):
-        transform = create_random_augment(imgs[0].size, "rand-m7-n4-mstd0.5-inc1", "bilinear")
+        transform = create_random_augment(imgs[0].size, self.rand_augment_param, "bilinear")
 
         imgs = transform(imgs)
         imgs = [transforms.ToTensor()(img) for img in imgs]
@@ -103,14 +104,14 @@ class TADDataset(torch.utils.data.Dataset):
         imgs = imgs.permute(3, 0, 1, 2)
         # Perform data augmentation.
         scl, asp = (
-            [0.08, 1.0],
+            [0.8, 1.0],
             [0.75, 1.3333],
         )
         imgs = spatial_sampling(
             imgs,
             spatial_idx=-1,
-            min_scale=256,
-            max_scale=320,
+            min_scale=-1,
+            max_scale=-1,
             crop_size=self.crop_size,
             random_horizontal_flip=True,
             inverse_uniform_sampling=False,
@@ -365,4 +366,5 @@ def build(dataset, subset, args, mode):
         binary=args.binary,
         input_type=args.input_type,
         resize=args.img_resize,
-        crop_size=args.img_crop_size,)
+        crop_size=args.img_crop_size,
+        rand_augment_param=args.rand_augment_param)
