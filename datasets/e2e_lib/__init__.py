@@ -65,7 +65,6 @@ def make_img_transform(is_training, resize=110, crop=96, mean=127.5, std=127.5, 
         resize_trans = GroupResize(resize)
     else:
         if keep_asr:
-            resize = int(resize)
             assert isinstance(resize, int), 'if keep asr, resize must be a single integer'
             resize_trans = GroupResizeShorterSide(resize)
         else:

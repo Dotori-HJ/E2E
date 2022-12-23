@@ -30,7 +30,7 @@ fix_transform: false
 # Image
 # img_resize: 440
 # img_crop_size: 384
-img_resize: 256t
+img_resize: 256
 img_crop_size: 224
 # img_resize: 256
 # img_crop_size: 224
