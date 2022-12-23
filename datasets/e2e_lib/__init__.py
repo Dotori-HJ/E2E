@@ -61,6 +61,7 @@ def make_img_transform(is_training, resize=110, crop=96, mean=127.5, std=127.5, 
         GroupRotate,
     )
 
+    print(resize)
     if isinstance(resize, (list, tuple)):
         resize_trans = GroupResize(resize)
     else:
