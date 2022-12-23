@@ -41,8 +41,10 @@ def load_video_frames(frame_dir, start, seq_len, stride=1, fn_tmpl='img_%07d.jpg
         num_imgs = len(os.listdir(frame_dir))
         # frames = [cv2.imread(os.path.join(frame_dir, fn_tmpl % (i+1))) for i in range(num_imgs)]
         frames = [Image.open(os.path.join(frame_dir, fn_tmpl % (i+1))) for i in range(num_imgs)]
-    return np.asarray(frames, dtype=np.float32)  # NHWC
-    # return frames
+    if isinstance(frames[0], np.ndarray):
+        return np.asarray(frames, dtype=np.float32)  # NHWC
+    else:
+        return frames
 
 
 def make_img_transform(is_training, resize=110, crop=96, mean=127.5, std=127.5, keep_asr=True):
