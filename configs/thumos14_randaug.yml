@@ -39,7 +39,7 @@ img_crop_size: 224
 # act_reg: false
 # set_cost_class: 2
 # activation: 'gelu'
-rand_augment_param: rand-m9-n3-mstd0.5-inc1
+rand_augment_param: rand-m10-n1-mstd0.5-inc1
 
 # output
 output_dir: outputs/thumos14_e2e_slowfast_test
