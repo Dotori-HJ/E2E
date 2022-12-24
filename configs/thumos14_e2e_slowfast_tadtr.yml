@@ -8,7 +8,7 @@ enc_layers: 6
 dec_layers: 6
 dim_feedforward: 2048
 num_queries: 100
-dropout: 0.1
+dropout: 0.0
 
 # data setting
 dataset_name: thumos14
@@ -28,18 +28,19 @@ fix_transform: false
 
 # Image
 # img_resize: 440
-# img_resize: 256
-img_resize: 110
+img_resize: 256
+# img_resize: 110
 # img_crop_size: 384
-# img_crop_size: 224
-img_crop_size: 96
+img_crop_size: 224
+# img_crop_size: 96
 
 # Training
 # act_reg: false
 # set_cost_class: 2
 activation: 'gelu'
-rand_augment_param: rand-m7-n4-mstd0.5-inc1
+# rand_augment_param: rand-m7-n4-mstd0.5-inc1
+rand_augment_param: rand-m8-n3-mstd0.5-inc1
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_test_
+output_dir: outputs/thumos14_e2e_slowfast_full
 
