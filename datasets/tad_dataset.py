@@ -86,7 +86,7 @@ class TADDataset(torch.utils.data.Dataset):
                     video_transforms.CenterCrop(size=(self.crop_size, self.crop_size)),
                     volume_transforms.ClipToTensor(),
                     video_transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                            std=[0.229, 0.224, 0.225])
+                                               std=[0.229, 0.224, 0.225])
                 ])
             else:
                 self.transforms = self._train_transform
