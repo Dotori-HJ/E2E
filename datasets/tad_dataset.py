@@ -41,7 +41,7 @@ class TADDataset(torch.utils.data.Dataset):
     def __init__(self, subset, mode, feature_info, ann_file, ft_info_file, transforms,
                  mem_cache=False, online_slice=False, slice_len=None, slice_overlap=0,
                  binary=False, padding=True, input_type='feature', img_stride=1,
-                 resize=256, crop_size=224, rand_augment_param=None):
+                 resize=256, crop_size=224, rand_augment_param=None, fix_transform=False):
         '''TADDataset
         Parameters:
             subset: train/val/test
@@ -80,7 +80,16 @@ class TADDataset(torch.utils.data.Dataset):
         self.rand_augment_param = rand_augment_param
         self._prepare()
         if mode == 'train':
-            self.transforms = self._train_transform
+            if fix_transform:
+                self.transforms = video_transforms.Compose([
+                    video_transforms.Resize(self.short_side_size, interpolation='bilinear'),
+                    video_transforms.CenterCrop(size=(self.crop_size, self.crop_size)),
+                    volume_transforms.ClipToTensor(),
+                    video_transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                            std=[0.229, 0.224, 0.225])
+                ])
+            else:
+                self.transforms = self._train_transform
         else:
             self.transforms = video_transforms.Compose([
                 video_transforms.Resize(self.short_side_size, interpolation='bilinear'),
@@ -396,4 +405,5 @@ def build(dataset, subset, args, mode):
         input_type=args.input_type,
         resize=args.img_resize,
         crop_size=args.img_crop_size,
-        rand_augment_param=args.rand_augment_param), gpu_transforms
+        rand_augment_param=args.rand_augment_param,
+        fix_transform=args.fix_transform), gpu_transforms
