@@ -6,8 +6,8 @@ pretrained_model: https://download.openmmlab.com/mmaction/recognition/slowfast/s
 # model setting
 enc_layers: 4
 dec_layers: 4
-dim_feedforward: 2048
-num_queries: 100
+dim_feedforward: 1024
+num_queries: 40
 dropout: 0.1
 
 # data setting
@@ -23,7 +23,7 @@ input_type: image
 lr: 0.0001
 batch_size: 4
 
-fix_encoder: true
+fix_encoder: false
 fix_transform: false
 
 # Image
@@ -37,10 +37,10 @@ img_crop_size: 224
 # Training
 # act_reg: false
 # set_cost_class: 2
-activation: 'gelu'
+# activation: 'gelu'
 # rand_augment_param: rand-m7-n4-mstd0.5-inc1
-rand_augment_param: rand-m8-n3-mstd0.5-inc1
+rand_augment_param: rand-m7-n3-mstd0.5-inc1
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_full
+output_dir: outputs/thumos14_e2e_slowfast_full_randaug
 
