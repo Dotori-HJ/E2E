@@ -23,7 +23,7 @@ input_type: image
 lr: 0.0001
 batch_size: 4
 
-fix_encoder: false
+fix_encoder: true
 fix_transform: false
 
 # Image
@@ -42,5 +42,5 @@ img_crop_size: 224
 rand_augment_param: rand-m7-n3-mstd0.5-inc1
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_full_randaug
+output_dir: outputs/thumos14_e2e_slowfast_fix_randaug
 
