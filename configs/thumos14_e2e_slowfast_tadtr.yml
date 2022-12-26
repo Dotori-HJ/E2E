@@ -23,16 +23,16 @@ input_type: image
 lr: 0.0001
 batch_size: 4
 
-fix_encoder: true
+fix_encoder: false
 fix_transform: false
 
 # Image
 # img_resize: 440
-# img_resize: 256
-img_resize: 110
+img_resize: 256
+# img_resize: 110
 # img_crop_size: 384
-# img_crop_size: 224
-img_crop_size: 96
+img_crop_size: 224
+# img_crop_size: 96
 
 # Training
 # act_reg: false
@@ -42,5 +42,5 @@ img_crop_size: 96
 rand_augment_param: rand-m7-n3-mstd0.5-inc1
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_fixfix
+output_dir: outputs/thumos14_e2e_slowfast_no_cliff_0
 
