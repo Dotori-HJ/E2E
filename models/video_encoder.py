@@ -77,8 +77,8 @@ class Tuner(nn.Module):
         for i, layer in enumerate(self.layers):
             if i == 0:
                 out = layer(features[i]) + features[i+1]
-            elif i == self.num_lvls - 1:
-                out = layer(out)
+            # elif i == self.num_lvls - 1:
+            #     out = layer(out)
             else:
                 out = layer(out) + features[i+1]
 
