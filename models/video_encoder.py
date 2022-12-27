@@ -37,9 +37,55 @@ def unfold(ip, kernel_size, stride):
     out = rearrange(out, 'n c nw ks h w -> (n nw) c ks h w')
     return out
 
+class IdentityNeck(nn.Module):
+    def forward(self, x):
+        return x[-1]
+
+
+class TunerBlock(nn.Module):
+    def __init__(self, in_channels, out_channels, ratio=0.25, kernel_size=1):
+        super().__init__()
+        self.in_channels = in_channels
+        self.middel_channels = int(out_channels * ratio)
+        self.out_channels = out_channels
+
+        # Conv
+        self.conv1 = nn.Conv1d(in_channels, self.middel_channels, kernel_size=kernel_size)
+        self.conv2 = nn.Conv1d(self.middel_channels, out_channels, kernel_size=kernel_size)
+
+    def forward(self, x):
+        return self.conv2(F.relu(self.conv1(x)))
+
+class Tuner(nn.Module):
+    def __init__(self, base_channels, num_lvls, ratio=0.25):
+        super().__init__()
+        self.base_channels = base_channels
+        self.num_lvls = num_lvls
+
+        self.layers = nn.ModuleList([
+            TunerBlock(
+                int(base_channels * 2 ** lvl),
+                int(base_channels * 2 ** (lvl + 1)),
+                ratio
+            )
+            for lvl in range(num_lvls)
+        ])
+
+    def forward(self, features):
+        assert len(features) == self.num_lvls + 1, f"feature_len={len(features)}, num_levels={self.num_lvls}"
+
+        for i, layer in enumerate(self.layers):
+            if i == 0:
+                out = layer(features[i]) + features[i+1]
+            elif i == self.num_lvls - 1:
+                out = layer(out)
+            else:
+                out = layer(out) + features[i+1]
+
+        return out
 
 class VideoEncoder(nn.Module):
-    def __init__(self, arch='slowfast', fix_encoder=False):
+    def __init__(self, arch='slowfast', fix_encoder=False, neck='tune'):
         super().__init__()
         self.arch = arch
         self.use_upsample = cfg.temporal_upsample
@@ -62,6 +108,11 @@ class VideoEncoder(nn.Module):
 
         if fix_encoder:
             self._fix_encoder()
+
+        if neck == 'identity':
+            self.neck = IdentityNeck()
+        else:
+            self.neck = Tuner(288, 3, 0.25)
 
 
     def forward(self, tensor_list):
@@ -90,8 +141,9 @@ class VideoEncoder(nn.Module):
                 # fully convolutional feature extraction
                 video_ft = self.backbone(tensor_list.tensors)  # [n,c,t, h, w]
 
-            if isinstance(video_ft, (list, tuple)) and len(video_ft) == 1:
-                video_ft = video_ft[0]
+            video_ft = self.neck(video_ft)
+            # if isinstance(video_ft, (list, tuple)) and len(video_ft) == 1:
+            #     video_ft = video_ft[0]
 
             if not isinstance(video_ft, (list, tuple)):
                 if video_ft.ndim == 5:

@@ -529,11 +529,14 @@ class ResNet3dSlowFast(nn.Module):
             x_fast_lateral = self.slow_path.conv1_lateral(x_fast)
             x_slow = torch.cat((x_slow, x_fast_lateral), dim=1)
 
+        slow_outs, fast_outs = [], []
         for i, layer_name in enumerate(self.slow_path.res_layers):
             res_layer = getattr(self.slow_path, layer_name)
             x_slow = res_layer(x_slow)
             res_layer_fast = getattr(self.fast_path, layer_name)
             x_fast = res_layer_fast(x_fast)
+            slow_outs.append(x_slow)
+            fast_outs.append(x_fast)
             if (i != len(self.slow_path.res_layers) - 1
                     and self.slow_path.lateral):
                 # No fusion needed in the final stage
@@ -542,9 +545,14 @@ class ResNet3dSlowFast(nn.Module):
                 x_fast_lateral = conv_lateral(x_fast)
                 x_slow = torch.cat((x_slow, x_fast_lateral), dim=1)
 
+
         # out = (x_slow, x_fast)
-        x_slow = F.adaptive_avg_pool3d(x_slow, (None, 1, 1)).flatten(2)
-        x_fast = F.adaptive_avg_pool3d(x_fast, (None, 1, 1)).flatten(2)
+
+        slow_outs = [F.adaptive_avg_pool3d(x, (None, 1, 1)).flatten(2) for x in slow_outs]
+        fast_outs = [F.adaptive_avg_pool3d(x, (None, 1, 1)).flatten(2) for x in fast_outs]
+
+        # x_slow = F.adaptive_avg_pool3d(x_slow, (None, 1, 1)).flatten(2)
+        # x_fast = F.adaptive_avg_pool3d(x_fast, (None, 1, 1)).flatten(2)
 
         # output stride = 1
         if self.slow_upsample == 8:
@@ -556,10 +564,16 @@ class ResNet3dSlowFast(nn.Module):
             x_slow_up = F.interpolate(x_slow, scale_factor=4, mode='linear')
         # output stride = 4
         elif self.slow_upsample == 2:
-            x_fast_down = F.interpolate(x_fast, scale_factor=0.25, mode='linear')
-            x_slow_up = F.interpolate(x_slow, scale_factor=2, mode='linear')
-        out = torch.cat((x_slow_up, x_fast_down), dim=1)
-        return out
+            slow_outs = [F.interpolate(x, scale_factor=2, mode='linear') for x in slow_outs]
+            fast_outs = [F.interpolate(x, scale_factor=0.25, mode='linear') for x in fast_outs]
+            # x_fast_down = F.interpolate(x_fast, scale_factor=0.25, mode='linear')
+            # x_slow_up = F.interpolate(x_slow, scale_factor=2, mode='linear')
+
+        # print("slow_out", [x.size() for x in slow_outs])
+        # print("fast_out", [x.size() for x in slow_outs])
+        outs = [torch.cat((slow, fast), dim=1) for slow, fast in zip(slow_outs, fast_outs)]
+        # out = torch.cat((x_slow_up, x_fast_down), dim=1)
+        return outs
 
 
 if __name__ == '__main__':
