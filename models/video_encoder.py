@@ -43,21 +43,21 @@ class IdentityNeck(nn.Module):
 
 
 class TunerBlock(nn.Module):
-    def __init__(self, in_channels, out_channels, ratio=0.5, kernel_size=1):
+    def __init__(self, in_channels, middle_channels, out_channels, kernel_size=1):
         super().__init__()
         self.in_channels = in_channels
-        self.middel_channels = int(out_channels * ratio)
+        self.middle_channels = middle_channels
         self.out_channels = out_channels
 
         # Conv
-        self.conv1 = nn.Conv1d(in_channels, self.middel_channels, kernel_size=kernel_size)
-        self.conv2 = nn.Conv1d(self.middel_channels, out_channels, kernel_size=kernel_size)
+        self.conv1 = nn.Conv1d(in_channels, middle_channels, kernel_size=kernel_size)
+        self.conv2 = nn.Conv1d(middle_channels, out_channels, kernel_size=kernel_size)
 
     def forward(self, x):
         return self.conv2(F.relu(self.conv1(x)))
 
 class Tuner(nn.Module):
-    def __init__(self, base_channels, num_lvls, ratio=0.25):
+    def __init__(self, base_channels, num_lvls, middle_channels=2048):
         super().__init__()
         self.base_channels = base_channels
         self.num_lvls = num_lvls
@@ -65,8 +65,8 @@ class Tuner(nn.Module):
         self.layers = nn.ModuleList([
             TunerBlock(
                 int(base_channels * 2 ** lvl),
+                middle_channels,
                 int(base_channels * 2 ** (lvl + 1)),
-                ratio
             )
             for lvl in range(num_lvls)
         ])
@@ -140,7 +140,7 @@ class VideoEncoder(nn.Module):
         elif neck == 'pyramid':
             self.neck = PyramidTuner((288, 576, 1152, 2304), 512, self.num_channels)
         elif neck == "tuner":
-            self.neck = Tuner(288, 3, 0.5)
+            self.neck = Tuner(288, 2304, 3)
         else:
             assert True, "neck"
 
