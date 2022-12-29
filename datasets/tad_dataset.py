@@ -79,25 +79,25 @@ class TADDataset(torch.utils.data.Dataset):
         self.crop_size = crop_size
         self.rand_augment_param = rand_augment_param
         self._prepare()
-        if mode == 'train':
-            if fix_transform:
-                self.transforms = video_transforms.Compose([
-                    video_transforms.Resize(self.short_side_size, interpolation='bilinear'),
-                    video_transforms.CenterCrop(size=(self.crop_size, self.crop_size)),
-                    volume_transforms.ClipToTensor(),
-                    video_transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                               std=[0.229, 0.224, 0.225])
-                ])
-            else:
-                self.transforms = self._train_transform
-        else:
-            self.transforms = video_transforms.Compose([
-                video_transforms.Resize(self.short_side_size, interpolation='bilinear'),
-                video_transforms.CenterCrop(size=(self.crop_size, self.crop_size)),
-                volume_transforms.ClipToTensor(),
-                video_transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                           std=[0.229, 0.224, 0.225])
-            ])
+        # if mode == 'train':
+        #     if fix_transform:
+        #         self.transforms = video_transforms.Compose([
+        #             video_transforms.Resize(self.short_side_size, interpolation='bilinear'),
+        #             video_transforms.CenterCrop(size=(self.crop_size, self.crop_size)),
+        #             volume_transforms.ClipToTensor(),
+        #             video_transforms.Normalize(mean=[0.485, 0.456, 0.406],
+        #                                        std=[0.229, 0.224, 0.225])
+        #         ])
+        #     else:
+        #         self.transforms = self._train_transform
+        # else:
+        #     self.transforms = video_transforms.Compose([
+        #         video_transforms.Resize(self.short_side_size, interpolation='bilinear'),
+        #         video_transforms.CenterCrop(size=(self.crop_size, self.crop_size)),
+        #         volume_transforms.ClipToTensor(),
+        #         video_transforms.Normalize(mean=[0.485, 0.456, 0.406],
+        #                                    std=[0.229, 0.224, 0.225])
+        #     ])
 
     def _train_transform(self, imgs):
         transform = create_random_augment(imgs[0].size, self.rand_augment_param, "bilinear")
@@ -393,7 +393,7 @@ def build(dataset, subset, args, mode):
         #     KA.RandomHorizontalFlip(p=0.5, same_on_batch=True),
         #     KE.Normalize(mean=torch.tensor(mean) / 255, std=torch.tensor(std) / 255),
         # ])
-        gpu_transforms = None
+        # gpu_transforms = None
     else:
         transforms = None
         gpu_transforms = None
