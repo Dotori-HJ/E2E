@@ -143,7 +143,7 @@ class VideoEncoder(nn.Module):
         elif neck == "tuner":
             self.neck = Tuner(288, 2304, 3)
         else:
-            assert True, "neck"
+            assert True, f"neck={neck}"
 
 
     def forward(self, tensor_list):
