@@ -85,7 +85,7 @@ class Tuner(nn.Module):
         return out
 
 class VideoEncoder(nn.Module):
-    def __init__(self, arch='slowfast', fix_encoder=False, neck='tune'):
+    def __init__(self, arch='slowfast', fix_encoder=False, neck='identity'):
         super().__init__()
         self.arch = arch
         self.use_upsample = cfg.temporal_upsample
