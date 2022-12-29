@@ -45,4 +45,4 @@ img_crop_size: 224
 rand_augment_param: rand-m7-n3-mstd0.5-inc1
 
 # output
-output_dir: outputs/thumos14_pyramid_mlp_residual_o
+output_dir: outputs/thumos14_pyramid_mlp_residual_x
