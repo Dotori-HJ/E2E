@@ -208,5 +208,5 @@ def build_video_encoder(args):
     if args.input_type == 'feature':
         model = EmptyEncoder(args.feature_dim)
     else:
-        model = VideoEncoder(args.encoder, args.fix_encoder)
+        model = VideoEncoder(args.encoder, args.fix_encoder, args.neck)
     return model

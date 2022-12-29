@@ -170,6 +170,7 @@ cfg.test_interval = 2
 
 # ----- E2E-TAD options -------
 cfg.encoder = 'slowfast'
+cfg.neck = 'identity'
 # how to reduce the spatial dimension of video features
 cfg.spatial_pool = 'avg'
 # whether to freeze bn layers
