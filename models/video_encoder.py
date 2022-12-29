@@ -70,11 +70,6 @@ class Tuner(nn.Module):
             )
             for lvl in range(num_lvls)
         ])
-        self.proj = nn.Conv1d(
-            base_channels * 2 ** num_lvls,
-            base_channels * 2 ** num_lvls,
-            kernel_size=1
-        )
 
     def forward(self, features):
         assert len(features) == self.num_lvls + 1, f"feature_len={len(features)}, num_levels={self.num_lvls}"
@@ -87,7 +82,6 @@ class Tuner(nn.Module):
             else:
                 out = layer(out) + features[i+1]
 
-        out = self.proj(out)
         return out
 
 class VideoEncoder(nn.Module):
