@@ -43,7 +43,7 @@ class IdentityNeck(nn.Module):
 
 
 class TunerBlock(nn.Module):
-    def __init__(self, in_channels, out_channels, ratio=0.25, kernel_size=1):
+    def __init__(self, in_channels, out_channels, ratio=0.5, kernel_size=1):
         super().__init__()
         self.in_channels = in_channels
         self.middel_channels = int(out_channels * ratio)
@@ -57,7 +57,7 @@ class TunerBlock(nn.Module):
         return self.conv2(F.relu(self.conv1(x)))
 
 class Tuner(nn.Module):
-    def __init__(self, base_channels, num_lvls, ratio=0.25):
+    def __init__(self, base_channels, num_lvls, ratio=0.5):
         super().__init__()
         self.base_channels = base_channels
         self.num_lvls = num_lvls
@@ -70,6 +70,11 @@ class Tuner(nn.Module):
             )
             for lvl in range(num_lvls)
         ])
+        self.proj = nn.Conv1d(
+            base_channels * 2 ** (num_lvls + 1),
+            base_channels * 2 ** (num_lvls + 1),
+            kernel_size=1
+        )
 
     def forward(self, features):
         assert len(features) == self.num_lvls + 1, f"feature_len={len(features)}, num_levels={self.num_lvls}"
@@ -82,6 +87,7 @@ class Tuner(nn.Module):
             else:
                 out = layer(out) + features[i+1]
 
+        out = self.proj(out)
         return out
 
 class VideoEncoder(nn.Module):
@@ -112,7 +118,7 @@ class VideoEncoder(nn.Module):
         if neck == 'identity':
             self.neck = IdentityNeck()
         else:
-            self.neck = Tuner(288, 3, 0.25)
+            self.neck = Tuner(288, 3, 0.5)
 
 
     def forward(self, tensor_list):
