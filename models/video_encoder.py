@@ -54,7 +54,7 @@ class TunerBlock(nn.Module):
         self.conv2 = nn.Conv1d(middle_channels, out_channels, kernel_size=kernel_size)
 
     def forward(self, x):
-        return self.conv2(F.relu(self.conv1(x)))
+        return self.conv2(F.relu(self.conv1(x))) + x
 
 class Tuner(nn.Module):
     def __init__(self, base_channels, num_lvls, middle_channels=2048):
