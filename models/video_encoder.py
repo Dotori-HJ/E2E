@@ -139,8 +139,10 @@ class VideoEncoder(nn.Module):
             self.neck = IdentityNeck()
         elif neck == 'pyramid':
             self.neck = PyramidTuner((288, 576, 1152, 2304), 512, self.num_channels)
-        else:
+        elif neck == "tuner":
             self.neck = Tuner(288, 3, 0.5)
+        else:
+            assert True, "neck"
 
 
     def forward(self, tensor_list):
