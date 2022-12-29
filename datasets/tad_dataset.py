@@ -163,7 +163,7 @@ class TADDataset(torch.utils.data.Dataset):
         anno_dict = json.load(open(self.ann_file))
         self.classes = self._get_classes(anno_dict)
 
-        self.video_dict, self.video_list = get_dataset_dict(self.ft_info_file, self.ann_file, self.subset, fps=0, mode=self.mode, online_slice=self.online_slice, slice_len=self.slice_len, slice_overlap=self.slice_overlap, ignore_empty=self.mode == 'train', return_id_list=True)
+        self.video_dict, self.video_list = get_dataset_dict(self.ft_info_file, self.ann_file, None, self.subset, fps=0, mode=self.mode, online_slice=self.online_slice, slice_len=self.slice_len, slice_overlap=self.slice_overlap, ignore_empty=self.mode == 'train', return_id_list=True)
 
         # video_list = self.video_dict.keys()
         # self.video_list = list(sorted(video_list))
