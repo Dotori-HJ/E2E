@@ -548,8 +548,20 @@ class ResNet3dSlowFast(nn.Module):
 
         # out = (x_slow, x_fast)
 
-        slow_outs = [F.adaptive_avg_pool3d(x, (None, 1, 1)).flatten(2) for x in slow_outs]
-        fast_outs = [F.adaptive_avg_pool3d(x, (None, 1, 1)).flatten(2) for x in fast_outs]
+        print([x.size() for x in slow_outs])
+        print([x.size() for x in fast_outs])
+        slow_outs = [
+            F.adaptive_avg_pool3d(x, (None, 1, 1)).flatten(2)
+            for x in slow_outs
+        ]
+        fast_outs = [
+            F.adaptive_avg_pool3d(x, (None, 1, 1)).flatten(2)
+            for x in fast_outs
+        ]
+        print("---------------------------")
+        print([x.size() for x in slow_outs])
+        print([x.size() for x in fast_outs])
+        exit()
 
         # x_slow = F.adaptive_avg_pool3d(x_slow, (None, 1, 1)).flatten(2)
         # x_fast = F.adaptive_avg_pool3d(x_fast, (None, 1, 1)).flatten(2)
