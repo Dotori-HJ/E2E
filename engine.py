@@ -37,7 +37,6 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
 
     for samples, targets in metric_logger.log_every(data_loader, print_freq, header):
         samples = samples.to(device)
-        print(gpu_transforms)
         if gpu_transforms is not None:
             samples.tensors = gpu_transforms(samples.tensors)
         targets = [{k: v.to(device) if k in ['segments', 'labels']
