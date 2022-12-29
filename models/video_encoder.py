@@ -71,8 +71,8 @@ class Tuner(nn.Module):
             for lvl in range(num_lvls)
         ])
         self.proj = nn.Conv1d(
-            base_channels * 2 ** (num_lvls + 1),
-            base_channels * 2 ** (num_lvls + 1),
+            base_channels * 2 ** num_lvls,
+            base_channels * 2 ** num_lvls,
             kernel_size=1
         )
 
@@ -91,7 +91,7 @@ class Tuner(nn.Module):
         return out
 
 class VideoEncoder(nn.Module):
-    def __init__(self, arch='slowfast', fix_encoder=False, neck='identity'):
+    def __init__(self, arch='slowfast', fix_encoder=False, neck='tune'):
         super().__init__()
         self.arch = arch
         self.use_upsample = cfg.temporal_upsample
