@@ -107,7 +107,7 @@ class PyramidTuner(nn.Module):
                 out = layer(proj_features[i]) + proj_features[i+1]
             else:
                 out = layer(out) + proj_features[i+1]
-        out = self.output_layer(out)# + features[-1]
+        out = self.output_layer(out) + features[-1]
 
         return out
 
