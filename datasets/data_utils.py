@@ -1,17 +1,16 @@
 '''Utilities for data loading'''
-
 import json
-import math
 import logging
+import math
 import os
+import pickle
 
-import pandas as pd
 import easydict
-import yaml
-
 import numpy as np
+import pandas as pd
 import torch
 import torch.nn.functional as F
+import yaml
 
 
 def load_json(path):
@@ -33,7 +32,7 @@ def get_valid_anno(gt_instances, slice, thr=0.75,
             new_start = max(start_getter(inst), start)
             new_end = min(end_getter(inst), end)
             integrity = (new_end - new_start) * 1.0 / (end_getter(inst) - start_getter(inst))
-            
+
             if integrity >= thr:
                 new_inst = {k:v for k,v in inst.items()}
                 new_inst['segment'] = [new_start - start, new_end - start]
@@ -41,7 +40,7 @@ def get_valid_anno(gt_instances, slice, thr=0.75,
     return kept_instances
 
 
-def get_dataset_dict(video_info_path, video_anno_path, subset, mode='test', exclude_videos=None, online_slice=False, slice_len=None, ignore_empty=True, slice_overlap=0, return_id_list=False):
+def get_dataset_dict(video_info_path, video_anno_path, feature_info, fps, subset, mode='test', exclude_videos=None, online_slice=False, slice_len=None, ignore_empty=True, slice_overlap=0, return_id_list=False):
     '''
     Prepare a dict that contains the information of each video, such as duration, annotations.
     Args:
@@ -57,7 +56,8 @@ def get_dataset_dict(video_info_path, video_anno_path, subset, mode='test', excl
     Return:
         dict
     '''
-    video_ft_info = load_json(video_info_path)
+    if video_info_path:
+        video_ft_info = load_json(video_info_path)
     anno_data = load_json(video_anno_path)['database']
 
     video_dict = {}
@@ -65,13 +65,34 @@ def get_dataset_dict(video_info_path, video_anno_path, subset, mode='test', excl
     cnt = 0
 
     video_set = set([x for x in anno_data if anno_data[x]['subset'] in subset])
-    video_set = video_set.intersection(video_ft_info.keys())
+    # video_set = video_set.intersection(video_ft_info.keys())
 
     if exclude_videos is not None:
         assert isinstance(exclude_videos, (list, tuple))
         video_set = video_set.difference(exclude_videos)
 
     video_list = list(sorted(video_set))
+    video_paths = [os.path.join(feature_info['local_path'], f"{x}.{feature_info['format']}") for x in video_list]
+    # with open("paths.pth", "wb") as f:
+    #     pickle.dump(video_paths, f)
+    # exit()
+    from .video_clip import VideoClips
+    strides = int(slice_len * (1 - slice_overlap))
+    # meta_path = feature_info['meta_path_fmt'].format(subset, fps, slice_len, strides)
+    meta_path = feature_info['meta_path_fmt'].format(subset)
+
+    if os.path.exists(meta_path):
+        with open(meta_path, "rb") as f:
+            _precomputed_metadata = pickle.load(f)
+    else:
+        _precomputed_metadata = None
+    clips = VideoClips(video_paths, slice_len, strides, fps, _precomputed_metadata=_precomputed_metadata, num_workers=min(os.cpu_count(), 16))
+    if not _precomputed_metadata:
+        with open(meta_path, "wb") as f:
+            pickle.dump(clips.metadata, f)
+    for i in range(5):
+        print(clips.get_clip(i))
+    exit()
 
     for video_name in video_list:
         # remove ambiguous instances on THUMOS14
@@ -82,7 +103,7 @@ def get_dataset_dict(video_info_path, video_anno_path, subset, mode='test', excl
             # video_info records the length in snippets, duration and fps (#frames per second) of the feature/image sequence
             video_info = video_ft_info[video_name]
             # number of frames or snippets
-            feature_length = int(video_info['feature_length'])   
+            feature_length = int(video_info['feature_length'])
             feature_fps = video_info['feature_fps']
             feature_second = video_info['feature_second']
         else:
@@ -111,7 +132,7 @@ def get_dataset_dict(video_info_path, video_anno_path, subset, mode='test', excl
                     else:
                         # move left to get a complete slice.
                         # This is a historical issue. The performance might be better
-                        # if we keep the same rule for training and inference 
+                        # if we keep the same rule for training and inference
                         last_slice_start = max(0, feature_length - slice_len)
                     slices.append([last_slice_start, feature_length])
             num_kept_slice = 0
@@ -120,13 +141,13 @@ def get_dataset_dict(video_info_path, video_anno_path, subset, mode='test', excl
                 feature_second = time_slices[1] - time_slices[0]
                 # perform integrity-based instance filtering
                 valid_annotations = get_valid_anno(annotations, time_slices)
-                
+
                 if not ignore_empty or len(valid_annotations) >= 1:
                     # rename the video slice
                     new_vid_name = video_name + '_window_{}_{}'.format(*slice)
                     new_vid_info = {
-                        'annotations': valid_annotations, 'src_vid_name': video_name, 
-                        'feature_fps': feature_fps, 'feature_length': slice_len, 
+                        'annotations': valid_annotations, 'src_vid_name': video_name,
+                        'feature_fps': feature_fps, 'feature_length': slice_len,
                         'subset': subset, 'feature_second': feature_second, 'time_offset': time_slices[0]}
                     video_dict[new_vid_name] = new_vid_info
                     id_list.append(new_vid_name)
@@ -141,9 +162,9 @@ def get_dataset_dict(video_info_path, video_anno_path, subset, mode='test', excl
 
                 if ignore_empty and len(valid_annotations) == 0:
                     continue
-                
+
                 video_dict[video_name] = {
-                    'src_vid_name': video_name, 'annotations': valid_annotations, 
+                    'src_vid_name': video_name, 'annotations': valid_annotations,
                     'feature_fps': feature_fps, 'feature_length': int(feature_length),
                     'subset': video_subset, 'feature_second': feature_second, 'time_offset': 0}
                 id_list.append(video_name)
@@ -177,7 +198,7 @@ def get_dataset_info(dataset, feature):
         # It means that the 'val' set of THUMOS14 is used for 'training', the 'test' set is used for 'validation'
         subset_mapping = {'train': 'val', 'val': 'test'}
         ann_file = path_info['thumos14']['ann_file']
-    
+
         if feature == 'i3d2s':
             feature_info = {'local_path': path_info['thumos14'][feature]['local_path'], 'format': 'torch', 'fn_templ': '%s'}
             ft_info_file = path_info['thumos14'][feature]['ft_info_file']
@@ -185,10 +206,18 @@ def get_dataset_info(dataset, feature):
         elif feature.startswith('img'):  # e.g. img10fps
             pos = feature.find('fps')
             fps = int(feature[3:pos])
-            
-            feature_info = {'local_path': path_info['thumos14']['img']['local_path'].format(fps), 
+
+            feature_info = {'local_path': path_info['thumos14']['img']['local_path'].format(fps),
             'format': 'jpg', 'fn_templ': '%s', 'img_fn_templ': '/img_%07d.jpg'}
             ft_info_file = path_info['thumos14']['img']['ft_info_file'].format(fps)
+        elif feature == 'video':
+            feature_info = {
+                'local_path': path_info['thumos14']['video']['local_path'],
+                'meta_path_fmt': path_info['thumos14']['video']['meta_path_fmt'],
+                'format': 'mp4',
+                'fn_templ': '%s'
+            }
+            ft_info_file = None
         else:
             raise ValueError('unsupported feature, should be one of [i3d2s]')
 
@@ -197,10 +226,10 @@ def get_dataset_info(dataset, feature):
 
     elif dataset == 'hacs':
         raise NotImplementedError
-    
+
     elif dataset == 'muses':
         raise NotImplementedError
-        
+
     else:
         raise ValueError('unsupported dataset {}'.format(dataset))
 

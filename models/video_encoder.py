@@ -57,7 +57,7 @@ class TunerBlock(nn.Module):
         return self.conv2(F.relu(self.conv1(x)))
 
 class Tuner(nn.Module):
-    def __init__(self, base_channels, num_lvls, ratio=0.5):
+    def __init__(self, base_channels, num_lvls, ratio=0.25):
         super().__init__()
         self.base_channels = base_channels
         self.num_lvls = num_lvls

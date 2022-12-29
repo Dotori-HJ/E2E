@@ -1,3 +1,22 @@
+import pickle
+
+with open("paths.pth", "rb") as f:
+    src_paths = pickle.load(f)
+
+import os
+
+dst_folder = "data/thumos14/videos"
+
+dst_paths = [os.path.join(dst_folder, os.path.split(path)[-1]) for path in src_paths]
+
+import shutil
+
+from tqdm import tqdm
+
+for src_path, dst_path in tqdm(zip(src_paths, dst_paths)):
+    shutil.copyfile(src_path, dst_path)
+
+exit()
 from timm.data import create_transform
 
 transform = create_transform(

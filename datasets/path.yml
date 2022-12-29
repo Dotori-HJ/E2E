@@ -9,3 +9,8 @@ thumos14:
   img:
     local_path: data/thumos14/thumos14_img{}fps
     ft_info_file: 'data/thumos14/th14_img{}fps_info.json'
+
+  video:
+    local_path: data/thumos14/videos
+    # meta_path_fmt: data/thumos14/metadata_{}_{}fps_{}_{}.pth
+    meta_path_fmt: data/thumos14/metadata_{}.pth
