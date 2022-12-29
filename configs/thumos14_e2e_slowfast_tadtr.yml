@@ -25,7 +25,7 @@ batch_size: 4
 
 fix_encoder: true
 fix_transform: false
-neck: tuner
+neck: pyramid
 
 # Image
 # img_resize: 440
@@ -43,4 +43,4 @@ img_crop_size: 224
 rand_augment_param: rand-m7-n3-mstd0.5-inc1
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_tuner_256_wide_1
+output_dir: outputs/thumos14_e2e_slowfast_tuner_256_pyramid

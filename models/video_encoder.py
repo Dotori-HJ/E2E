@@ -92,11 +92,12 @@ class PyramidTuner(nn.Module):
             for dim in feature_dims
         ])
         self.middle_layers = nn.ModuleList([
-            nn.Conv1d(middle_dim, middle_dim, kernel_size=1)
+            TunerBlock(middle_dim, 2048, middle_dim, kernel_size=1)
+            # nn.Conv1d(middle_dim, middle_dim, kernel_size=1)
             for _ in range(len(feature_dims) - 1)
         ])
         self.output_layer = nn.Conv1d(middle_dim, output_dim, kernel_size=1)
-        self.scaler = nn.Parameter(torch.ones(1))
+        # self.scaler = nn.Parameter(torch.ones(1))
 
     def forward(self, features):
         proj_features = [layer(x) for x, layer in zip(features, self.proj_layers)]
@@ -106,7 +107,7 @@ class PyramidTuner(nn.Module):
                 out = layer(proj_features[i]) + proj_features[i+1]
             else:
                 out = layer(out) + proj_features[i+1]
-        out = self.output_layer(out) * self.scaler + features[-1]
+        out = self.output_layer(out)# + features[-1]
 
         return out
 
