@@ -65,34 +65,33 @@ def get_dataset_dict(video_info_path, video_anno_path, feature_info, fps, subset
     cnt = 0
 
     video_set = set([x for x in anno_data if anno_data[x]['subset'] in subset])
-    # video_set = video_set.intersection(video_ft_info.keys())
+    video_set = video_set.intersection(video_ft_info.keys())
 
     if exclude_videos is not None:
         assert isinstance(exclude_videos, (list, tuple))
         video_set = video_set.difference(exclude_videos)
 
     video_list = list(sorted(video_set))
-    video_paths = [os.path.join(feature_info['local_path'], f"{x}.{feature_info['format']}") for x in video_list]
-    # with open("paths.pth", "wb") as f:
-    #     pickle.dump(video_paths, f)
-    # exit()
-    from .video_clip import VideoClips
-    strides = int(slice_len * (1 - slice_overlap))
-    # meta_path = feature_info['meta_path_fmt'].format(subset, fps, slice_len, strides)
-    meta_path = feature_info['meta_path_fmt'].format(subset)
 
-    if os.path.exists(meta_path):
-        with open(meta_path, "rb") as f:
-            _precomputed_metadata = pickle.load(f)
-    else:
-        _precomputed_metadata = None
-    clips = VideoClips(video_paths, slice_len, strides, fps, _precomputed_metadata=_precomputed_metadata, num_workers=min(os.cpu_count(), 16))
-    if not _precomputed_metadata:
-        with open(meta_path, "wb") as f:
-            pickle.dump(clips.metadata, f)
-    for i in range(5):
-        print(clips.get_clip(i))
-    exit()
+
+    # video_paths = [os.path.join(feature_info['local_path'], f"{x}.{feature_info['format']}") for x in video_list]
+
+    # from .video_clip import VideoClips
+    # strides = int(slice_len * (1 - slice_overlap))
+    # meta_path = feature_info['meta_path_fmt'].format(subset)
+
+    # if os.path.exists(meta_path):
+    #     with open(meta_path, "rb") as f:
+    #         _precomputed_metadata = pickle.load(f)
+    # else:
+    #     _precomputed_metadata = None
+    # clips = VideoClips(video_paths, slice_len, strides, fps, _precomputed_metadata=_precomputed_metadata, num_workers=min(os.cpu_count(), 16))
+    # if not _precomputed_metadata:
+    #     with open(meta_path, "wb") as f:
+    #         pickle.dump(clips.metadata, f)
+    # for i in range(5):
+    #     print(clips.get_clip(i))
+
 
     for video_name in video_list:
         # remove ambiguous instances on THUMOS14
