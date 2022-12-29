@@ -84,8 +84,34 @@ class Tuner(nn.Module):
 
         return out
 
+class PyramidTuner(nn.Module):
+    def __init__(self, feature_dims:tuple, middle_dim, output_dim):
+        super().__init__()
+        self.proj_layers = nn.ModuleList([
+            nn.Conv1d(dim, middle_dim)
+            for dim in feature_dims
+        ])
+        self.middle_layers = nn.ModuleList([
+            nn.Conv1d(middle_dim, middle_dim)
+            for _ in range(len(feature_dims) - 1)
+        ])
+        self.output_layer = nn.Conv1d(middle_dim, output_dim)
+        self.scaler = nn.Parameter(torch.ones(1))
+
+    def forward(self, features):
+        proj_features = [layer(x) for x, layer in zip(features, self.proj_layers)]
+
+        for i, layer in enumerate(self.middle_layers):
+            if i == 0:
+                out = layer(proj_features[i]) + proj_features[i+1]
+            else:
+                out = layer(out) + proj_features[i+1]
+        out = self.output_layer(out) * self.scaler + features[-1]
+
+        return out
+
 class VideoEncoder(nn.Module):
-    def __init__(self, arch='slowfast', fix_encoder=False, neck='identity'):
+    def __init__(self, arch='slowfast', fix_encoder=False, neck='pyramid'):
         super().__init__()
         self.arch = arch
         self.use_upsample = cfg.temporal_upsample
@@ -111,6 +137,8 @@ class VideoEncoder(nn.Module):
 
         if neck == 'identity':
             self.neck = IdentityNeck()
+        elif neck == 'pyramid':
+            self.neck = PyramidTuner((288, 576, 1152, 2304), 512, self.num_channels)
         else:
             self.neck = Tuner(288, 3, 0.5)
 
