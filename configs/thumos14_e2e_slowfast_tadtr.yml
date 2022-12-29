@@ -23,9 +23,10 @@ input_type: image
 lr: 0.0001
 batch_size: 4
 
-fix_encoder: true
+fix_encoder: false
 fix_transform: false
-neck: tuner
+# neck: tuner
+neck: identity
 
 # Image
 # img_resize: 440
@@ -43,4 +44,4 @@ img_crop_size: 224
 rand_augment_param: rand-m7-n3-mstd0.5-inc1
 
 # output
-output_dir: outputs/thumos14_e2e_kernel_3_mlp_residual_1
+output_dir: outputs/thumos14_reproduce
