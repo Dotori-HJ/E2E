@@ -88,15 +88,15 @@ class PyramidTuner(nn.Module):
     def __init__(self, feature_dims:tuple, middle_dim, output_dim):
         super().__init__()
         self.proj_layers = nn.ModuleList([
-            nn.Conv1d(dim, middle_dim, kernel_size=1)
+            nn.Conv1d(dim, middle_dim, kernel_size=3)
             for dim in feature_dims
         ])
         self.middle_layers = nn.ModuleList([
-            TunerBlock(middle_dim, 2048, middle_dim, kernel_size=1)
-            # nn.Conv1d(middle_dim, middle_dim, kernel_size=1)
+            TunerBlock(middle_dim, 2048, middle_dim, kernel_size=3)
+            # nn.Conv1d(middle_dim, middle_dim, kernel_size=3)
             for _ in range(len(feature_dims) - 1)
         ])
-        self.output_layer = nn.Conv1d(middle_dim, output_dim, kernel_size=1)
+        self.output_layer = nn.Conv1d(middle_dim, output_dim, kernel_size=3)
         # self.scaler = nn.Parameter(torch.ones(1))
 
     def forward(self, features):

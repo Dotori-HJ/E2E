@@ -544,13 +544,12 @@ class ResNet3dSlowFast(nn.Module):
                 conv_lateral = getattr(self.slow_path, lateral_name)
                 x_fast_lateral = conv_lateral(x_fast)
                 x_slow = torch.cat((x_slow, x_fast_lateral), dim=1)
-                print(x_slow.size())
-
+                # print(x_slow.size())
 
         # out = (x_slow, x_fast)
 
-        print([x.size() for x in slow_outs])
-        print([x.size() for x in fast_outs])
+        # print([x.size() for x in slow_outs])
+        # print([x.size() for x in fast_outs])
         slow_outs = [
             F.adaptive_avg_pool3d(x, (None, 1, 1)).flatten(2)
             for x in slow_outs
@@ -559,9 +558,9 @@ class ResNet3dSlowFast(nn.Module):
             F.adaptive_avg_pool3d(x, (None, 1, 1)).flatten(2)
             for x in fast_outs
         ]
-        print("---------------------------")
-        print([x.size() for x in slow_outs])
-        print([x.size() for x in fast_outs])
+        # print("---------------------------")
+        # print([x.size() for x in slow_outs])
+        # print([x.size() for x in fast_outs])
 
         # x_slow = F.adaptive_avg_pool3d(x_slow, (None, 1, 1)).flatten(2)
         # x_fast = F.adaptive_avg_pool3d(x_fast, (None, 1, 1)).flatten(2)
@@ -581,15 +580,13 @@ class ResNet3dSlowFast(nn.Module):
             # x_fast_down = F.interpolate(x_fast, scale_factor=0.25, mode='linear')
             # x_slow_up = F.interpolate(x_slow, scale_factor=2, mode='linear')
 
-        # print("slow_out", [x.size() for x in slow_outs])
-        # print("fast_out", [x.size() for x in slow_outs])
-        print("---------------------------")
-        print([x.size() for x in slow_outs])
-        print([x.size() for x in fast_outs])
-        print("---------------------------")
+        # print("---------------------------")
+        # print([x.size() for x in slow_outs])
+        # print([x.size() for x in fast_outs])
+        # print("---------------------------")
         outs = [torch.cat((slow, fast), dim=1) for slow, fast in zip(slow_outs, fast_outs)]
-        print([x.size() for x in outs])
-        exit()
+        # print([x.size() for x in outs])
+        # exit()
         # out = torch.cat((x_slow_up, x_fast_down), dim=1)
         return outs
 
