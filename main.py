@@ -24,6 +24,7 @@ from pathlib import Path
 
 import numpy as np
 import torch
+import torch.backends.cudnn as cudnn
 from torch.utils.data import DataLoader, DistributedSampler
 
 import util.misc as utils
@@ -82,6 +83,8 @@ def main(args):
 
     torch.cuda.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
+    cudnn.benchmark = False
+    cudnn.deterministic = True
 
     # if cfg.input_type == 'image':
     #     # We plan to support image input in the future
