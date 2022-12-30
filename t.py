@@ -1,35 +1,35 @@
-import pickle
+# import pickle
 
-with open("paths.pth", "rb") as f:
-    src_paths = pickle.load(f)
+# with open("paths.pth", "rb") as f:
+#     src_paths = pickle.load(f)
 
-import os
+# import os
 
-dst_folder = "data/thumos14/videos"
+# dst_folder = "data/thumos14/videos"
 
-dst_paths = [os.path.join(dst_folder, os.path.split(path)[-1]) for path in src_paths]
+# dst_paths = [os.path.join(dst_folder, os.path.split(path)[-1]) for path in src_paths]
 
-import shutil
+# import shutil
 
-from tqdm import tqdm
+# from tqdm import tqdm
 
-for src_path, dst_path in tqdm(zip(src_paths, dst_paths)):
-    shutil.copyfile(src_path, dst_path)
+# for src_path, dst_path in tqdm(zip(src_paths, dst_paths)):
+#     shutil.copyfile(src_path, dst_path)
 
-exit()
-from timm.data import create_transform
+# exit()
+# from timm.data import create_transform
 
-transform = create_transform(
-    # input_size=384,
-    input_size=224,
-    is_training=True,
-    # color_jitter=config.AUG.COLOR_JITTER if config.AUG.COLOR_JITTER > 0 else None,
-    # auto_augment=config.AUG.AUTO_AUGMENT if config.AUG.AUTO_AUGMENT != 'none' else None,
-    # re_prob=config.AUG.REPROB,
-    # re_mode=config.AUG.REMODE,
-    # re_count=config.AUG.RECOUNT,
-    # interpolation=config.DATA.INTERPOLATION,
-)
+# transform = create_transform(
+#     # input_size=384,
+#     input_size=224,
+#     is_training=True,
+#     # color_jitter=config.AUG.COLOR_JITTER if config.AUG.COLOR_JITTER > 0 else None,
+#     # auto_augment=config.AUG.AUTO_AUGMENT if config.AUG.AUTO_AUGMENT != 'none' else None,
+#     # re_prob=config.AUG.REPROB,
+#     # re_mode=config.AUG.REMODE,
+#     # re_count=config.AUG.RECOUNT,
+#     # interpolation=config.DATA.INTERPOLATION,
+# )
 #     def __call__(self, x):
 #         ops = np.random.choice(
 #             self.ops,
@@ -46,13 +46,6 @@ import torch
 import torchvision.transforms as transforms
 from einops import rearrange, repeat
 from PIL import Image
-
-# gpu_transforms = GPUAugment([
-#     KA.RandomAffine(30, translate=0.1, shear=0.3, p=0.5, same_on_batch=True),
-#     KA.ColorJiggle(0.1, 0.1, 0.1, 0.1, p=0.5, same_on_batch=True),
-#     KA.RandomHorizontalFlip(p=0.5, same_on_batch=True),
-#     # KE.Normalize(mean=mean / 255, std=std / 255),
-# ])
 from torchvision.utils import save_image
 
 from datasets.utils import spatial_sampling, tensor_normalize
@@ -99,12 +92,12 @@ from video_transforms import create_random_augment
 
 
 
-# img = cv2.imread("000000.png")
-# img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+img = cv2.imread("000000.png")
+img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-# img = np.transpose(img, [2, 0, 1]).astype(np.float32)
-# img /= 255.
-# img = torch.from_numpy(img).contiguous().to("cuda")
+img = np.transpose(img, [2, 0, 1]).astype(np.float32)
+img /= 255.
+img = torch.from_numpy(img).contiguous().to("cuda")
 
 
 # aa_params = {"translate_const": int(224 * 0.45)}
@@ -113,55 +106,66 @@ from video_transforms import create_random_augment
 # aa_params["interpolation"] = Image.BILINEAR
 # transform = rand_augment_transform("rand-m7-n4-mstd0.5-inc1", aa_params)
 
+import kornia.augmentation as KA
 
-# class GPUAugment:
-#     def __init__(self, transforms):
-#         self.transforms = transforms
 
-#     def __call__(self, x):
-#         for op in self.transforms:
-#             x = torch.stack([op(_) for _ in x])
-#         return x
+class GPUAugment:
+    def __init__(self, transforms):
+        self.transforms = transforms
 
+    def __call__(self, x):
+        for op in self.transforms:
+            x = torch.stack([op(_) for _ in x])
+        return x
+
+gpu_transforms = GPUAugment([
+    KA.RandomAffine(30, translate=0.1, shear=0.3, p=1, padding_mode='reflection', same_on_batch=True),
+    KA.ColorJiggle(0.125, 0.5, 0.5, 0.1, p=1, same_on_batch=True),
+    # KA.RandomHorizontalFlip(p=0.5, same_on_batch=True),
+    # KE.Normalize(mean=mean / 255, std=std / 255),
+])
 # transform = RandAugment(2, 7)
-# import kornia.augmentation as KA
 
 
-img = Image.open("000000.png")
-buffer = [img for i in range(16)]
+
+# img = Image.open("000000.png")
+# buffer = [img for i in range(16)]
 # AugmentOp()
-# img = repeat(img, "c h w -> b t c h w", b=4, t=8)
+img = repeat(img, "c h w -> b t c h w", b=4, t=8)
 # transform = create_random_augment(buffer[0].size, "rand-m7-n4-mstd0.5-inc1", "bilinear")
-transform = create_random_augment(buffer[0].size, "rand-m7-n3-mstd0.5-inc1", "bilinear")
-buffer = transform(buffer)
+# transform = create_random_augment(buffer[0].size, "rand-m7-n3-mstd0.5-inc1", "bilinear")
+# print(transform)
+# buffer = transform(img)
+buffer = gpu_transforms(img)
+print(buffer.size())
 
-buffer = [transforms.ToTensor()(img) for img in buffer]
-buffer = torch.stack(buffer) # T C H W
-save_image(buffer.cpu(), "samples/before_sample.png", nrow=8, normalize=False)
-buffer = buffer.permute(0, 2, 3, 1) # T H W C
-# T H W C
-buffer = tensor_normalize(
-    buffer, [0.485, 0.456, 0.406], [0.229, 0.224, 0.225]
-)
-# T H W C -> C T H W.
-buffer = buffer.permute(3, 0, 1, 2)
-# Perform data augmentation.
-scl, asp = (
-    [0.8, 1.0],
-    [0.75, 1.3333],
-)
-buffer = spatial_sampling(
-    buffer,
-    spatial_idx=-1,
-    min_scale=-1,
-    max_scale=-1,
-    crop_size=224,
-    random_horizontal_flip=True,
-    inverse_uniform_sampling=False,
-    aspect_ratio=asp,
-    scale=scl,
-    motion_shift=False
-)
+# buffer = [transforms.ToTensor()(img) for img in buffer]
+# buffer = torch.stack(buffer) # T C H W
+# save_image(buffer.cpu(), "samples/before_sample.png", nrow=8, normalize=False)
+# buffer = buffer.permute(0, 2, 3, 1) # T H W C
+# # T H W C
+# buffer = tensor_normalize(
+#     buffer, [0.485, 0.456, 0.406], [0.229, 0.224, 0.225]
+# )
+# # T H W C -> C T H W.
+# buffer = buffer.permute(3, 0, 1, 2)
+# # Perform data augmentation.
+# scl, asp = (
+#     [0.8, 1.0],
+#     [0.75, 1.3333],
+# )
+# buffer = spatial_sampling(
+#     buffer,
+#     spatial_idx=-1,
+#     min_scale=-1,
+#     max_scale=-1,
+#     crop_size=224,
+#     random_horizontal_flip=True,
+#     inverse_uniform_sampling=False,
+#     aspect_ratio=asp,
+#     scale=scl,
+#     motion_shift=False
+# )
 
 # if self.rand_erase:
 #     erase_transform = RandomErasing(
@@ -176,7 +180,10 @@ buffer = spatial_sampling(
 #     buffer = buffer.permute(1, 0, 2, 3)
 
 
-buffer *= torch.tensor([0.229, 0.224, 0.225])[:, None, None, None]
-buffer += torch.tensor([0.485, 0.456, 0.406])[:, None, None, None]
+# buffer *= torch.tensor([0.229, 0.224, 0.225])[:, None, None, None]
+# buffer += torch.tensor([0.485, 0.456, 0.406])[:, None, None, None]
 
-save_image(buffer.permute(1, 0, 2, 3).cpu(), "samples/sample.png", nrow=8, normalize=False)
+for i in range(4):
+    print(buffer[i].size())
+    # save_image(buffer[i].permute(1, 0, 2, 3).cpu(), f"samples/sample_{i}.png", nrow=8, normalize=False)
+    save_image(buffer[i].cpu(), f"samples/sample_{i}.png", nrow=8, normalize=False)
