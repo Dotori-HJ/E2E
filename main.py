@@ -90,6 +90,7 @@ def main(args):
     #     # We plan to support image input in the future
     #     raise NotImplementedError
 
+    print(args.rand_augment_param)
     model, criterion, postprocessors = build_model(cfg)
 
     if not args.resume and not args.eval and cfg.input_type == 'image':
