@@ -95,13 +95,13 @@ def make_img_transform(is_training, resize=110, crop=96, mean=127.5, std=127.5, 
     else:
         transforms.append(GroupNormalize(mean, std, to_rgb=True))
 
-    # gpu_transforms = None
-    gpu_transforms = GPUAugment([
-        KA.RandomAffine(30, translate=0.1, shear=0.3, p=1, padding_mode='reflection', same_on_batch=True),
-        KA.ColorJiggle(0.125, 0.5, 0.5, 0.1, p=1, same_on_batch=True),
-        KA.RandomHorizontalFlip(p=0.5, same_on_batch=True),
-        KE.Normalize(mean=torch.tensor(mean) / 255, std=torch.tensor(std) / 255),
-    ])
+    gpu_transforms = None
+    # gpu_transforms = GPUAugment([
+    #     KA.RandomAffine(30, translate=0.1, shear=0.3, p=1, padding_mode='reflection', same_on_batch=True),
+    #     KA.ColorJiggle(0.125, 0.5, 0.5, 0.1, p=1, same_on_batch=True),
+    #     KA.RandomHorizontalFlip(p=0.5, same_on_batch=True),
+    #     KE.Normalize(mean=torch.tensor(mean) / 255, std=torch.tensor(std) / 255),
+    # ])
     # gpu_transform = kornia.augmentation
     return Compose(transforms), gpu_transforms
 import torch
