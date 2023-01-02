@@ -106,42 +106,42 @@ img = torch.from_numpy(img).contiguous().to("cuda")
 # aa_params["interpolation"] = Image.BILINEAR
 # transform = rand_augment_transform("rand-m7-n4-mstd0.5-inc1", aa_params)
 
-import kornia.augmentation as KA
+# import kornia.augmentation as KA
 
 
-class GPUAugment:
-    def __init__(self, transforms):
-        self.transforms = transforms
+# class GPUAugment:
+#     def __init__(self, transforms):
+#         self.transforms = transforms
 
-    def __call__(self, x):
-        for op in self.transforms:
-            x = torch.stack([op(_) for _ in x])
-        return x
+#     def __call__(self, x):
+#         for op in self.transforms:
+#             x = torch.stack([op(_) for _ in x])
+#         return x
 
-gpu_transforms = GPUAugment([
-    KA.RandomAffine(30, translate=0.1, shear=0.3, p=1, padding_mode='reflection', same_on_batch=True),
-    KA.ColorJiggle(0.125, 0.5, 0.5, 0.1, p=1, same_on_batch=True),
-    # KA.RandomHorizontalFlip(p=0.5, same_on_batch=True),
-    # KE.Normalize(mean=mean / 255, std=std / 255),
-])
+# gpu_transforms = GPUAugment([
+#     KA.RandomAffine(30, translate=0.1, shear=0.3, p=1, padding_mode='reflection', same_on_batch=True),
+#     KA.ColorJiggle(0.125, 0.5, 0.5, 0.1, p=1, same_on_batch=True),
+#     # KA.RandomHorizontalFlip(p=0.5, same_on_batch=True),
+#     # KE.Normalize(mean=mean / 255, std=std / 255),
+# ])
 # transform = RandAugment(2, 7)
 
 
 
-# img = Image.open("000000.png")
-# buffer = [img for i in range(16)]
+img = Image.open("000000.png")
+buffer = [img for i in range(16)]
 # AugmentOp()
-img = repeat(img, "c h w -> b t c h w", b=4, t=8)
-# transform = create_random_augment(buffer[0].size, "rand-m7-n4-mstd0.5-inc1", "bilinear")
+# img = repeat(img, "c h w -> b t c h w", b=4, t=8)
+transform = create_random_augment(buffer[0].size, "rand-m8-n2-mstd0.5-inc1", "bilinear")
 # transform = create_random_augment(buffer[0].size, "rand-m7-n3-mstd0.5-inc1", "bilinear")
 # print(transform)
-# buffer = transform(img)
-buffer = gpu_transforms(img)
-print(buffer.size())
+buffer = transform(buffer)
+# buffer = gpu_transforms(img)
+# print(buffer.size())
 
-# buffer = [transforms.ToTensor()(img) for img in buffer]
-# buffer = torch.stack(buffer) # T C H W
-# save_image(buffer.cpu(), "samples/before_sample.png", nrow=8, normalize=False)
+buffer = [transforms.ToTensor()(img) for img in buffer]
+buffer = torch.stack(buffer) # T C H W
+save_image(buffer.cpu(), "samples/before_sample.png", nrow=8, normalize=False)
 # buffer = buffer.permute(0, 2, 3, 1) # T H W C
 # # T H W C
 # buffer = tensor_normalize(
@@ -149,24 +149,26 @@ print(buffer.size())
 # )
 # # T H W C -> C T H W.
 # buffer = buffer.permute(3, 0, 1, 2)
-# # Perform data augmentation.
-# scl, asp = (
-#     [0.8, 1.0],
-#     [0.75, 1.3333],
-# )
-# buffer = spatial_sampling(
-#     buffer,
-#     spatial_idx=-1,
-#     min_scale=-1,
-#     max_scale=-1,
-#     crop_size=224,
-#     random_horizontal_flip=True,
-#     inverse_uniform_sampling=False,
-#     aspect_ratio=asp,
-#     scale=scl,
-#     motion_shift=False
-# )
-
+# print(buffer.size())
+# Perform data augmentation.
+print(buffer.size())
+scl, asp = (
+    [0.8, 1.0],
+    [0.75, 1.3333],
+)
+buffer = spatial_sampling(
+    buffer,
+    spatial_idx=-1,
+    min_scale=-1,
+    max_scale=-1,
+    # crop_size=224,
+    crop_size=96,
+    random_horizontal_flip=True,
+    inverse_uniform_sampling=False,
+    aspect_ratio=asp,
+    scale=scl,
+    motion_shift=False
+)
 # if self.rand_erase:
 #     erase_transform = RandomErasing(
 #         args.reprob,
@@ -182,8 +184,14 @@ print(buffer.size())
 
 # buffer *= torch.tensor([0.229, 0.224, 0.225])[:, None, None, None]
 # buffer += torch.tensor([0.485, 0.456, 0.406])[:, None, None, None]
+print(buffer.size())
+save_image(buffer.cpu(), f"samples/sample.png", nrow=8, normalize=False)
+# for i in range(4):
+    # print(buffer[i].size())
+    # save_image(buffer[i].cpu(), f"samples/sample_{i}.png", nrow=8, normalize=False)
 
-for i in range(4):
-    print(buffer[i].size())
-    # save_image(buffer[i].permute(1, 0, 2, 3).cpu(), f"samples/sample_{i}.png", nrow=8, normalize=False)
-    save_image(buffer[i].cpu(), f"samples/sample_{i}.png", nrow=8, normalize=False)
+
+from torchvision.models import resnet50
+
+model = resnet50()
+print(model)

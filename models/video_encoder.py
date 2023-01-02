@@ -21,6 +21,50 @@ from opts import cfg
 from util.misc import NestedTensor, is_main_process
 
 
+class LayerNorm(nn.Module):
+    """
+    LayerNorm that supports inputs of size B, C, T
+    """
+    def __init__(
+        self,
+        num_channels,
+        eps = 1e-5,
+        affine = True,
+        device = None,
+        dtype = None,
+    ):
+        super().__init__()
+        factory_kwargs = {'device': device, 'dtype': dtype}
+        self.num_channels = num_channels
+        self.eps = eps
+        self.affine = affine
+
+        if self.affine:
+            self.weight = nn.Parameter(
+                torch.ones([1, num_channels, 1], **factory_kwargs))
+            self.bias = nn.Parameter(
+                torch.zeros([1, num_channels, 1], **factory_kwargs))
+        else:
+            self.register_parameter('weight', None)
+            self.register_parameter('bias', None)
+
+    def forward(self, x):
+        assert x.dim() == 3
+        assert x.shape[1] == self.num_channels
+
+        # normalization along C channels
+        mu = torch.mean(x, dim=1, keepdim=True)
+        res_x = x - mu
+        sigma = torch.mean(res_x**2, dim=1, keepdim=True)
+        out = res_x / torch.sqrt(sigma + self.eps)
+
+        # apply weight and bias
+        if self.affine:
+            out *= self.weight
+            out += self.bias
+
+        return out
+
 def unfold(ip, kernel_size, stride):
     '''Expect NCTHW shaped tensor, extract sliding block for snippet-wise feature extraction'''
     # ip_ncts = rearrange(ip_ncthw, "n c t h w -> n c t (h w)")
@@ -50,11 +94,12 @@ class TunerBlock(nn.Module):
         self.out_channels = out_channels
 
         # Conv
+        self.norm = LayerNorm(in_channels)
         self.conv1 = nn.Conv1d(in_channels, middle_channels, kernel_size=kernel_size, padding=kernel_size//2)
         self.conv2 = nn.Conv1d(middle_channels, out_channels, kernel_size=kernel_size, padding=kernel_size//2)
 
     def forward(self, x):
-        return self.conv2(F.relu(self.conv1(x))) + x
+        return self.conv2(F.relu(self.conv1(self.norm(x)))) + x
 
 class Tuner(nn.Module):
     def __init__(self, base_channels, num_lvls, middle_channels=2048):

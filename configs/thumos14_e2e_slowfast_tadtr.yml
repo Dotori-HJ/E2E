@@ -30,11 +30,11 @@ fix_transform: false
 neck: identity
 
 # Image
-img_resize: 440
-# img_resize: 256
+# img_resize: 440
+img_resize: 256
 # img_resize: 110
-img_crop_size: 384
-# img_crop_size: 224
+# img_crop_size: 384
+img_crop_size: 224
 # img_crop_size: 96
 
 # Training
@@ -42,7 +42,7 @@ img_crop_size: 384
 # set_cost_class: 2
 # activation: 'gelu'
 # rand_augment_param: rand-m7-n4-mstd0.5-inc1
-rand_augment_param: rand-m7-n3-mstd0.5-inc1
+rand_augment_param: rand-m8-n2-mstd0.5-inc1
 
 # output
-output_dir: outputs/thumos14_large
+output_dir: outputs/thumos14_tune
