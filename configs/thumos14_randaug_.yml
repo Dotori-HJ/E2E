@@ -14,7 +14,7 @@ dropout: 0.1
 dataset_name: thumos14
 feature: img10fps
 online_slice: true
-slice_len: 256
+slice_len: 512
 slice_overlap: 0.75
 test_slice_overlap: 0.25
 input_type: image
