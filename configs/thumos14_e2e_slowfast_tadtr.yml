@@ -32,6 +32,7 @@ fix_transform: false
 # neck: pyramid
 neck: identity
 
+
 # Image
 # img_resize: 440
 # img_resize: 256
