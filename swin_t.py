@@ -55,6 +55,7 @@ base = EasyDict(
 model = SwinTransformer3D(**base).cuda()
 for param in model.parameters():
     param.requires_grad_(False)
+model.eval()
 import torch.nn as nn
 import torch.nn.functional as F
 
