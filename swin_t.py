@@ -63,6 +63,7 @@ optimizer = optim.Adam(list(model.parameters()) + list(cls.parameters()), lr=1e-
 optimizer.zero_grad()
 
 out = model(x)
+print(out.size())
 out = cls(out)
 loss = out.mean()
 loss.backward()
