@@ -26,6 +26,7 @@ batch_size: 4
 # fix_encoder: true
 fix_encoder: false
 fix_transform: false
+# fix_transform: true
 neck: identity
 
 # Image
