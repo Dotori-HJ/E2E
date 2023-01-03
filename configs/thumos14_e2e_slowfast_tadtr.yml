@@ -26,8 +26,8 @@ batch_size: 4
 fix_encoder: true
 # fix_encoder: false
 fix_transform: false
-neck: pyramid
-# neck: identity
+# neck: pyramid
+neck: identity
 
 # Image
 # img_resize: 440
@@ -42,7 +42,7 @@ img_crop_size: 224
 # set_cost_class: 2
 # activation: 'gelu'
 # rand_augment_param: rand-m7-n4-mstd0.5-inc1
-rand_augment_param: rand-m8-n2-mstd0.5-inc1
+rand_augment_param: rand-m7-n2-mstd0.5-inc1
 
 # output
 output_dir: outputs/thumos14_tune
