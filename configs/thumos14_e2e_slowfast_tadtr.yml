@@ -30,6 +30,7 @@ fix_encoder: true
 # fix_encoder: false
 fix_transform: false
 neck: pyramid
+lr_backbone: 1e-4
 # neck: identity
 
 
