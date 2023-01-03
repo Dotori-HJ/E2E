@@ -25,7 +25,7 @@ batch_size: 4
 
 fix_encoder: false
 # fix_encoder: true
-fix_transform: false
+fix_transform: true
 # neck: pyramid
 neck: identity
 # lr_backbone: 1e-4
