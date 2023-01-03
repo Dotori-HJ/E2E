@@ -57,7 +57,7 @@ for param in model.parameters():
     param.requires_grad_(False)
 import torch.nn as nn
 
-cls = nn.Linear(128, 10)
+cls = nn.Linear(128, 10).cuda()
 optimizer = optim.Adam(list(model.parameters()) + list(cls.parameters()), lr=1e-4)
 
 optimizer.zero_grad()
