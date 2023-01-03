@@ -64,7 +64,7 @@ optimizer = optim.Adam(list(model.parameters()) + list(cls.parameters()), lr=1e-
 optimizer.zero_grad()
 
 out = model(x)
-out = F.adaptive_avg_pool3d(out, (1, 1, 1))
+out = F.adaptive_avg_pool3d(out, (1, 1, 1)).flatten(2)
 print(out.size())
 out = cls(out)
 loss = out.mean()
