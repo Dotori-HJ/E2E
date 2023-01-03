@@ -55,11 +55,15 @@ base = EasyDict(
 model = SwinTransformer3D(**base).cuda()
 for param in model.parameters():
     param.requires_grad_(False)
-optimizer = optim.Adam(model.parameters(), lr=1e-4)
+import torch.nn as nn
+
+cls = nn.Linear(128, 10)
+optimizer = optim.Adam(list(model.parameters()) + list(cls.parameters()), lr=1e-4)
 
 optimizer.zero_grad()
 
 out = model(x)
+out = cls(out)
 loss = out.mean()
 loss.backward()
 
