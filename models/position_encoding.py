@@ -57,7 +57,7 @@ class PositionEmbeddingSine(nn.Module):
 def build_position_encoding(args):
     feat_dim = args.hidden_dim
     if args.position_embedding in ('v2', 'sine'):
-        position_embedding = PositionEmbeddingSine(feat_dim, normalize=True)
+        position_embedding = PositionEmbeddingSine(feat_dim, args.temperature, normalize=True)
     else:
         raise ValueError(f"not supported {args.position_embedding}")
 

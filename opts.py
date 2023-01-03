@@ -113,6 +113,8 @@ cfg.act_reg = True
 # whether to disable self-attention between action queries
 cfg.disable_query_self_att = False
 
+cfg.temperature = 20
+
 
 # ----- Loss and matcher setting -------
 # Enable auxiliary decoding losses (loss at each layer)
