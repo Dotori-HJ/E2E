@@ -10,6 +10,7 @@ import torch
 import torch.nn.functional as F
 import torchvision
 from einops import rearrange
+from timm.models.layers import trunc_normal_
 from torch import nn
 from torch.nn.modules.normalization import GroupNorm
 from torchvision.models._utils import IntermediateLayerGetter
@@ -144,6 +145,16 @@ class PyramidTuner(nn.Module):
         ])
         self.output_layer = nn.Conv1d(middle_dim, output_dim, kernel_size=kernel_size, padding=kernel_size//2)
         # self.scaler = nn.Parameter(torch.ones(1))
+        self.apply(self._init_weights)
+
+    def _init_weights(self, m):
+        if isinstance(m, nn.Conv1d):
+            trunc_normal_(m.weight, std=.02)
+            if isinstance(m, nn.Conv1d) and m.bias is not None:
+                nn.init.zeros_(m.bias)
+        elif isinstance(m, nn.LayerNorm):
+            nn.init.ones_(m.weight)
+            nn.init.zeros_(m.bias)
 
     def forward(self, features):
         proj_features = [layer(x) for x, layer in zip(features, self.proj_layers)]
@@ -168,6 +179,8 @@ class VideoEncoder(nn.Module):
         if arch == 'slowfast':
             self.backbone = ResNet3dSlowFast(None, depth=cfg.slowfast_depth,freeze_bn=cfg.freeze_bn, freeze_bn_affine=cfg.freeze_affine, slow_upsample=cfg.slow_upsample)
             self.num_channels = 2304
+            self.pyramid_channels = (288, 576, 1152, 2304)
+            self.base_channels = 512
 
         elif arch in ['tsm', 'tsn']:
             self.backbone = TSM(arch=cfg.tsm_base_model, is_shift=arch=='tsm')
@@ -187,7 +200,7 @@ class VideoEncoder(nn.Module):
         if neck == 'identity':
             self.neck = IdentityNeck()
         elif neck == 'pyramid':
-            self.neck = PyramidTuner((288, 576, 1152, 2304), 512, self.num_channels)
+            self.neck = PyramidTuner(self.pyramid_channels, self.base_channels, self.num_channels)
         elif neck == "tuner":
             self.neck = Tuner(288, 2304, 3)
         else:
