@@ -56,13 +56,15 @@ model = SwinTransformer3D(**base).cuda()
 for param in model.parameters():
     param.requires_grad_(False)
 import torch.nn as nn
+import torch.nn.functional as F
 
-cls = nn.Linear(128, 10).cuda()
+cls = nn.Linear(1024, 10).cuda()
 optimizer = optim.Adam(list(model.parameters()) + list(cls.parameters()), lr=1e-4)
 
 optimizer.zero_grad()
 
 out = model(x)
+out = F.adaptive_avg_pool3d(out, (1, 1, 1))
 print(out.size())
 out = cls(out)
 loss = out.mean()
