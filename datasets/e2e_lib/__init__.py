@@ -32,15 +32,15 @@ def load_video_frames(frame_dir, start, seq_len, stride=1, fn_tmpl='img_%07d.jpg
         #     # img = img[:, :, [2, 1, 0]]  # BGR => RGB, moved to video_transforms.Normalize
         #     # img = (img/255.)*2 - 1
         #     frames.append(img)
-        # frames = [cv2.imread(os.path.join(frame_dir, fn_tmpl % i))
-        #     for i in range(start + stride // 2, start + seq_len, stride)]
-        frames = [Image.open(os.path.join(frame_dir, fn_tmpl % i))
+        frames = [cv2.imread(os.path.join(frame_dir, fn_tmpl % i))
             for i in range(start + stride // 2, start + seq_len, stride)]
+        # frames = [Image.open(os.path.join(frame_dir, fn_tmpl % i))
+        #     for i in range(start + stride // 2, start + seq_len, stride)]
     else:
         # load all frames
         num_imgs = len(os.listdir(frame_dir))
-        # frames = [cv2.imread(os.path.join(frame_dir, fn_tmpl % (i+1))) for i in range(num_imgs)]
-        frames = [Image.open(os.path.join(frame_dir, fn_tmpl % (i+1))) for i in range(num_imgs)]
+        frames = [cv2.imread(os.path.join(frame_dir, fn_tmpl % (i+1))) for i in range(num_imgs)]
+        # frames = [Image.open(os.path.join(frame_dir, fn_tmpl % (i+1))) for i in range(num_imgs)]
     if isinstance(frames[0], np.ndarray):
         return np.asarray(frames, dtype=np.float32)  # NHWC
     else:
@@ -79,21 +79,21 @@ def make_img_transform(is_training, resize=110, crop=96, mean=127.5, std=127.5, 
         GroupRandomCrop(crop) if is_training else GroupCenterCrop(crop),
     ]
     # TODO: Convert to Kornia (GPU) and AutoAugment version
-    # if is_training:
-    #     transforms += [
-    #         GroupRotate(limit=(-45, 45), border_mode='reflect101', p=0.5),
-    #         GroupPhotoMetricDistortion(brightness_delta=32,
-    #             contrast_range=(0.5, 1.5),
-    #             saturation_range=(0.5, 1.5),
-    #             hue_delta=18,
-    #             p=0.5),
-    #         GroupRandomHorizontalFlip(0.5),
-    #     ]
-
     if is_training:
-        transforms.append(GroupNormalize(127.5, 127.5, to_rgb=True))
-    else:
-        transforms.append(GroupNormalize(mean, std, to_rgb=True))
+        transforms += [
+            GroupRotate(limit=(-45, 45), border_mode='reflect101', p=0.5),
+            GroupPhotoMetricDistortion(brightness_delta=32,
+                contrast_range=(0.5, 1.5),
+                saturation_range=(0.5, 1.5),
+                hue_delta=18,
+                p=0.5),
+            GroupRandomHorizontalFlip(0.5),
+        ]
+
+    # if is_training:
+    #     transforms.append(GroupNormalize(127.5, 127.5, to_rgb=True))
+    # else:
+    transforms.append(GroupNormalize(mean, std, to_rgb=True))
 
     gpu_transforms = None
     # gpu_transforms = GPUAugment([
