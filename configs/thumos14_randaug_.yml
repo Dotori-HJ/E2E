@@ -9,6 +9,7 @@ dec_layers: 4
 dim_feedforward: 2048
 num_queries: 40
 dropout: 0.1
+temperature: 20
 
 # data setting
 dataset_name: thumos14
