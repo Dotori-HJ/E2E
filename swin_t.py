@@ -65,7 +65,6 @@ optimizer.zero_grad()
 
 out = model(x)
 out = F.adaptive_avg_pool3d(out, (1, 1, 1)).flatten(1)
-print(out.size())
 out = cls(out)
 loss = out.mean()
 loss.backward()
