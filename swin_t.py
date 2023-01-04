@@ -50,9 +50,9 @@ base = EasyDict(
 )
 
 
-# model = SwinTransformer3D(**tiny).cuda()
+model = SwinTransformer3D(**tiny).cuda()
 # model = SwinTransformer3D(**small).cuda()
-model = SwinTransformer3D(**base).cuda()
+# model = SwinTransformer3D(**base).cuda()
 for param in model.parameters():
     param.requires_grad_(False)
 model.eval()

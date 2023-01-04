@@ -485,7 +485,9 @@ class SwinTransformer3D(nn.Module):
                  norm_layer=nn.LayerNorm,
                  patch_norm=False,
                  frozen_stages=-1,
-                 use_checkpoint=False):
+                 use_checkpoint=False,
+                 out_indices=(0, 1, 2, 3)
+                 ):
         super().__init__()
 
         self.pretrained = pretrained
@@ -526,10 +528,21 @@ class SwinTransformer3D(nn.Module):
                 use_checkpoint=use_checkpoint)
             self.layers.append(layer)
 
-        self.num_features = int(embed_dim * 2**(self.num_layers-1))
+        # self.num_features = int(embed_dim * 2**(self.num_layers-1))
+        num_features = [
+            int(embed_dim * 2 ** (i + 1))
+            for i in range(self.num_layers - 1)
+        ]
+        num_features.append(int(embed_dim * 2**(self.num_layers-1)))
+        self.num_features = num_features
 
         # add a norm layer for each output
-        self.norm = norm_layer(self.num_features)
+        # self.norm = norm_layer(self.num_features)
+        self.out_indices = out_indices
+        for i_layer in out_indices:
+            layer = norm_layer(num_features[i_layer])
+            layer_name = f'norm{i_layer}'
+            self.add_module(layer_name, layer)
 
         self._freeze_stages()
 
@@ -646,13 +659,18 @@ class SwinTransformer3D(nn.Module):
         x = self.pos_drop(x)
 
         outs = []
-        for layer in self.layers:
+        for i, layer in enumerate(self.layers):
             x = layer(x.contiguous())
-            outs.append(x)
 
-        x = rearrange(x, 'n c d h w -> n d h w c')
-        x = self.norm(x)
-        x = rearrange(x, 'n d h w c -> n c d h w')
+            if i in self.out_indices:
+                norm_layer = getattr(self, f'norm{i}')
+
+                x_out = rearrange(x, 'n c d h w -> n d h w c')
+                x_out = norm_layer(x_out)
+                x_out = rearrange(x_out, 'n d h w c -> n c d h w')
+                outs.append(x_out)
+
+            outs.append(x)
 
         return outs
 
