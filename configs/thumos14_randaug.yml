@@ -28,7 +28,7 @@ fix_encoder: false
 fix_transform: false
 # neck: pyramid
 neck: identity
-lr_backbone: 1e-5
+lr_backbone: 0.00001
 
 # Image
 # img_resize: 440
