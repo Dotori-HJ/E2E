@@ -59,15 +59,16 @@ model.eval()
 import torch.nn as nn
 import torch.nn.functional as F
 
-cls = nn.Linear(1024, 10).cuda()
-optimizer = optim.Adam(list(model.parameters()) + list(cls.parameters()), lr=1e-4)
+# cls = nn.Linear(1024, 10).cuda()
+# optimizer = optim.Adam(list(model.parameters()) + list(cls.parameters()), lr=1e-4)
 
-optimizer.zero_grad()
+# optimizer.zero_grad()
 
-out = model(x)
-out = F.adaptive_avg_pool3d(out, (1, 1, 1)).flatten(1)
-out = cls(out)
-loss = out.mean()
-loss.backward()
+outs = model(x)
+print([o.size() for o in outs])
+# out = F.adaptive_avg_pool3d(out, (1, 1, 1)).flatten(1)
+# out = cls(out)
+# loss = out.mean()
+# loss.backward()
 
-optimizer.step()
+# optimizer.step()
