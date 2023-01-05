@@ -33,16 +33,16 @@ lr_backbone: 0.00001
 # Image
 # img_resize: 440
 # img_crop_size: 384
-# img_resize: 110
-# img_crop_size: 96
-img_resize: 256
-img_crop_size: 224
+img_resize: 110
+img_crop_size: 96
+# img_resize: 256
+# img_crop_size: 224
 
 # Training
 # act_reg: false
 # set_cost_class: 2
 # activation: 'gelu'
-rand_augment_param: rand-m6-n5-mstd0.5-inc1
+rand_augment_param: rand-m8-n3-mstd0.5-inc1
 
 # output
 output_dir: outputs/thumos14_e2e_slowfast_test___
