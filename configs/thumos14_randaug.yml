@@ -45,5 +45,5 @@ img_crop_size: 224
 rand_augment_param: rand-m6-n5-mstd0.5-inc1
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_test
+output_dir: outputs/thumos14_e2e_slowfast_test___
 
