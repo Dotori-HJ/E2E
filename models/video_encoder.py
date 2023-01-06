@@ -18,6 +18,7 @@ from torchvision.models._utils import IntermediateLayerGetter
 from models.video_encoder_archs.slowfast import ResNet3dSlowFast
 from models.video_encoder_archs.tsm import TSM
 from models.video_encoder_archs.video_mae import VisionTransformer
+from models.video_encoder_archs.video_swin import SwinTransformer3D, params
 from opts import cfg
 from util.misc import NestedTensor, is_main_process
 
@@ -188,7 +189,11 @@ class VideoEncoder(nn.Module):
         elif arch == 'video_mae':
             self.backbone = VisionTransformer()
             self.num_channels = self.backbone.num_channels
-
+        elif arch == 'video_swin':
+            self.backbone = SwinTransformer3D(pretrained=cfg.pretrained_model, **params[cfg.size])
+            self.num_channels = self.backbone.num_features[-1]
+            self.pyramid_channels = self.backbone.num_features
+            self.base_channels = 512
         else:
             raise ValueError('Not supported arch: {}'.format(arch))
 

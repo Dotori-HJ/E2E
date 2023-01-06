@@ -668,9 +668,10 @@ class SwinTransformer3D(nn.Module):
                 x_out = rearrange(x, 'n c d h w -> n d h w c')
                 x_out = norm_layer(x_out)
                 x_out = rearrange(x_out, 'n d h w c -> n c d h w')
+                x_out = F.adaptive_avg_pool3d(x_out, (None, 1, 1)).flatten(2)
                 outs.append(x_out)
 
-            outs.append(x)
+            # outs.append(x)
 
         return outs
 
@@ -678,3 +679,51 @@ class SwinTransformer3D(nn.Module):
         """Convert the model into training mode while keep layers freezed."""
         super(SwinTransformer3D, self).train(mode)
         self._freeze_stages()
+
+from easydict import EasyDict
+
+params = {
+    "tiny": EasyDict(
+        patch_size=(4,4,4),
+        embed_dim=96,
+        depths=[2, 2, 6, 2],
+        num_heads=[3, 6, 12, 24],
+        window_size=(8,7,7),
+        mlp_ratio=4.,
+        qkv_bias=True,
+        qk_scale=None,
+        drop_rate=0.,
+        attn_drop_rate=0.,
+        drop_path_rate=0.2,
+        patch_norm=True,
+    ),
+    "small": EasyDict(
+        patch_size=(4,4,4),
+        embed_dim=96,
+        depths=[2, 2, 18, 2],
+        num_heads=[3, 6, 12, 24],
+        window_size=(8,7,7),
+        mlp_ratio=4.,
+        qkv_bias=True,
+        qk_scale=None,
+        drop_rate=0.,
+        attn_drop_rate=0.,
+        drop_path_rate=0.2,
+        patch_norm=True,
+    ),
+    "base": EasyDict(
+        patch_size=(4,4,4),
+        embed_dim=128,
+        depths=[2, 2, 18, 2],
+        num_heads=[4, 8, 16, 32],
+        window_size=(8,7,7),
+        mlp_ratio=4.,
+        qkv_bias=True,
+        qk_scale=None,
+        drop_rate=0.,
+        attn_drop_rate=0.,
+        drop_path_rate=0.2,
+        patch_norm=True,
+    )
+}
+
