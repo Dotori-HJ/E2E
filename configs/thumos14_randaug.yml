@@ -7,10 +7,10 @@ pretrained_model: https://download.openmmlab.com/mmaction/recognition/slowfast/s
 enc_layers: 4
 dec_layers: 4
 dim_feedforward: 1024
-# num_queries: 100
-num_queries: 40
+num_queries: 100
+# num_queries: 40
 dropout: 0.1
-# temperature: 20
+temperature: 20
 
 # data setting
 dataset_name: thumos14
