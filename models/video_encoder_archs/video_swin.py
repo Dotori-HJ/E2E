@@ -470,7 +470,7 @@ class SwinTransformer3D(nn.Module):
     def __init__(self,
                  pretrained=None,
                  pretrained2d=True,
-                 patch_size=(4,4,4),
+                 patch_size=(2,4,4),
                  in_chans=3,
                  embed_dim=96,
                  depths=[2, 2, 6, 2],
@@ -619,9 +619,12 @@ class SwinTransformer3D(nn.Module):
         else:
             checkpoint = torch.load(ckpt_path)
 
-        state_dict = checkpoint['model']
+        state_dict = checkpoint['state_dict']
+        updated_state_dict = {}
+        for key in state_dict.keys():
+            updated_state_dict[key[9:]] = state_dict[key]
 
-        self.load_state_dict(state_dict)
+        self.load_state_dict(updated_state_dict)
 
     def init_weights(self, pretrained=None):
         """Initialize the weights in backbone.
