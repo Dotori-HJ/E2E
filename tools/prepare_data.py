@@ -1,5 +1,5 @@
-import os
 import json
+import os
 import os.path as osp
 
 
@@ -27,5 +27,5 @@ def gen_thumos14_frames_info(frame_dir, fps):
 
 
 if __name__ == '__main__':
-    frame_dir = 'data/thumos14/thumos14_img10fps'
-    gen_thumos14_frames_info(frame_dir, 10)
+    frame_dir = 'data/thumos14/thumos14_img20fps'
+    gen_thumos14_frames_info(frame_dir, 20)
