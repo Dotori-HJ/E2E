@@ -63,7 +63,7 @@ import torch.nn.functional as F
 # optimizer = optim.Adam(list(model.parameters()) + list(cls.parameters()), lr=1e-4)
 
 # optimizer.zero_grad()
-
+print(x.size())
 outs = model(x)
 print([o.size() for o in outs])
 # out = F.adaptive_avg_pool3d(out, (1, 1, 1)).flatten(1)

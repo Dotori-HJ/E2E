@@ -624,7 +624,7 @@ class SwinTransformer3D(nn.Module):
         for key in state_dict.keys():
             updated_state_dict[key[9:]] = state_dict[key]
 
-        self.load_state_dict(updated_state_dict)
+        self.load_state_dict(updated_state_dict, strict=False)
 
     def init_weights(self, pretrained=None):
         """Initialize the weights in backbone.
@@ -687,7 +687,7 @@ from easydict import EasyDict
 
 params = {
     "tiny": EasyDict(
-        patch_size=(4,4,4),
+        patch_size=(2,4,4),
         embed_dim=96,
         depths=[2, 2, 6, 2],
         num_heads=[3, 6, 12, 24],
@@ -701,7 +701,7 @@ params = {
         patch_norm=True,
     ),
     "small": EasyDict(
-        patch_size=(4,4,4),
+        patch_size=(2,4,4),
         embed_dim=96,
         depths=[2, 2, 18, 2],
         num_heads=[3, 6, 12, 24],
@@ -715,7 +715,7 @@ params = {
         patch_norm=True,
     ),
     "base": EasyDict(
-        patch_size=(4,4,4),
+        patch_size=(2,4,4),
         embed_dim=128,
         depths=[2, 2, 18, 2],
         num_heads=[4, 8, 16, 32],
