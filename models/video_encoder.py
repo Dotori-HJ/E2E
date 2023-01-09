@@ -100,6 +100,9 @@ class TunerBlock(nn.Module):
         self.conv1 = nn.Conv1d(in_channels, middle_channels, kernel_size=kernel_size, padding=kernel_size//2)
         self.conv2 = nn.Conv1d(middle_channels, out_channels, kernel_size=kernel_size, padding=kernel_size//2)
 
+        self._init_weight()
+
+    def _init_weight(self):
         with torch.no_grad():
             nn.init.kaiming_normal_(self.conv1.weight, nonlinearity='relu')
             nn.init.zeros_(self.conv1.bias)
@@ -152,6 +155,11 @@ class PyramidTuner(nn.Module):
         ])
         self.output_layer = nn.Conv1d(middle_dim, output_dim, kernel_size=kernel_size, padding=kernel_size//2)
 
+        self.scaler = nn.Parameter(torch.full(1, fill_value=0.1))
+        self._init_weights()
+        # self.apply(self._init_weights)
+
+    def _init_weights(self):
         with torch.no_grad():
             for layer in self.proj_layers:
                 nn.init.kaiming_normal_(layer.weight, nonlinearity='relu')
@@ -159,9 +167,6 @@ class PyramidTuner(nn.Module):
 
             nn.init.zeros_(self.output_layer.weight)
             nn.init.zeros_(self.output_layer.bias)
-
-        self.scaler = nn.Parameter(torch.full(1, fill_value=0.1))
-        # self.apply(self._init_weights)
 
     # def _init_weights(self, m):
     #     if isinstance(m, nn.Conv1d):
