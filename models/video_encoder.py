@@ -100,6 +100,12 @@ class TunerBlock(nn.Module):
         self.conv1 = nn.Conv1d(in_channels, middle_channels, kernel_size=kernel_size, padding=kernel_size//2)
         self.conv2 = nn.Conv1d(middle_channels, out_channels, kernel_size=kernel_size, padding=kernel_size//2)
 
+        with torch.no_grad():
+            nn.init.kaiming_normal_(self.conv1.weight, nonlinearity='relu')
+            nn.init.zeros_(self.conv1.bias)
+            nn.init.zeros_(self.conv2.weight)
+            nn.init.zeros_(self.conv2.bias)
+
     def forward(self, x):
         return self.conv2(F.relu(self.conv1(x))) + x
 
@@ -145,17 +151,27 @@ class PyramidTuner(nn.Module):
             for _ in range(len(feature_dims))
         ])
         self.output_layer = nn.Conv1d(middle_dim, output_dim, kernel_size=kernel_size, padding=kernel_size//2)
-        # self.scaler = nn.Parameter(torch.ones(1))
-        self.apply(self._init_weights)
 
-    def _init_weights(self, m):
-        if isinstance(m, nn.Conv1d):
-            trunc_normal_(m.weight, std=.02)
-            if isinstance(m, nn.Conv1d) and m.bias is not None:
-                nn.init.zeros_(m.bias)
-        elif isinstance(m, nn.LayerNorm):
-            nn.init.ones_(m.weight)
-            nn.init.zeros_(m.bias)
+        with torch.no_grad():
+            for layer in self.proj_layers:
+                nn.init.kaiming_normal_(layer.weight, nonlinearity='relu')
+                nn.init.zeros_(layer.bias)
+
+            nn.init.zeros_(self.output_layer.weight)
+            nn.init.zeros_(self.output_layer.bias)
+
+        self.scaler = nn.Parameter(torch.full(1, fill_value=0.1))
+        # self.apply(self._init_weights)
+
+    # def _init_weights(self, m):
+    #     if isinstance(m, nn.Conv1d):
+    #         # nn.init.kaiming_normal_(m, nn.Conv1d)
+    #         trunc_normal_(m.weight, std=.02)
+    #         if isinstance(m, nn.Conv1d) and m.bias is not None:
+    #             nn.init.zeros_(m.bias)
+    #     elif isinstance(m, nn.LayerNorm):
+    #         nn.init.ones_(m.weight)
+    #         nn.init.zeros_(m.bias)
 
     def forward(self, features):
         proj_features = [layer(x) for x, layer in zip(features, self.proj_layers)]
@@ -167,7 +183,7 @@ class PyramidTuner(nn.Module):
                 out = layer(out) + proj_features[i+1]
             else:
                 out = layer(out)
-        out = self.output_layer(out) + features[-1]
+        out = self.output_layer(out) * self.scaler + features[-1]
 
         return out
 
