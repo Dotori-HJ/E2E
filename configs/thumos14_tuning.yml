@@ -35,9 +35,9 @@ batch_size: 4
 # fix_encoder: false
 fix_encoder: true
 fix_transform: false
-# neck: pyramid
-neck: identity
-# lr_backbone: 0.0001
+neck: pyramid
+lr_backbone: 0.0001
+# neck: identity
 
 # Image
 # img_resize: 440
@@ -51,7 +51,7 @@ img_crop_size: 224
 # act_reg: false
 # set_cost_class: 2
 # activation: 'gelu'
-rand_augment_param: rand-m8-n3-mstd0.5-inc1
+rand_augment_param: rand-m7-n4-mstd0.5-inc1
 
 # output
 output_dir: outputs/thumos14_e2e_slowfast_identity
