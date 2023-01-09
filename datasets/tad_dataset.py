@@ -381,7 +381,7 @@ def build(dataset, subset, args, mode):
     if args.input_type == 'image':
         if args.encoder == 'i3d':
             mean, std = (127.5, 127.5)
-        elif args.encoder == 'slowfast' or 'video_mae' in args.encoder or args.backbone.startswith('ts'):
+        elif args.encoder == 'slowfast' or 'video_mae' or 'video_swin' in args.encoder or args.backbone.startswith('ts'):
             mean, std = ([123.675, 116.28, 103.53], [58.395, 57.12, 57.375])
         is_training = mode == 'train' and not args.fix_transform
         transforms, gpu_transforms = make_img_transform(
