@@ -110,7 +110,7 @@ class TunerBlock(nn.Module):
             nn.init.zeros_(self.conv2.bias)
 
     def forward(self, x):
-        return self.conv2(F.relu(self.conv1(x))) + x
+        return self.conv2(F.relu(self.conv1(x)))
 
 class Tuner(nn.Module):
     def __init__(self, base_channels, num_lvls, middle_channels=2048):
