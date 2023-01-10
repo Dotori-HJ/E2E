@@ -30,7 +30,7 @@ fix_encoder: true
 fix_transform: false
 neck: pyramid
 # neck: identity
-lr_backbone: 0.0001
+# lr_backbone: 0.0001
 
 # Image
 # img_resize: 440
