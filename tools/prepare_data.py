@@ -27,5 +27,5 @@ def gen_thumos14_frames_info(frame_dir, fps):
 
 
 if __name__ == '__main__':
-    frame_dir = 'data/thumos14/thumos14_img20fps'
-    gen_thumos14_frames_info(frame_dir, 20)
+    frame_dir = 'data/thumos14/thumos14_img30fps'
+    gen_thumos14_frames_info(frame_dir, 30)
