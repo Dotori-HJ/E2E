@@ -14,8 +14,8 @@ pretrained_model: https://download.openmmlab.com/mmaction/recognition/slowfast/s
 enc_layers: 4
 dec_layers: 4
 dim_feedforward: 1024
-num_queries: 100
-# num_queries: 40
+# num_queries: 100
+num_queries: 40
 dropout: 0.1
 temperature: 20
 
@@ -42,10 +42,10 @@ neck: pyramid
 # Image
 # img_resize: 440
 # img_crop_size: 384
-# img_resize: 110
-# img_crop_size: 96
-img_resize: 256
-img_crop_size: 224
+img_resize: 110
+img_crop_size: 96
+# img_resize: 256
+# img_crop_size: 224
 
 # Training
 # act_reg: false
