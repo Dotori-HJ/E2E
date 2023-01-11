@@ -36,12 +36,12 @@ input_type: image
 lr: 0.0001
 batch_size: 4
 
+
 # fix_encoder: true
-# fix_encoder: true
-fix_encoder: true
+fix_encoder: false
 fix_transform: false
-neck: pyramid
-lr_backbone: 0.00001
+# neck: pyramid
+# lr_backbone: 0.00001
 # neck: identity
 
 # Image
@@ -59,4 +59,4 @@ img_crop_size: 96
 rand_augment_param: rand-m7-n4-mstd0.5-inc1
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_10fps_tune
+output_dir: outputs/thumos14_e2e_slowfast_10fps_full
