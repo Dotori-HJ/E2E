@@ -43,11 +43,11 @@ _HPARAMS_DEFAULT = {
     "img_mean": _FILL,
 }
 
-_RANDOM_INTERPOLATION = (Image.BILINEAR, Image.BICUBIC)
+_RANDOM_INTERPOLATION = (Image.Resampling.BILINEAR, Image.Resampling.BICUBIC)
 
 
 def _interpolation(kwargs):
-    interpolation = kwargs.pop("resample", Image.BILINEAR)
+    interpolation = kwargs.pop("resample", Image.Resampling.BILINEAR)
     if isinstance(interpolation, (list, tuple)):
         return random.choice(interpolation)
     else:

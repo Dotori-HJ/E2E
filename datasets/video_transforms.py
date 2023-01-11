@@ -17,27 +17,27 @@ from .rand_augment import rand_augment_transform
 from .random_erasing import RandomErasing
 
 _pil_interpolation_to_str = {
-    Image.NEAREST: "PIL.Image.NEAREST",
-    Image.BILINEAR: "PIL.Image.BILINEAR",
-    Image.BICUBIC: "PIL.Image.BICUBIC",
-    Image.LANCZOS: "PIL.Image.LANCZOS",
-    Image.HAMMING: "PIL.Image.HAMMING",
-    Image.BOX: "PIL.Image.BOX",
+    Image.Resampling.NEAREST: "PIL.Image.Resampling.NEAREST",
+    Image.Resampling.BILINEAR: "PIL.Image.Resampling.BILINEAR",
+    Image.Resampling.BICUBIC: "PIL.Image.Resampling.BICUBIC",
+    Image.Resampling.LANCZOS: "PIL.Image.Resampling.LANCZOS",
+    Image.Resampling.HAMMING: "PIL.Image.Resampling.HAMMING",
+    Image.Resampling.BOX: "PIL.Image.Resampling.BOX",
 }
 
 
-_RANDOM_INTERPOLATION = (Image.BILINEAR, Image.BICUBIC)
+_RANDOM_INTERPOLATION = (Image.Resampling.BILINEAR, Image.Resampling.BICUBIC)
 
 
 def _pil_interp(method):
     if method == "bicubic":
-        return Image.BICUBIC
+        return Image.Resampling.BICUBIC
     elif method == "lanczos":
-        return Image.LANCZOS
+        return Image.Resampling.LANCZOS
     elif method == "hamming":
-        return Image.HAMMING
+        return Image.Resampling.HAMMING
     else:
-        return Image.BILINEAR
+        return Image.Resampling.BILINEAR
 
 
 def random_short_side_scale_jitter(

@@ -43,7 +43,7 @@ _HPARAMS_DEFAULT = {
     "img_mean": _FILL,
 }
 
-_RANDOM_INTERPOLATION = (Image.BILINEAR, Image.BICUBIC)
+_RANDOM_INTERPOLATION = (Image.Resampling.BILINEAR, Image.Resampling.BICUBIC)
 
 
 def _interpolation(kwargs):
@@ -340,6 +340,7 @@ class AugmentOp:
 
     def __init__(self, name, prob=0.5, magnitude=10, hparams=None):
         hparams = hparams or _HPARAMS_DEFAULT
+        self.name = name
         self.aug_fn = NAME_TO_OP[name]
         self.level_fn = LEVEL_TO_ARG[name]
         self.prob = prob
@@ -353,6 +354,7 @@ class AugmentOp:
             if "interpolation" in hparams
             else _RANDOM_INTERPOLATION,
         }
+        # self.kwargs["fill"] = 1
 
         # If magnitude_std is > 0, we introduce some randomness
         # in the usually fixed policy and sample magnitude from a normal distribution
@@ -380,6 +382,8 @@ class AugmentOp:
         else:
             return self.aug_fn(img_list, *level_args, **self.kwargs)
 
+    def __str__(self):
+        return f"AugmentOP({self.name}, aug_fn: {self.aug_fn}, level_fn: {self.level_fn}, prob: {self.prob})"
 
 _RAND_TRANSFORMS = [
     "AutoContrast",
@@ -475,6 +479,13 @@ class RandAugment:
         for op in ops:
             img = op(img)
         return img
+
+    def __str__(self):
+        out_str = ""
+        for ops in self.ops:
+            out_str += str(ops)
+            out_str += '\n'
+        return out_str
 
 
 def rand_augment_transform(config_str, hparams):
