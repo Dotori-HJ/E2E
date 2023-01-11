@@ -1375,21 +1375,22 @@ buffer = transform(buffer)
 import datasets.video_transforms as video_transforms
 import datasets.volume_transforms as volume_transforms
 
-video_transfom = video_transforms.Compose([
-    video_transforms.Resize(256, interpolation='bilinear'),
-    # video_transforms.CenterCrop(size=(self.crop_size, self.crop_size)),
-    volume_transforms.ClipToTensor(),
-    # video_transforms.Normalize(mean=[0.485, 0.456, 0.406],
-    #                             std=[0.229, 0.224, 0.225])
-])
+# video_transfom = video_transforms.Compose([
+#     video_transforms.Resize(256, interpolation='bilinear'),
+#     # video_transforms.CenterCrop(size=(self.crop_size, self.crop_size)),
+#     volume_transforms.ClipToTensor(),
+#     # video_transforms.Normalize(mean=[0.485, 0.456, 0.406],
+#     #                             std=[0.229, 0.224, 0.225])
+# ])
 
-buffer = video_transfom(buffer)
+# buffer = video_transfom(buffer)
 # print(buffer.size())
 
-# buffer = [transforms.ToTensor()(img) for img in buffer]
-# buffer = torch.stack(buffer) # T C H W
+buffer = [transforms.ToTensor()(img) for img in buffer]
+buffer = torch.stack(buffer) # T C H W
 
-save_image(buffer.permute(1, 0, 2, 3).cpu(), "samples/before_sample.png", nrow=8, normalize=False)
+# save_image(buffer.permute(1, 0, 2, 3).cpu(), "samples/before_sample.png", nrow=8, normalize=False)
+save_image(buffer.cpu(), "samples/before_sample.png", nrow=8, normalize=False)
 # buffer = buffer.permute(0, 2, 3, 1) # T H W C
 # # T H W C
 # buffer = tensor_normalize(
@@ -1429,20 +1430,21 @@ buffer = spatial_sampling(
 #     buffer = erase_transform(buffer)
 #     buffer = buffer.permute(1, 0, 2, 3)
 
-erase_transform = RandomErasing(
-    0.25,
-    mode='pixel',
-    max_count=1,
-    num_splits=1,
-    device="cpu",
-)
-buffer = buffer.permute(1, 0, 2, 3)
-buffer = erase_transform(buffer)
-buffer = buffer.permute(1, 0, 2, 3)
+# erase_transform = RandomErasing(
+#     0.25,
+#     mode='pixel',
+#     max_count=1,
+#     num_splits=1,
+#     device="cpu",
+# )
+# buffer = buffer.permute(1, 0, 2, 3)
+# buffer = erase_transform(buffer)
+# buffer = buffer.permute(1, 0, 2, 3)
 
 # buffer *= torch.tensor([0.229, 0.224, 0.225])[:, None, None, None]
 # buffer += torch.tensor([0.485, 0.456, 0.406])[:, None, None, None]
-# print(buffer.size())
+
+print(buffer.size())
 save_image(buffer.cpu(), f"samples/sample.png", nrow=8, normalize=False)
 # for i in range(4):
     # print(buffer[i].size())
