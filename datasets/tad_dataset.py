@@ -131,6 +131,7 @@ class TADDataset(torch.utils.data.Dataset):
             [0.8, 1.0],
             [0.75, 1.3333],
         )
+        asp = None
         imgs = spatial_sampling(
             imgs,
             spatial_idx=-1,
