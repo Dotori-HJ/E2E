@@ -40,8 +40,8 @@ batch_size: 4
 # fix_encoder: true
 fix_encoder: true
 fix_transform: false
-# neck: pyramid
-# lr_backbone: 0.00001
+neck: pyramid
+lr_backbone: 0.00001
 # neck: identity
 
 # Image
