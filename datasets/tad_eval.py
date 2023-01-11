@@ -159,7 +159,7 @@ class TADEvaluator(object):
                     dets = input_dets[sort_idx, :]
 
                 # only keep top 300 detections per video
-                dets = dets[:300, :]
+                dets = dets[:self.topk, :]
 
                 # On ActivityNet, follow the tradition to use external video label
                 if assign_cls_labels:
@@ -173,7 +173,7 @@ class TADEvaluator(object):
         for vid in video_ids:
             this_dets = self.all_pred['nms'][self.all_pred['nms']['video-id'] == vid][['t-start', 't-end', 'score', 'cls']].values
 
-            this_dets = apply_nms(this_dets)[:300, ...]
+            this_dets = apply_nms(this_dets)[:self.topk, ...]
             this_dets = [[vid] + x.tolist() for x in this_dets]
             all_pred += this_dets
         self.all_pred['nms'] = pd.DataFrame(all_pred, columns=["video-id", "t-start", "t-end", "score", "cls"])
