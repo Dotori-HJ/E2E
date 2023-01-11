@@ -83,13 +83,22 @@ class TADDataset(torch.utils.data.Dataset):
             if fix_transform:
                 self.transforms = video_transforms.Compose([
                     video_transforms.Resize(self.short_side_size, interpolation='bilinear'),
+                    # video_transforms.CenterCrop(size=(self.short_side_size, self.short_side_size)),
                     video_transforms.CenterCrop(size=(self.crop_size, self.crop_size)),
+                    volume_transforms.ClipToTensor(),
+                    video_transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                            std=[0.229, 0.224, 0.225])
+                ])
+            else:
+                self.transforms = self._train_transform
+                self.train_transforms = video_transforms.Compose([
+                    video_transforms.Resize(self.short_side_size, interpolation='bilinear'),
+                    video_transforms.RandomCrop(self.crop_size),
+                    video_transforms.RandomHorizontalFlip(),
                     volume_transforms.ClipToTensor(),
                     video_transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                                std=[0.229, 0.224, 0.225])
                 ])
-            else:
-                self.transforms = self._train_transform
         else:
             self.transforms = video_transforms.Compose([
                 video_transforms.Resize(self.short_side_size, interpolation='bilinear'),
@@ -102,6 +111,9 @@ class TADDataset(torch.utils.data.Dataset):
 
     def _train_transform(self, imgs):
         transform = create_random_augment(imgs[0].size, self.rand_augment_param, "bilinear")
+
+        imgs = self.train_transforms(imgs)
+        return imgs
 
         imgs = transform(imgs)
         imgs = [transforms.ToTensor()(img) for img in imgs]
