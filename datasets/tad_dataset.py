@@ -133,16 +133,16 @@ class TADDataset(torch.utils.data.Dataset):
         )
 
         # if self.rand_erase:
-        erase_transform = RandomErasing(
-            0.25,
-            mode='pixel',
-            max_count=1,
-            num_splits=1,
-            device="cpu",
-        )
-        imgs = imgs.permute(1, 0, 2, 3)
-        imgs = erase_transform(imgs)
-        imgs = imgs.permute(1, 0, 2, 3)
+        # erase_transform = RandomErasing(
+        #     0.25,
+        #     mode='pixel',
+        #     max_count=1,
+        #     num_splits=1,
+        #     device="cpu",
+        # )
+        # imgs = imgs.permute(1, 0, 2, 3)
+        # imgs = erase_transform(imgs)
+        # imgs = imgs.permute(1, 0, 2, 3)
 
         return imgs
 

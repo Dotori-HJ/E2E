@@ -210,7 +210,7 @@ cfg.postproc_rank = 1
 # this setting is useful for debug
 cfg.postproc_cls_topk = 1
 # for each video, pick topk detections
-cfg.postproc_ins_topk = 100
+cfg.postproc_ins_topk = 200
 # IoU threshold for NMS. Note that NMS is not necessary.
 cfg.nms_thr = 0.4
 
