@@ -51,7 +51,7 @@ def apply_nms(dets_arr, nms_thr=0.4, use_soft_nms=False):
 
 
 class TADEvaluator(object):
-    def __init__(self, dataset_name, subset, video_dict=None, nms_mode=['raw'], iou_range=[0.5], epoch=None, num_workers=None):
+    def __init__(self, dataset_name, subset, video_dict=None, nms_mode=['raw'], iou_range=[0.5], epoch=None, num_workers=None, topk=200):
         '''dataset_name:  thumos14, activitynet or hacs
         subset: val or test
         video_dict: the dataset dict created in video_dataset.py
@@ -63,6 +63,7 @@ class TADEvaluator(object):
         self.nms_mode = nms_mode
         self.dataset_name = dataset_name
         self.ignored_videos = list()
+        self.topk = topk
 
         if dataset_name == 'thumos14':
             subset_mapping = {'train': 'val', 'val': 'test'}
@@ -157,8 +158,8 @@ class TADEvaluator(object):
                     sort_idx = input_dets[:, 2].argsort()[::-1]
                     dets = input_dets[sort_idx, :]
 
-                # only keep top 200 detections per video
-                dets = dets[:200, :]
+                # only keep top 300 detections per video
+                dets = dets[:300, :]
 
                 # On ActivityNet, follow the tradition to use external video label
                 if assign_cls_labels:
@@ -172,7 +173,7 @@ class TADEvaluator(object):
         for vid in video_ids:
             this_dets = self.all_pred['nms'][self.all_pred['nms']['video-id'] == vid][['t-start', 't-end', 'score', 'cls']].values
 
-            this_dets = apply_nms(this_dets)[:200, ...]
+            this_dets = apply_nms(this_dets)[:300, ...]
             this_dets = [[vid] + x.tolist() for x in this_dets]
             all_pred += this_dets
         self.all_pred['nms'] = pd.DataFrame(all_pred, columns=["video-id", "t-start", "t-end", "score", "cls"])

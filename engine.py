@@ -116,7 +116,7 @@ def test(model, criterion, postprocessor, data_loader, base_ds, device, output_d
 
     # action_evaluator = None
     action_evaluator = TADEvaluator(cfg.dataset_name, subset, base_ds, nms_mode=[
-                                          'raw'], iou_range=iou_range, epoch=epoch)
+                                          'raw'], iou_range=iou_range, epoch=epoch, topk=cfg.postproc_ins_topk)
 
     # raw_res = []
     cnt = 0
