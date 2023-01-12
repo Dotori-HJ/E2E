@@ -35,7 +35,6 @@ batch_size: 1
 
 fix_encoder: false
 # fix_encoder: true
-# fix_encoder: false
 fix_transform: false
 # neck: pyramid
 # lr_backbone: 0.00001
