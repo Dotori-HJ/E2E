@@ -11,14 +11,14 @@ pretrained_model: https://download.openmmlab.com/mmaction/recognition/slowfast/s
 
 
 # model setting
-enc_layers: 4
-dec_layers: 4
+enc_layers: 6
+dec_layers: 6
 dim_feedforward: 1024
 # dim_feedforward: 2048
 num_queries: 40
 # num_queries: 100
-# dropout: 0.1
-dropout: 0.0
+dropout: 0.1
+# dropout: 0.0
 temperature: 10000
 # temperature: 20
 
