@@ -56,6 +56,7 @@ img_crop_size: 224
 # set_cost_class: 2
 # activation: 'gelu'
 rand_augment_param: rand-m7-n4-mstd0.5-inc1
+rand_erase: true
 
 # output
 output_dir: outputs/thumos14_e2e_slowfast_10fps_full

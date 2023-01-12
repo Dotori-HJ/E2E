@@ -41,7 +41,7 @@ class TADDataset(torch.utils.data.Dataset):
     def __init__(self, subset, mode, feature_info, ann_file, ft_info_file, transforms,
                  mem_cache=False, online_slice=False, slice_len=None, slice_overlap=0,
                  binary=False, padding=True, input_type='feature', img_stride=1,
-                 resize=256, crop_size=224, rand_augment_param=None, fix_transform=False):
+                 resize=256, crop_size=224, rand_augment_param=None, fix_transform=False, rand_erase=False):
         '''TADDataset
         Parameters:
             subset: train/val/test
@@ -78,6 +78,7 @@ class TADDataset(torch.utils.data.Dataset):
         self.short_side_size = resize
         self.crop_size = crop_size
         self.rand_augment_param = rand_augment_param
+        self.rand_erase = rand_erase
         self._prepare()
         if mode == 'train':
             if fix_transform:
@@ -144,17 +145,17 @@ class TADDataset(torch.utils.data.Dataset):
             motion_shift=False
         )
 
-        # if self.rand_erase:
-        # erase_transform = RandomErasing(
-        #     0.25,
-        #     mode='pixel',
-        #     max_count=1,
-        #     num_splits=1,
-        #     device="cpu",
-        # )
-        # imgs = imgs.permute(1, 0, 2, 3)
-        # imgs = erase_transform(imgs)
-        # imgs = imgs.permute(1, 0, 2, 3)
+        if self.rand_erase:
+            erase_transform = RandomErasing(
+                0.25,
+                mode='pixel',
+                max_count=1,
+                num_splits=1,
+                device="cpu",
+            )
+            imgs = imgs.permute(1, 0, 2, 3)
+            imgs = erase_transform(imgs)
+            imgs = imgs.permute(1, 0, 2, 3)
 
         return imgs
 
@@ -419,4 +420,6 @@ def build(dataset, subset, args, mode):
         resize=args.img_resize,
         crop_size=args.img_crop_size,
         rand_augment_param=args.rand_augment_param,
-        fix_transform=args.fix_transform), gpu_transforms
+        fix_transform=args.fix_transform,
+        rand_erase=args.rand_erase
+        ), gpu_transforms

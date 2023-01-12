@@ -215,6 +215,7 @@ cfg.postproc_ins_topk = 200
 cfg.nms_thr = 0.4
 
 cfg.rand_augment_param = "rand-m7-n4-mstd0.5-inc1"
+cfg.rand_erase = False
 
 def update_cfg_with_args(cfg, arg_list):
     from ast import literal_eval
