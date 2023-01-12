@@ -481,7 +481,7 @@ class SwinTransformer3D(nn.Module):
                  qk_scale=None,
                  drop_rate=0.,
                  attn_drop_rate=0.,
-                 drop_path_rate=0.2,
+                 drop_path_rate=0.,
                  norm_layer=nn.LayerNorm,
                  patch_norm=False,
                  frozen_stages=-1,
@@ -697,7 +697,7 @@ params = {
         qk_scale=None,
         drop_rate=0.,
         attn_drop_rate=0.,
-        drop_path_rate=0.2,
+        drop_path_rate=0.,
         patch_norm=True,
     ),
     "small": EasyDict(
@@ -711,7 +711,7 @@ params = {
         qk_scale=None,
         drop_rate=0.,
         attn_drop_rate=0.,
-        drop_path_rate=0.2,
+        drop_path_rate=0.,
         patch_norm=True,
     ),
     "base": EasyDict(
@@ -725,7 +725,7 @@ params = {
         qk_scale=None,
         drop_rate=0.,
         attn_drop_rate=0.,
-        drop_path_rate=0.2,
+        drop_path_rate=0.,
         patch_norm=True,
     )
 }
