@@ -266,7 +266,7 @@ class VideoEncoder(nn.Module):
         super().__init__()
         self.arch = arch
         self.use_upsample = cfg.temporal_upsample
-        temporal_length = 32
+        temporal_length = 64
 
         if arch == 'slowfast':
             self.backbone = ResNet3dSlowFast(None, depth=cfg.slowfast_depth,freeze_bn=cfg.freeze_bn, freeze_bn_affine=cfg.freeze_affine, slow_upsample=cfg.slow_upsample)
