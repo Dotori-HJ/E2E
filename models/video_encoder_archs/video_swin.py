@@ -697,7 +697,7 @@ params = {
         qk_scale=None,
         drop_rate=0.,
         attn_drop_rate=0.,
-        drop_path_rate=0.,
+        drop_path_rate=0.3,
         patch_norm=True,
     ),
     "small": EasyDict(
@@ -711,7 +711,7 @@ params = {
         qk_scale=None,
         drop_rate=0.,
         attn_drop_rate=0.,
-        drop_path_rate=0.,
+        drop_path_rate=0.3,
         patch_norm=True,
     ),
     "base": EasyDict(
@@ -725,7 +725,7 @@ params = {
         qk_scale=None,
         drop_rate=0.,
         attn_drop_rate=0.,
-        drop_path_rate=0.,
+        drop_path_rate=0.3,
         patch_norm=True,
     )
 }
