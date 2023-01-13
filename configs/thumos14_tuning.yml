@@ -36,12 +36,13 @@ input_type: image
 lr: 0.0001
 batch_size: 4
 
-fix_encoder: true
+# fix_encoder: true
+fix_encoder: false
 # fix_encoder: true
 fix_transform: false
 neck: mixer
 # neck: pyramid
-lr_backbone: 0.0001
+# lr_backbone: 0.0001
 # neck: identity
 
 # Image
