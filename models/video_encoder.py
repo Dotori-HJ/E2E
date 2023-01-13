@@ -155,7 +155,7 @@ class PyramidTuner(nn.Module):
         ])
         self.output_layer = nn.Conv1d(middle_dim, output_dim, kernel_size=kernel_size, padding=kernel_size//2)
 
-        self.scaler = nn.Parameter(torch.ones(1))
+        # self.scaler = nn.Parameter(torch.ones(1))
         self._init_weights()
         # self.apply(self._init_weights)
 
@@ -188,8 +188,8 @@ class PyramidTuner(nn.Module):
                 out = layer(out) + proj_features[i+1]
             else:
                 out = layer(out)
-        out = self.output_layer(out) * self.scaler + features[-1]
-        # out = self.output_layer(out) + features[-1]
+        # out = self.output_layer(out) * self.scaler + features[-1]
+        out = self.output_layer(out) + features[-1]
 
         return out
 
