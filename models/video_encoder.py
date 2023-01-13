@@ -193,11 +193,80 @@ class PyramidTuner(nn.Module):
 
         return out
 
+class PreNormResidual(nn.Module):
+    def __init__(self, dim, fn):
+        super().__init__()
+        self.fn = fn
+        self.norm = nn.LayerNorm(dim)
+
+    def forward(self, x):
+        return self.fn(self.norm(x)) + x
+
+class MLP(nn.Module):
+    def __init__(self, in_dim, hidden_dim, out_dim, conv=False, pre_norm=True):
+        super().__init__()
+        self.pre_norm = pre_norm
+        if conv:
+            self.linear1 = nn.Conv1d(in_dim, hidden_dim, kernel_size=1)
+            self.linear2 = nn.Conv1d(hidden_dim, out_dim, kernel_size=1)
+            if pre_norm:
+                self.norm = LayerNorm(in_dim)
+            else:
+                self.norm = LayerNorm(out_dim)
+        else:
+            self.linear1 = nn.Linear(in_dim, hidden_dim)
+            self.linear2 = nn.Linear(hidden_dim, out_dim)
+            if pre_norm:
+                self.norm = nn.LayerNorm(in_dim)
+            else:
+                self.norm = nn.LayerNorm(out_dim)
+
+    def forward(self, x):
+        if self.pre_norm:
+            return self.linear2(F.relu(self.linear1(self.norm(x)))) + x
+        else:
+            return self.norm(self.linear2(F.relu(self.linear1(x))) + x)
+
+class Mixer(nn.Module):
+    def __init__(self, in_dim, hidden_dim, out_dim, temporal_length):
+        super().__init__()
+        self.channel_mlp = MLP(temporal_length, int(temporal_length * 4), temporal_length)
+        self.temporal_mlp = MLP(in_dim, hidden_dim, out_dim, conv=True)
+
+    def forward(self, x):
+        x = self.channel_mlp(x)
+        x = self.temporal_mlp(x)
+        return x
+
+class MixerTuner(nn.Module):
+    def __init__(self, feature_dims, temporal_length):
+        super().__init__()
+        self.feature_dims = feature_dims
+        self.mixers = nn.ModuleList([
+            Mixer(
+                feature_dims[i],
+                2048,
+                feature_dims[i+1],
+                temporal_length
+            ) for i in range(len(feature_dims) - 1)
+        ])
+
+    def forward(self, features):
+        for i, layer in enumerate(self.mixers):
+            if i == 0:
+                out = layer(features[i]) + features[i+1]
+            else:
+                out = layer(out) + features[i+1]
+
+        return out
+
+
 class VideoEncoder(nn.Module):
     def __init__(self, arch='slowfast', fix_encoder=False, neck='pyramid'):
         super().__init__()
         self.arch = arch
         self.use_upsample = cfg.temporal_upsample
+        temporal_length = 32
 
         if arch == 'slowfast':
             self.backbone = ResNet3dSlowFast(None, depth=cfg.slowfast_depth,freeze_bn=cfg.freeze_bn, freeze_bn_affine=cfg.freeze_affine, slow_upsample=cfg.slow_upsample)
@@ -230,6 +299,8 @@ class VideoEncoder(nn.Module):
             self.neck = PyramidTuner(self.pyramid_channels, self.base_channels, self.num_channels)
         elif neck == "tuner":
             self.neck = Tuner(288, 2304, 3)
+        elif neck == "mixer":
+            self.neckt = MixerTuner(self.pyramid_channels, temporal_length)
         else:
             assert True, f"neck={neck}"
 

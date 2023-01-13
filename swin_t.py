@@ -1,4 +1,20 @@
 import torch
+
+from models.video_encoder import MixerTuner
+
+batch_size = 4
+temporal_length = 32
+channels = [192, 384, 768, 768]
+x = [torch.randn(batch_size, channel, temporal_length).cuda() for channel in channels]
+
+print([_.size() for _ in x])
+tuner = MixerTuner(channels, temporal_length).cuda()
+x = tuner(x)
+print(x.size())
+
+exit()
+
+import torch
 import torch.optim as optim
 from easydict import EasyDict
 
