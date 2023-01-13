@@ -300,7 +300,7 @@ class VideoEncoder(nn.Module):
         elif neck == "tuner":
             self.neck = Tuner(288, 2304, 3)
         elif neck == "mixer":
-            self.neckt = MixerTuner(self.pyramid_channels, temporal_length)
+            self.neck = MixerTuner(self.pyramid_channels, temporal_length)
         else:
             assert True, f"neck={neck}"
 
