@@ -250,6 +250,7 @@ class MixerTuner(nn.Module):
                 temporal_length
             ) for i in range(len(feature_dims) - 1)
         ])
+        print(self.mixers)
 
     def forward(self, features):
         for i, layer in enumerate(self.mixers):
