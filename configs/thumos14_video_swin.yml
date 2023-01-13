@@ -2,10 +2,10 @@
 encoder: video_swin
 # size: tiny
 # pretrained_model: https://github.com/SwinTransformer/storage/releases/download/v1.0.4/swin_tiny_patch244_window877_kinetics400_1k.pth
-size: small
-pretrained_model: https://github.com/SwinTransformer/storage/releases/download/v1.0.4/swin_small_patch244_window877_kinetics400_1k.pth
-# size: base
-# pretrained_model: https://github.com/SwinTransformer/storage/releases/download/v1.0.4/swin_base_patch244_window877_kinetics600_22k.pth
+# size: small
+# pretrained_model: https://github.com/SwinTransformer/storage/releases/download/v1.0.4/swin_small_patch244_window877_kinetics400_1k.pth
+size: base
+pretrained_model: https://github.com/SwinTransformer/storage/releases/download/v1.0.4/swin_base_patch244_window877_kinetics600_22k.pth
 
 # model setting
 enc_layers: 4
@@ -14,8 +14,8 @@ dec_layers: 4
 dim_feedforward: 1024
 # num_queries: 100
 num_queries: 40
-dropout: 0.1
-# dropout: 0.0
+# dropout: 0.1
+dropout: 0.0
 # temperature: 10000
 temperature: 20
 
@@ -33,8 +33,8 @@ input_type: image
 lr: 0.0001
 batch_size: 1
 
-fix_encoder: false
-# fix_encoder: true
+# fix_encoder: false
+fix_encoder: true
 fix_transform: false
 # neck: pyramid
 # lr_backbone: 0.00001
