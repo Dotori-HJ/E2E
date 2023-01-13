@@ -254,7 +254,7 @@ class MixerTuner(nn.Module):
 
     def forward(self, features):
         for i, layer in enumerate(self.mixers):
-            print(features[i], layer)
+            print(features[i].size(), layer)
             if i == 0:
                 out = layer(features[i]) + features[i+1]
             else:
