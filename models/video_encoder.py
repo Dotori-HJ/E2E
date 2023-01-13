@@ -223,6 +223,9 @@ class MLP(nn.Module):
 
     def forward(self, x):
         if self.pre_norm:
+            print(self.norm(x).size())
+            print(self.linear1(x).size())
+            
             return self.linear2(F.relu(self.linear1(self.norm(x)))) + x
         else:
             return self.norm(self.linear2(F.relu(self.linear1(x))) + x)
