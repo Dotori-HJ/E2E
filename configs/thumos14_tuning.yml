@@ -18,7 +18,7 @@ dim_feedforward: 1024
 num_queries: 40
 # num_queries: 100
 # dropout: 0.1
-dropout: 0.1
+dropout: 0.0
 temperature: 10000
 # temperature: 20
 
