@@ -3,7 +3,7 @@ import torch
 from models.video_encoder import MixerTuner
 
 batch_size = 4
-temporal_length = 32
+temporal_length = 64
 channels = [192, 384, 768, 768]
 x = [torch.randn(batch_size, channel, temporal_length).cuda() for channel in channels]
 

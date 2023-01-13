@@ -220,15 +220,20 @@ class MLP(nn.Module):
                 self.norm = nn.LayerNorm(in_dim)
             else:
                 self.norm = nn.LayerNorm(out_dim)
+        if in_dim != out_dim:
+            if conv:
+                self.proj = nn.Conv1d(in_dim, out_dim, kernel_size=1)
+            else:
+                self.proj = nn.Linear(in_dim, out_dim)
+        else:
+            self.proj = nn.Identity()
 
     def forward(self, x):
         if self.pre_norm:
-            print(self.norm(x).size())
-            print(self.linear1(x).size())
-            
-            return self.linear2(F.relu(self.linear1(self.norm(x)))) + x
+            x = self.norm(x)
+            return self.linear2(F.relu(self.linear1(x))) + self.proj(x)
         else:
-            return self.norm(self.linear2(F.relu(self.linear1(x))) + x)
+            return self.norm(self.linear2(F.relu(self.linear1(x))) + self.proj(x))
 
 class Mixer(nn.Module):
     def __init__(self, in_dim, hidden_dim, out_dim, temporal_length):
@@ -253,7 +258,6 @@ class MixerTuner(nn.Module):
                 temporal_length
             ) for i in range(len(feature_dims) - 1)
         ])
-        print(self.mixers)
 
     def forward(self, features):
         for i, layer in enumerate(self.mixers):
