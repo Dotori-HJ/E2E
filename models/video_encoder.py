@@ -257,6 +257,7 @@ class MixerTuner(nn.Module):
                 out = layer(features[i]) + features[i+1]
             else:
                 out = layer(out) + features[i+1]
+            print(out.size())
 
         return out
 
