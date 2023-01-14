@@ -32,7 +32,8 @@ fix_transform: false
 # neck: pyramid
 # lr_backbone: 0.0001
 neck: identity
-look_forward_twice: true
+two_stage: true
+look_forward_twice: false
 
 
 # Image
