@@ -76,9 +76,8 @@ class DeformableTransformer(nn.Module):
         mask_flatten_ = memory_padding_mask.view(N_, T_)
         valid_T = torch.sum(~mask_flatten_[:, :], 1)
 
-        grid = torch.linspace(0, 1, T_, dtype=torch.float32, device=memory.device)
-        print(valid_T.size(), grid)
-        grid = torch.linspace(0, T_ - 1, T_, dtype=torch.float32, device=memory.device).unsqueeze(0) / valid_T.unsqueeze(1)
+
+        grid = (torch.linspace(0, T_ - 1, T_, dtype=torch.float32, device=memory.device).unsqueeze(0) + 0.5) / valid_T.unsqueeze(1)
         print(grid)
 
         # scale = torch.cat([valid_W.unsqueeze(-1), valid_H.unsqueeze(-1)], 1).view(N_, 1, 1, 2)
