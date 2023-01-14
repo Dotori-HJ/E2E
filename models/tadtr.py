@@ -189,7 +189,7 @@ class TadTR(nn.Module):
         query_embeds = None
         if not self.two_stage:
             query_embeds = self.query_embed.weight
-        hs, init_reference, inter_references, memory, enc_outputs_coord_unact, enc_outputs_class = self.transformer(
+        hs, init_reference, inter_references, memory, enc_outputs_class, enc_outputs_coord_unact = self.transformer(
                 srcs, masks, pos, query_embeds)
 
         outputs_classes = []
@@ -243,9 +243,9 @@ class TadTR(nn.Module):
 
         if self.two_stage:
             enc_outputs_coord = enc_outputs_coord_unact.sigmoid()
-            print("-----")
-            print(enc_outputs_class.size(), enc_outputs_coord.size())
-            print("-----")
+            # print("-----")
+            # print(enc_outputs_class.size(), enc_outputs_coord.size())
+            # print("-----")
             out['enc_outputs'] = {'pred_logits': enc_outputs_class, 'pred_segments': enc_outputs_coord}
 
         return out
