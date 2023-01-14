@@ -336,6 +336,8 @@ class SetCriterion(nn.Module):
            The target segments are expected in format (center, width), normalized by the video length.
         """
         assert 'pred_segments' in outputs
+        if not 'pred_actionness' in outputs:
+            return losses
         assert 'pred_actionness' in outputs
         src_segments = outputs['pred_segments'].view((-1, 2))
         target_segments = torch.cat([t['segments'] for t in targets], dim=0)
