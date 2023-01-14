@@ -73,10 +73,9 @@ class DeformableTransformer(nn.Module):
         T_ = temporal_length
         proposals = []
 
-        mask_flatten_ = memory_padding_mask.view(N_, T_, 1)
+        mask_flatten_ = memory_padding_mask.view(N_, T_)
         print(mask_flatten_)
-        valid_H = torch.sum(~mask_flatten_[:, :, 0, 0], 1)
-        valid_W = torch.sum(~mask_flatten_[:, 0, :, 0], 1)
+        valid_T = torch.sum(~mask_flatten_[:, :], 1)
 
         grid_y, grid_x = torch.meshgrid(torch.linspace(0, H_ - 1, H_, dtype=torch.float32, device=memory.device),
                                         torch.linspace(0, W_ - 1, W_, dtype=torch.float32, device=memory.device))
