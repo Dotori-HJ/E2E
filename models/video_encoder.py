@@ -203,24 +203,21 @@ class PreNormResidual(nn.Module):
         return self.fn(self.norm(x)) + x
 
 class MLP(nn.Module):
-    def __init__(self, in_dim, hidden_dim, out_dim, conv=False, pre_norm=True):
+    def __init__(self, in_dim, hidden_dim, out_dim, norm_dim=None, conv=False, pre_norm=True):
         super().__init__()
         self.pre_norm = pre_norm
         if conv:
             self.linear1 = nn.Conv1d(in_dim, hidden_dim, kernel_size=1)
             self.linear2 = nn.Conv1d(hidden_dim, out_dim, kernel_size=1)
-            # if pre_norm:
-            #     self.norm = LayerNorm(in_dim)
-            # else:
-            #     self.norm = LayerNorm(out_dim)
         else:
             self.linear1 = nn.Linear(in_dim, hidden_dim)
             self.linear2 = nn.Linear(hidden_dim, out_dim)
 
         if pre_norm:
-            self.norm = nn.LayerNorm(in_dim)
+            self.norm = nn.LayerNorm(norm_dim if norm_dim is not None else in_dim)
         else:
-            self.norm = nn.LayerNorm(out_dim)
+            self.norm = nn.LayerNorm(norm_dim if norm_dim is not None else out_dim)
+
         if in_dim != out_dim:
             if conv:
                 self.proj = nn.Conv1d(in_dim, out_dim, kernel_size=1)
@@ -245,6 +242,7 @@ class Mixer(nn.Module):
         # self.channel_mlp = MLP(temporal_length, hidden_dim, temporal_length)
 
     def forward(self, x):
+        print(x.size())
         if self.conv:
             x = self.temporal_mlp(x)
             x = self.channel_mlp(x)
