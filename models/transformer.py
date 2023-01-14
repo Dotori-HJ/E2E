@@ -155,7 +155,7 @@ class DeformableTransformer(nn.Module):
             num_topk = 40
             # hack implementation for two-stage Deformable DETR
             enc_outputs_class = self.decoder.class_embed[self.decoder.num_layers](output_memory)
-            enc_outputs_coord_unact = self.decoder.bbox_embed[self.decoder.num_layers](output_memory) + output_proposals
+            enc_outputs_coord_unact = self.decoder.segment_embed[self.decoder.num_layers](output_memory) + output_proposals
 
             # topk = self.two_stage_num_proposals
             topk_proposals = torch.topk(enc_outputs_class[..., 0], num_topk, dim=1)[1]
