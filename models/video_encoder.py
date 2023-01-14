@@ -248,8 +248,8 @@ class Mixer(nn.Module):
             x = self.mlp(x)
         else:
             x = self.mixer(x)
-            x = self.mlp(x.transpose(2, 1))
-        return x.transpose(2, 1)
+            x = self.mlp(x.transpose(2, 1)).transpose(2, 1)
+        return x
 
 class MixerTuner(nn.Module):
     def __init__(self, feature_dims, temporal_length):
