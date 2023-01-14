@@ -76,7 +76,7 @@ def main(args):
     device = torch.device(args.device)
 
     # fix the seed
-    print(utils.get_rank())
+    # print(utils.get_rank())
     seed = args.seed + utils.get_rank()
     torch.manual_seed(seed)
     np.random.seed(seed)
@@ -91,7 +91,7 @@ def main(args):
     #     # We plan to support image input in the future
     #     raise NotImplementedError
 
-    print(cfg.rand_augment_param)
+    # print(cfg.rand_augment_param)
     model, criterion, postprocessors = build_model(cfg)
 
     if not args.resume and not args.eval and cfg.input_type == 'image':
