@@ -414,6 +414,24 @@ class SetCriterion(nn.Module):
                     l_dict = {k + f'_{i}': v for k, v in l_dict.items()}
                     losses.update(l_dict)
 
+        if 'enc_outputs' in outputs:
+            enc_outputs = outputs['enc_outputs']
+            bin_targets = copy.deepcopy(targets)
+            for bt in bin_targets:
+                bt['labels'] = torch.zeros_like(bt['labels'])
+            indices = self.matcher(enc_outputs, bin_targets)
+            for loss in self.losses:
+                if loss == 'masks':
+                    # Intermediate masks losses are too costly to compute, we ignore them.
+                    continue
+                kwargs = {}
+                if loss == 'labels':
+                    # Logging is enabled only for the last layer
+                    kwargs['log'] = False
+                l_dict = self.get_loss(loss, enc_outputs, bin_targets, indices, num_segments, **kwargs)
+                l_dict = {k + f'_enc': v for k, v in l_dict.items()}
+                losses.update(l_dict)
+
         self.indices = indices
         return losses
 
@@ -513,6 +531,7 @@ def build(args):
         num_classes=num_classes,
         num_queries=args.num_queries,
         aux_loss=args.aux_loss,
+        two_stage=args.two_stage,
         with_segment_refine=args.seg_refine,
         with_act_reg=args.act_reg
     )
