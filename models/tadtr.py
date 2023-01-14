@@ -120,8 +120,8 @@ class TadTR(nn.Module):
         if two_stage:
             # hack implementation for two-stage
             self.transformer.decoder.class_embed = self.class_embed
-            for box_embed in self.bbox_embed:
-                nn.init.constant_(box_embed.layers[-1].bias.data[2:], 0.0)
+            for segment_embed in self.segment_embed:
+                nn.init.constant_(segment_embed.layers[-1].bias.data[2:], 0.0)
 
         if with_act_reg:
             # RoIAlign params
