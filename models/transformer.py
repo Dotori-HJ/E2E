@@ -339,7 +339,7 @@ def build_deformable_transformer(args):
         dropout=args.dropout,
         activation=args.activation,
         return_intermediate_dec=True,
-        look_forward_twice=arg.look_forward_twice,
+        look_forward_twice=args.look_forward_twice,
         num_feature_levels=1,
         dec_n_points=args.dec_n_points,
         enc_n_points=args.enc_n_points)
