@@ -39,8 +39,8 @@ input_type: image
 lr: 0.0001
 batch_size: 4
 
-# fix_encoder: false
-fix_encoder: true
+fix_encoder: false
+# fix_encoder: true
 fix_transform: false
 # neck: pyramid
 # lr_backbone: 0.00001
@@ -53,6 +53,8 @@ neck: identity
 # img_crop_size: 96
 img_resize: 256
 img_crop_size: 224
+look_forward_twice: true
+
 
 # Training
 # act_reg: false
@@ -62,4 +64,4 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_10fps_identiry
+output_dir: outputs/thumos14_e2e_slowfast_10fps_full
