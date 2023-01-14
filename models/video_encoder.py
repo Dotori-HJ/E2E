@@ -231,17 +231,17 @@ class MLP(nn.Module):
     def forward(self, x):
         if self.pre_norm:
             x = self.norm(x)
-            return self.linear2(F.relu(self.linear1(x))) + self.proj(x)
+            return self.linear2(F.gelu(self.linear1(x))) + self.proj(x)
         else:
-            return self.norm(self.linear2(F.relu(self.linear1(x))) + self.proj(x))
+            return self.norm(self.linear2(F.gelu(self.linear1(x))) + self.proj(x))
 
 class Mixer(nn.Module):
-    def __init__(self, in_dim, hidden_dim, out_dim, temporal_length, conv=True):
+    def __init__(self, in_dim, hidden_dim, out_dim, temporal_length, conv=False):
         super().__init__()
         self.conv = conv
         self.temporal_mlp = MLP(in_dim, hidden_dim, out_dim, conv=conv)
-        # self.channel_mlp = MLP(temporal_length, int(temporal_length * 4), temporal_length)
-        self.channel_mlp = MLP(temporal_length, hidden_dim, temporal_length)
+        self.channel_mlp = MLP(temporal_length, int(temporal_length * 4), temporal_length)
+        # self.channel_mlp = MLP(temporal_length, hidden_dim, temporal_length)
 
     def forward(self, x):
         if self.conv:
