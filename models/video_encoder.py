@@ -203,7 +203,7 @@ class PreNormResidual(nn.Module):
         return self.fn(self.norm(x)) + x
 
 class MLP(nn.Module):
-    def __init__(self, in_dim, hidden_dim, out_dim, conv=False, pre_norm=False):
+    def __init__(self, in_dim, hidden_dim, out_dim, conv=False, pre_norm=True):
         super().__init__()
         self.pre_norm = pre_norm
         if conv:
