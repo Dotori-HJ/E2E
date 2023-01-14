@@ -11,6 +11,7 @@
 # ------------------------------------------------------------------------
 
 import copy
+import math
 
 import torch
 import torch.nn.functional as F
@@ -68,6 +69,21 @@ class DeformableTransformer(nn.Module):
             xavier_uniform_(self.reference_points.weight.data, gain=1.0)
             constant_(self.reference_points.bias.data, 0.)
         normal_(self.level_embed)
+
+    def get_proposal_pos_embed(self, proposals):
+        num_pos_feats = 128
+        temperature = 10000
+        scale = 2 * math.pi
+
+        dim_t = torch.arange(num_pos_feats, dtype=torch.float32, device=proposals.device)
+        dim_t = temperature ** (2 * (dim_t // 2) / num_pos_feats)
+        # N, L, 4
+        proposals = proposals.sigmoid() * scale
+        # N, L, 4, 128
+        pos = proposals[:, :, :, None] / dim_t
+        # N, L, 4, 64, 2
+        pos = torch.stack((pos[:, :, :, 0::2].sin(), pos[:, :, :, 1::2].cos()), dim=4).flatten(2)
+        return pos
 
     def gen_encoder_output_proposals(self, memory, memory_padding_mask, temporal_length):
         N_, S_, C_ = memory.shape
