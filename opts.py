@@ -109,7 +109,7 @@ cfg.activation = 'relu'
 # Whether to enable segment refinement mechanism
 cfg.seg_refine = True
 # Whether to enable actionness regression head
-cfg.act_reg = True
+cfg.act_reg = False
 # whether to disable self-attention between action queries
 cfg.disable_query_self_att = False
 

@@ -78,7 +78,6 @@ class HungarianMatcher(nn.Module):
         cost_class = pos_cost_class[:, tgt_ids] - neg_cost_class[:, tgt_ids]
 
         # Compute the L1 cost between segments
-        print(out_seg.size(), tgt_seg.size())
         cost_seg = torch.cdist(out_seg, tgt_seg, p=1)
 
         # Compute the iou cost betwen segments
