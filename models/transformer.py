@@ -100,8 +100,6 @@ class DeformableTransformer(nn.Module):
         # grid = (grid.unsqueeze(0).expand(N_, -1, -1, -1) + 0.5) / scale
         scale = self.base_scale.sigmoid().expand_as(timeline)
         # time_length = torch.ones_like(timeline) * 0.05 * 2.0
-        print(scale)
-        exit()
 
         proposals = torch.stack((timeline, scale), -1).view(N_, -1, 2)
 
@@ -115,7 +113,6 @@ class DeformableTransformer(nn.Module):
         output_memory = output_memory.masked_fill(memory_padding_mask.unsqueeze(-1), float(0))
         output_memory = output_memory.masked_fill(~output_proposals_valid, float(0))
         output_memory = self.enc_output_norm(self.enc_output(output_memory))
-        print(output_proposals)
         return output_memory, output_proposals
 
     def get_valid_ratio(self, mask):

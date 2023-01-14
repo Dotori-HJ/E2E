@@ -11,12 +11,13 @@
 # Modified from DETR (https://github.com/facebookresearch/detr)
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
 
+import pdb
+
 import torch
 from scipy.optimize import linear_sum_assignment
 from torch import nn
 
 from util.segment_ops import segment_cw_to_t1t2, segment_iou
-import pdb
 
 
 class HungarianMatcher(nn.Module):
@@ -75,8 +76,9 @@ class HungarianMatcher(nn.Module):
         neg_cost_class = (1 - alpha) * (out_prob ** gamma) * (-(1 - out_prob + 1e-8).log())
         pos_cost_class = alpha * ((1 - out_prob) ** gamma) * (-(out_prob + 1e-8).log())
         cost_class = pos_cost_class[:, tgt_ids] - neg_cost_class[:, tgt_ids]
-        
+
         # Compute the L1 cost between segments
+        print(out_seg.size(), tgt_seg.size())
         cost_seg = torch.cdist(out_seg, tgt_seg, p=1)
 
         # Compute the iou cost betwen segments
