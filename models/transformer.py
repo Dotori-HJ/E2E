@@ -98,6 +98,7 @@ class DeformableTransformer(nn.Module):
         output_memory = output_memory.masked_fill(memory_padding_mask.unsqueeze(-1), float(0))
         output_memory = output_memory.masked_fill(~output_proposals_valid, float(0))
         output_memory = self.enc_output_norm(self.enc_output(output_memory))
+        print(output_memory, output_proposals)
         return output_memory, output_proposals
 
     def get_valid_ratio(self, mask):
