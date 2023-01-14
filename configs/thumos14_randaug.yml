@@ -28,17 +28,18 @@ batch_size: 4
 # fix_encoder: false
 fix_encoder: true
 fix_transform: false
-neck: pyramid
-# neck: identity
+# neck: pyramid
+neck: identity
 # lr_backbone: 0.0001
+two_stage: true
 
 # Image
 # img_resize: 440
 # img_crop_size: 384
-# img_resize: 110
-# img_crop_size: 96
-img_resize: 256
-img_crop_size: 224
+img_resize: 110
+img_crop_size: 96
+# img_resize: 256
+# img_crop_size: 224
 
 # Training
 # act_reg: false
@@ -47,5 +48,5 @@ img_crop_size: 224
 rand_augment_param: rand-m7-n4-mstd0.5-inc1
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_test____
+output_dir: outputs/thumos14_e2e_slowfast_test________
 

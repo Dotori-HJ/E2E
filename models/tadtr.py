@@ -58,7 +58,8 @@ def get_norm(norm_type, dim, num_groups=None):
 class TadTR(nn.Module):
     """ This is the TadTR module that performs temporal action detection """
 
-    def __init__(self, backbone, position_embedding, transformer, num_classes, num_queries, aux_loss=True, with_segment_refine=True, with_act_reg=True):
+    def __init__(self, backbone, position_embedding, transformer, num_classes, num_queries,
+                 aux_loss=True, with_segment_refine=True, with_act_reg=True, two_stage=False):
         """ Initializes the model.
         Parameters:
             backbone: torch module of the backbone to be used. See backbone.py
@@ -75,7 +76,8 @@ class TadTR(nn.Module):
         hidden_dim = transformer.d_model
         self.class_embed = nn.Linear(hidden_dim, num_classes)
         self.segment_embed = MLP(hidden_dim, hidden_dim, 2, 3)
-        self.query_embed = nn.Embedding(num_queries, hidden_dim*2)
+        if not two_stage:
+            self.query_embed = nn.Embedding(num_queries, hidden_dim*2)
 
         self.input_proj = nn.ModuleList([
             nn.Sequential(
@@ -87,6 +89,7 @@ class TadTR(nn.Module):
         self.aux_loss = aux_loss
         self.with_segment_refine = with_segment_refine
         self.with_act_reg = with_act_reg
+        self.two_stage = two_stage
 
         prior_prob = 0.01
         bias_value = -math.log((1 - prior_prob) / prior_prob)
@@ -97,7 +100,7 @@ class TadTR(nn.Module):
             nn.init.xavier_uniform_(proj[0].weight, gain=1)
             nn.init.constant_(proj[0].bias, 0)
 
-        num_pred = transformer.decoder.num_layers
+        num_pred = (transformer.decoder.num_layers + 1) if two_stage else transformer.decoder.num_layers
         if with_segment_refine:
             self.class_embed = _get_clones(self.class_embed, num_pred)
             self.segment_embed = _get_clones(self.segment_embed, num_pred)
@@ -113,6 +116,12 @@ class TadTR(nn.Module):
             self.segment_embed = nn.ModuleList(
                 [self.segment_embed for _ in range(num_pred)])
             self.transformer.decoder.segment_embed = None
+
+        if two_stage:
+            # hack implementation for two-stage
+            self.transformer.decoder.class_embed = self.class_embed
+            for box_embed in self.bbox_embed:
+                nn.init.constant_(box_embed.layers[-1].bias.data[2:], 0.0)
 
         if with_act_reg:
             # RoIAlign params
@@ -177,9 +186,11 @@ class TadTR(nn.Module):
         srcs = [self.input_proj[0](src)]
         masks = [mask]
 
-        query_embeds = self.query_embed.weight
-        hs, init_reference, inter_references, memory = self.transformer(
-            srcs, masks, pos, query_embeds)
+        query_embeds = None
+        if not self.two_stage:
+            query_embeds = self.query_embed.weight
+        hs, init_reference, inter_references, memory, enc_outputs_coord_unact, enc_outputs_class = self.transformer(
+                srcs, masks, pos, query_embeds)
 
         outputs_classes = []
         outputs_coords = []
@@ -229,6 +240,10 @@ class TadTR(nn.Module):
         if self.aux_loss:
             out['aux_outputs'] = self._set_aux_loss(
                 outputs_class, outputs_coord)
+
+        if self.two_stage:
+            enc_outputs_coord = enc_outputs_coord_unact.sigmoid()
+            out['enc_outputs'] = {'pred_logits': enc_outputs_class, 'pred_boxes': enc_outputs_coord}
 
         return out
 
