@@ -238,8 +238,9 @@ class MLP(nn.Module):
 class Mixer(nn.Module):
     def __init__(self, in_dim, hidden_dim, out_dim, temporal_length):
         super().__init__()
-        self.temporal_mlp = MLP(in_dim, int(in_dim * 4), out_dim, conv=True)
-        self.channel_mlp = MLP(temporal_length, int(temporal_length * 4), temporal_length)
+        self.temporal_mlp = MLP(in_dim, hidden_dim, out_dim, conv=True)
+        # self.channel_mlp = MLP(temporal_length, int(temporal_length * 4), temporal_length)
+        self.channel_mlp = MLP(temporal_length, hidden_dim, temporal_length)
 
     def forward(self, x):
         x = self.temporal_mlp(x)

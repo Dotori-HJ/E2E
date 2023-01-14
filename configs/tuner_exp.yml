@@ -42,7 +42,7 @@ fix_encoder: true
 fix_transform: false
 # neck: pyramid
 neck: mixer
-lr_backbone: 0.00001
+lr_backbone: 0.0001
 # neck: identity
 
 # Image
