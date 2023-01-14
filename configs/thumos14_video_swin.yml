@@ -57,5 +57,5 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 # rand_augment_param: rand-m8-n3-mstd0.5-inc1
 
 # output
-output_dir: outputs/thumos14_swin_base_identity_droppath
+output_dir: outputs/thumos14_swin_base_mixer
 # output_dir: outputs/thumos14_swin_small_
