@@ -77,15 +77,14 @@ class DeformableTransformer(nn.Module):
         valid_T = torch.sum(~mask_flatten_[:, :], 1)
         print(valid_T)
 
-        grid_y, grid_x = torch.meshgrid(torch.linspace(0, H_ - 1, H_, dtype=torch.float32, device=memory.device),
-                                        torch.linspace(0, W_ - 1, W_, dtype=torch.float32, device=memory.device))
-        grid = torch.cat([grid_x.unsqueeze(-1), grid_y.unsqueeze(-1)], -1)
 
-        scale = torch.cat([valid_W.unsqueeze(-1), valid_H.unsqueeze(-1)], 1).view(N_, 1, 1, 2)
-        grid = (grid.unsqueeze(0).expand(N_, -1, -1, -1) + 0.5) / scale
-        wh = torch.ones_like(grid) * 0.05 * (2.0 ** lvl)
-        proposal = torch.cat((grid, wh), -1).view(N_, -1, 4)
-        proposals.append(proposal)
+        grid = torch.linspace(0, T_ - 1, T_, dtype=torch.float32, device=memory.device)]
+
+        # scale = torch.cat([valid_W.unsqueeze(-1), valid_H.unsqueeze(-1)], 1).view(N_, 1, 1, 2)
+        # grid = (grid.unsqueeze(0).expand(N_, -1, -1, -1) + 0.5) / scale
+        # wh = torch.ones_like(grid) * 0.05 * (2.0 ** lvl)
+        # proposal = torch.cat((grid, wh), -1).view(N_, -1, 4)
+        proposals = grid
 
 
         output_proposals = torch.cat(proposals, 1)
