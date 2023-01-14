@@ -70,10 +70,10 @@ class DeformableTransformer(nn.Module):
 
     def gen_encoder_output_proposals(self, memory, memory_padding_mask, temporal_length):
         N_, S_, C_ = memory.shape
-        base_scale = 4.0
+        T_ = temporal_length
         proposals = []
 
-        mask_flatten_ = memory_padding_mask.view(N_, H_, W_, 1)
+        mask_flatten_ = memory_padding_mask.view(N_, T_, 1)
         valid_H = torch.sum(~mask_flatten_[:, :, 0, 0], 1)
         valid_W = torch.sum(~mask_flatten_[:, 0, :, 0], 1)
 
@@ -150,6 +150,7 @@ class DeformableTransformer(nn.Module):
 
         bs, t, c = memory.shape
         if self.two_stage:
+            print(t)
             output_memory, output_proposals = self.gen_encoder_output_proposals(memory, mask_flatten, t)
 
             # hack implementation for two-stage Deformable DETR
@@ -157,7 +158,7 @@ class DeformableTransformer(nn.Module):
             enc_outputs_coord_unact = self.decoder.bbox_embed[self.decoder.num_layers](output_memory) + output_proposals
 
             # topk = self.two_stage_num_proposals
-            topk_proposals = torch.topk(enc_outputs_class[..., 0], topk_proposals.size(1), dim=1)[1]
+            topk_proposals = torch.topk(enc_outputs_class[..., 0], enc_outputs_class.size(1), dim=1)[1]
             topk_coords_unact = torch.gather(enc_outputs_coord_unact, 1, topk_proposals.unsqueeze(-1).repeat(1, 1, 4))
             topk_coords_unact = topk_coords_unact.detach()
             reference_points = topk_coords_unact.sigmoid()
