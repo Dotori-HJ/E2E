@@ -76,7 +76,7 @@ class DeformableTransformer(nn.Module):
         scale = 2 * math.pi
 
         dim_t = torch.arange(num_pos_feats, dtype=torch.float32, device=proposals.device)
-        dim_t = temperature ** (2 * (dim_t // 2) / num_pos_feats)
+        dim_t = temperature ** (2 * torch.div(dim_t, 2, rounding_mode='trunc') / num_pos_feats)
         # N, L, 4
         proposals = proposals.sigmoid() * scale
         # N, L, 4, 128
@@ -113,6 +113,7 @@ class DeformableTransformer(nn.Module):
         output_memory = output_memory.masked_fill(memory_padding_mask.unsqueeze(-1), float(0))
         output_memory = output_memory.masked_fill(~output_proposals_valid, float(0))
         output_memory = self.enc_output_norm(self.enc_output(output_memory))
+        print(output_proposals)
         return output_memory, output_proposals
 
     def get_valid_ratio(self, mask):

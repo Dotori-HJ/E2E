@@ -421,9 +421,6 @@ class SetCriterion(nn.Module):
                 bt['labels'] = torch.zeros_like(bt['labels'])
             indices = self.matcher(enc_outputs, bin_targets)
             for loss in self.losses:
-                if loss == 'masks':
-                    # Intermediate masks losses are too costly to compute, we ignore them.
-                    continue
                 kwargs = {}
                 if loss == 'labels':
                     # Logging is enabled only for the last layer
