@@ -44,6 +44,11 @@ fix_transform: false
 neck: mixer
 lr_backbone: 0.0001
 # neck: identity
+act_reg: false
+two_stage: true
+mixed_selection: true
+look_forward_twice: false
+
 
 # Image
 # img_resize: 440
