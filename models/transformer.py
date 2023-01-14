@@ -50,6 +50,7 @@ class DeformableTransformer(nn.Module):
             self.enc_output_norm = nn.LayerNorm(d_model)
             self.pos_trans = nn.Linear(d_model * 2, d_model * 2)
             self.pos_trans_norm = nn.LayerNorm(d_model * 2)
+            self.base_scale = nn.Parameter(torch.full((1,), fill_value=0.1))
         else:
             self.reference_points = nn.Linear(d_model, 1)
 
@@ -77,15 +78,14 @@ class DeformableTransformer(nn.Module):
         valid_T = torch.sum(~mask_flatten_[:, :], 1)
 
 
-        grid = (torch.linspace(0, T_ - 1, T_, dtype=torch.float32, device=memory.device).unsqueeze(0) + 0.5) / valid_T.unsqueeze(1)
+        timeline = (torch.linspace(0, T_ - 1, T_, dtype=torch.float32, device=memory.device).unsqueeze(0) + 0.5) / valid_T.unsqueeze(1)
 
         # scale = torch.cat([valid_W.unsqueeze(-1), valid_H.unsqueeze(-1)], 1).view(N_, 1, 1, 2)
         # grid = (grid.unsqueeze(0).expand(N_, -1, -1, -1) + 0.5) / scale
-        wh = torch.ones_like(grid) * 0.05 * 2.0
+        scale = self.base_scale.expand_as(timeline)
+        # time_length = torch.ones_like(timeline) * 0.05 * 2.0
 
-        proposal = torch.stack((grid, wh), -1).view(N_, -1, 2)
-        proposals = proposal
-        print(proposals)
+        proposals = torch.stack((timeline, scale), -1).view(N_, -1, 2)
 
 
         output_proposals = proposals
