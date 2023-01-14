@@ -51,7 +51,7 @@ class DeformableTransformer(nn.Module):
             self.enc_output_norm = nn.LayerNorm(d_model)
             self.pos_trans = nn.Linear(d_model * 2, d_model * 2)
             self.pos_trans_norm = nn.LayerNorm(d_model * 2)
-            self.base_scale = nn.Parameter(torch.full((1,), fill_value=0.1))
+            self.base_scale = nn.Parameter(torch.full((1,), fill_value=-math.log((1 - 0.1) / 0.1)))
         else:
             self.reference_points = nn.Linear(d_model, 1)
 
@@ -79,7 +79,6 @@ class DeformableTransformer(nn.Module):
         dim_t = temperature ** (2 * (dim_t // 2) / num_pos_feats)
         # N, L, 4
         proposals = proposals.sigmoid() * scale
-        print(proposals)
         # N, L, 4, 128
         pos = proposals[:, :, :, None] / dim_t
         # N, L, 4, 64, 2
@@ -99,11 +98,10 @@ class DeformableTransformer(nn.Module):
 
         # scale = torch.cat([valid_W.unsqueeze(-1), valid_H.unsqueeze(-1)], 1).view(N_, 1, 1, 2)
         # grid = (grid.unsqueeze(0).expand(N_, -1, -1, -1) + 0.5) / scale
-        scale = self.base_scale.expand_as(torch.sigmoid(timeline))
+        scale = self.base_scale.expand_as(timeline.sigmoid())
         # time_length = torch.ones_like(timeline) * 0.05 * 2.0
 
         proposals = torch.stack((timeline, scale), -1).view(N_, -1, 2)
-
 
         output_proposals = proposals
         output_proposals_valid = ((output_proposals > 0.01) & (output_proposals < 0.99)).all(-1, keepdim=True)
@@ -180,8 +178,6 @@ class DeformableTransformer(nn.Module):
             topk_coords_unact = topk_coords_unact.detach()
             reference_points = topk_coords_unact.sigmoid()
             init_reference_out = reference_points
-            print(self.get_proposal_pos_embed(topk_coords_unact).size())
-            print(self.pos_trans, topk_coords_unact.size())
             pos_trans_out = self.pos_trans_norm(self.pos_trans(self.get_proposal_pos_embed(topk_coords_unact)))
             query_embed, tgt = torch.split(pos_trans_out, c, dim=2)
         else:
@@ -196,7 +192,7 @@ class DeformableTransformer(nn.Module):
                                             temporal_lens, level_start_index, valid_ratios, query_embed, mask_flatten)
         inter_references_out = inter_references
         if self.two_stage:
-            hs, init_reference_out, inter_references_out, memory.transpose(1, 2), enc_outputs_class, enc_outputs_coord_unact
+            return hs, init_reference_out, inter_references_out, memory.transpose(1, 2), enc_outputs_class, enc_outputs_coord_unact
         return hs, init_reference_out, inter_references_out, memory.transpose(1, 2), None, None
 
 

@@ -243,7 +243,7 @@ class TadTR(nn.Module):
 
         if self.two_stage:
             enc_outputs_coord = enc_outputs_coord_unact.sigmoid()
-            out['enc_outputs'] = {'pred_logits': enc_outputs_class, 'pred_boxes': enc_outputs_coord}
+            out['enc_outputs'] = {'pred_logits': enc_outputs_class, 'pred_segments': enc_outputs_coord}
 
         return out
 
