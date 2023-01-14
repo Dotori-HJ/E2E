@@ -209,17 +209,18 @@ class MLP(nn.Module):
         if conv:
             self.linear1 = nn.Conv1d(in_dim, hidden_dim, kernel_size=1)
             self.linear2 = nn.Conv1d(hidden_dim, out_dim, kernel_size=1)
-            if pre_norm:
-                self.norm = LayerNorm(in_dim)
-            else:
-                self.norm = LayerNorm(out_dim)
+            # if pre_norm:
+            #     self.norm = LayerNorm(in_dim)
+            # else:
+            #     self.norm = LayerNorm(out_dim)
         else:
             self.linear1 = nn.Linear(in_dim, hidden_dim)
             self.linear2 = nn.Linear(hidden_dim, out_dim)
-            if pre_norm:
-                self.norm = nn.LayerNorm(in_dim)
-            else:
-                self.norm = nn.LayerNorm(out_dim)
+
+        if pre_norm:
+            self.norm = nn.LayerNorm(in_dim)
+        else:
+            self.norm = nn.LayerNorm(out_dim)
         if in_dim != out_dim:
             if conv:
                 self.proj = nn.Conv1d(in_dim, out_dim, kernel_size=1)
@@ -236,7 +237,7 @@ class MLP(nn.Module):
             return self.norm(self.linear2(F.gelu(self.linear1(x))) + self.proj(x))
 
 class Mixer(nn.Module):
-    def __init__(self, in_dim, hidden_dim, out_dim, temporal_length, conv=False):
+    def __init__(self, in_dim, hidden_dim, out_dim, temporal_length, conv=True):
         super().__init__()
         self.conv = conv
         self.temporal_mlp = MLP(in_dim, hidden_dim, out_dim, conv=conv)
