@@ -25,7 +25,7 @@ from util.misc import inverse_sigmoid
 class DeformableTransformer(nn.Module):
     def __init__(self, d_model=256, nhead=8,
                  num_encoder_layers=6, num_decoder_layers=6, dim_feedforward=1024, dropout=0.1,
-                 activation="relu", return_intermediate_dec=False,
+                 activation="relu", return_intermediate_dec=False, look_forward_twice=False,
                  num_feature_levels=4, dec_n_points=4,  enc_n_points=4):
         super().__init__()
 
@@ -40,7 +40,7 @@ class DeformableTransformer(nn.Module):
         decoder_layer = DeformableTransformerDecoderLayer(d_model, dim_feedforward,
                                                           dropout, activation,
                                                           num_feature_levels, nhead, dec_n_points)
-        self.decoder = DeformableTransformerDecoder(decoder_layer, num_decoder_layers, return_intermediate_dec)
+        self.decoder = DeformableTransformerDecoder(decoder_layer, num_decoder_layers, return_intermediate_dec, look_forward_twice)
 
         self.level_embed = nn.Parameter(torch.Tensor(num_feature_levels, d_model))
 
@@ -256,11 +256,12 @@ class DeformableTransformerDecoderLayer(nn.Module):
 
 
 class DeformableTransformerDecoder(nn.Module):
-    def __init__(self, decoder_layer, num_layers, return_intermediate=False):
+    def __init__(self, decoder_layer, num_layers, return_intermediate=False, look_forward_twice=False):
         super().__init__()
         self.layers = _get_clones(decoder_layer, num_layers)
         self.num_layers = num_layers
         self.return_intermediate = return_intermediate
+        self.look_forward_twice = look_forward_twice
         # hack implementation for iterative bounding box refinement and two-stage Deformable DETR
         self.segment_embed = None
         self.class_embed = None
@@ -300,7 +301,11 @@ class DeformableTransformerDecoder(nn.Module):
 
             if self.return_intermediate:
                 intermediate.append(output)
-                intermediate_reference_points.append(reference_points)
+                intermediate_reference_points.append(
+                    new_reference_points
+                    if self.look_forward_twice
+                    else reference_points
+                )
         if self.return_intermediate:
             return torch.stack(intermediate), torch.stack(intermediate_reference_points)
 
@@ -334,6 +339,7 @@ def build_deformable_transformer(args):
         dropout=args.dropout,
         activation=args.activation,
         return_intermediate_dec=True,
+        look_forward_twice=arg.look_forward_twice,
         num_feature_levels=1,
         dec_n_points=args.dec_n_points,
         enc_n_points=args.enc_n_points)
