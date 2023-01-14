@@ -74,6 +74,7 @@ class DeformableTransformer(nn.Module):
         proposals = []
 
         mask_flatten_ = memory_padding_mask.view(N_, T_, 1)
+        print(mask_flatten_)
         valid_H = torch.sum(~mask_flatten_[:, :, 0, 0], 1)
         valid_W = torch.sum(~mask_flatten_[:, 0, :, 0], 1)
 
@@ -150,7 +151,6 @@ class DeformableTransformer(nn.Module):
 
         bs, t, c = memory.shape
         if self.two_stage:
-            print(t)
             output_memory, output_proposals = self.gen_encoder_output_proposals(memory, mask_flatten, t)
 
             # hack implementation for two-stage Deformable DETR
