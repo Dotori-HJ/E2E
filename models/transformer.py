@@ -100,6 +100,8 @@ class DeformableTransformer(nn.Module):
         # grid = (grid.unsqueeze(0).expand(N_, -1, -1, -1) + 0.5) / scale
         scale = self.base_scale.expand_as(timeline.sigmoid())
         # time_length = torch.ones_like(timeline) * 0.05 * 2.0
+        print(scale)
+        exit()
 
         proposals = torch.stack((timeline, scale), -1).view(N_, -1, 2)
 
