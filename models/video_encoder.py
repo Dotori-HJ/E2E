@@ -214,9 +214,9 @@ class MLP(nn.Module):
             self.linear2 = nn.Linear(hidden_dim, out_dim)
 
         if pre_norm:
-            self.norm = nn.LayerNorm(norm_dim if norm_dim is not None else in_dim)
+            self.norm = LayerNorm(norm_dim if norm_dim is not None else in_dim)
         else:
-            self.norm = nn.LayerNorm(norm_dim if norm_dim is not None else out_dim)
+            self.norm = LayerNorm(norm_dim if norm_dim is not None else out_dim)
 
         if in_dim != out_dim:
             if conv:
@@ -243,14 +243,13 @@ class Mixer(nn.Module):
         # self.channel_mlp = MLP(temporal_length, hidden_dim, temporal_length)
 
     def forward(self, x):
-        print(x.size())
         if self.conv:
             x = self.mixer(x)
             x = self.mlp(x)
         else:
-            x = self.mixer(x.transpose(2, 1))
+            x = self.mixer(x)
             x = self.mlp(x.transpose(2, 1))
-        return x
+        return x.transpose(2, 1)
 
 class MixerTuner(nn.Module):
     def __init__(self, feature_dims, temporal_length):
