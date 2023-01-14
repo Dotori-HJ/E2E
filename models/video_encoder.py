@@ -236,7 +236,7 @@ class MLP(nn.Module):
             return self.norm(self.linear2(F.relu(self.linear1(x))) + self.proj(x))
 
 class Mixer(nn.Module):
-    def __init__(self, in_dim, hidden_dim, out_dim, temporal_length, conv=True):
+    def __init__(self, in_dim, hidden_dim, out_dim, temporal_length, conv=False):
         super().__init__()
         self.conv = True
         self.temporal_mlp = MLP(in_dim, hidden_dim, out_dim, conv=conv)
