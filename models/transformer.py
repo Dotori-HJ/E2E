@@ -71,7 +71,7 @@ class DeformableTransformer(nn.Module):
         normal_(self.level_embed)
 
     def get_proposal_pos_embed(self, proposals):
-        num_pos_feats = 128
+        num_pos_feats = 256
         temperature = 10000
         scale = 2 * math.pi
 
@@ -79,6 +79,7 @@ class DeformableTransformer(nn.Module):
         dim_t = temperature ** (2 * (dim_t // 2) / num_pos_feats)
         # N, L, 4
         proposals = proposals.sigmoid() * scale
+        print(proposals)
         # N, L, 4, 128
         pos = proposals[:, :, :, None] / dim_t
         # N, L, 4, 64, 2
@@ -180,6 +181,7 @@ class DeformableTransformer(nn.Module):
             reference_points = topk_coords_unact.sigmoid()
             init_reference_out = reference_points
             print(self.get_proposal_pos_embed(topk_coords_unact).size())
+            print(self.pos_trans, topk_coords_unact.size())
             pos_trans_out = self.pos_trans_norm(self.pos_trans(self.get_proposal_pos_embed(topk_coords_unact)))
             query_embed, tgt = torch.split(pos_trans_out, c, dim=2)
         else:
