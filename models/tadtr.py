@@ -59,7 +59,7 @@ class TadTR(nn.Module):
     """ This is the TadTR module that performs temporal action detection """
 
     def __init__(self, backbone, position_embedding, transformer, num_classes, num_queries,
-                 aux_loss=True, with_segment_refine=True, with_act_reg=True, two_stage=False):
+                 aux_loss=True, with_segment_refine=True, with_act_reg=True, two_stage=False, mixed_selection=False):
         """ Initializes the model.
         Parameters:
             backbone: torch module of the backbone to be used. See backbone.py
@@ -78,6 +78,8 @@ class TadTR(nn.Module):
         self.segment_embed = MLP(hidden_dim, hidden_dim, 2, 3)
         if not two_stage:
             self.query_embed = nn.Embedding(num_queries, hidden_dim*2)
+        elif mixed_selection:
+            self.query_embed = nn.Embedding(num_queries, hidden_dim)
 
         self.input_proj = nn.ModuleList([
             nn.Sequential(
@@ -90,6 +92,7 @@ class TadTR(nn.Module):
         self.with_segment_refine = with_segment_refine
         self.with_act_reg = with_act_reg
         self.two_stage = two_stage
+        self.mixed_selection = mixed_selection
 
         prior_prob = 0.01
         bias_value = -math.log((1 - prior_prob) / prior_prob)
@@ -187,7 +190,7 @@ class TadTR(nn.Module):
         masks = [mask]
 
         query_embeds = None
-        if not self.two_stage:
+        if not self.two_stage or self.mixed_selection:
             query_embeds = self.query_embed.weight
         hs, init_reference, inter_references, memory, enc_outputs_class, enc_outputs_coord_unact = self.transformer(
                 srcs, masks, pos, query_embeds)
@@ -534,6 +537,7 @@ def build(args):
         num_queries=args.num_queries,
         aux_loss=args.aux_loss,
         two_stage=args.two_stage,
+        mixed_selection=args.mixed_selection,
         with_segment_refine=args.seg_refine,
         with_act_reg=args.act_reg
     )

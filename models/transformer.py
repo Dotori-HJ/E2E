@@ -26,13 +26,14 @@ from util.misc import inverse_sigmoid
 class DeformableTransformer(nn.Module):
     def __init__(self, d_model=256, nhead=8,
                  num_encoder_layers=6, num_decoder_layers=6, dim_feedforward=1024, dropout=0.1,
-                 activation="relu", return_intermediate_dec=False, two_stage=False, look_forward_twice=False,
+                 activation="relu", return_intermediate_dec=False, two_stage=False, look_forward_twice=False, mixed_selection=False,
                  num_feature_levels=4, dec_n_points=4,  enc_n_points=4):
         super().__init__()
 
         self.d_model = d_model
         self.nhead = nhead
         self.two_stage = two_stage
+        self.mixed_selection = mixed_selection
 
         encoder_layer = DeformableTransformerEncoderLayer(d_model, dim_feedforward,
                                                         dropout, activation,
@@ -179,7 +180,12 @@ class DeformableTransformer(nn.Module):
             reference_points = topk_coords_unact.sigmoid()
             init_reference_out = reference_points
             pos_trans_out = self.pos_trans_norm(self.pos_trans(self.get_proposal_pos_embed(topk_coords_unact)))
-            query_embed, tgt = torch.split(pos_trans_out, c, dim=2)
+            if not self.mixed_selection:
+                query_embed, tgt = torch.split(pos_trans_out, c, dim=2)
+            else:
+                # query_embed here is the content embed for deformable DETR
+                tgt = query_embed.unsqueeze(0).expand(bs, -1, -1)
+                query_embed, _ = torch.split(pos_trans_out, c, dim=2)
         else:
             query_embed, tgt = torch.split(query_embed, c, dim=1)
             query_embed = query_embed.unsqueeze(0).expand(bs, -1, -1)
@@ -414,6 +420,7 @@ def build_deformable_transformer(args):
         return_intermediate_dec=True,
         two_stage=args.two_stage,
         look_forward_twice=args.look_forward_twice,
+        mixed_selection=args.mixed_selection,
         num_feature_levels=1,
         dec_n_points=args.dec_n_points,
         enc_n_points=args.enc_n_points)

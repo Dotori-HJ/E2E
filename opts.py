@@ -117,6 +117,8 @@ cfg.two_stage = False
 
 cfg.look_forward_twice = False
 
+cfg.mixed_selection = False
+
 cfg.temperature = 10000
 
 
