@@ -53,7 +53,7 @@ neck: identity
 # img_crop_size: 96
 img_resize: 256
 img_crop_size: 224
-look_forward_twice: true
+look_forward_twice: false
 
 
 # Training
