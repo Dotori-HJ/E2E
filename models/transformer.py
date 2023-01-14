@@ -74,8 +74,8 @@ class DeformableTransformer(nn.Module):
         proposals = []
 
         mask_flatten_ = memory_padding_mask.view(N_, T_)
-        print(mask_flatten_)
         valid_T = torch.sum(~mask_flatten_[:, :], 1)
+        print(valid_T)
 
         grid_y, grid_x = torch.meshgrid(torch.linspace(0, H_ - 1, H_, dtype=torch.float32, device=memory.device),
                                         torch.linspace(0, W_ - 1, W_, dtype=torch.float32, device=memory.device))
