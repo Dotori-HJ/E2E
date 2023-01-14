@@ -82,9 +82,8 @@ class DeformableTransformer(nn.Module):
         # scale = torch.cat([valid_W.unsqueeze(-1), valid_H.unsqueeze(-1)], 1).view(N_, 1, 1, 2)
         # grid = (grid.unsqueeze(0).expand(N_, -1, -1, -1) + 0.5) / scale
         wh = torch.ones_like(grid) * 0.05 * 2.0
-        print(wh.size(), grid.size())
-        exit()
-        proposal = torch.cat((grid, wh), -1).view(N_, -1, 2)
+
+        proposal = torch.stack((grid, wh), -1).view(N_, -1, 2)
         proposals = proposal
         print(proposals)
 
