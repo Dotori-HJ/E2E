@@ -77,6 +77,7 @@ class DeformableTransformer(nn.Module):
         valid_T = torch.sum(~mask_flatten_[:, :], 1)
 
         grid = torch.linspace(0, T_ - 1, T_, dtype=torch.float32, device=memory.device) / valid_T
+        grid = torch.linspace(0, 1, T_, dtype=torch.float32, device=memory.device)
         print(grid)
 
         # scale = torch.cat([valid_W.unsqueeze(-1), valid_H.unsqueeze(-1)], 1).view(N_, 1, 1, 2)
