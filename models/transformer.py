@@ -98,7 +98,7 @@ class DeformableTransformer(nn.Module):
 
         # scale = torch.cat([valid_W.unsqueeze(-1), valid_H.unsqueeze(-1)], 1).view(N_, 1, 1, 2)
         # grid = (grid.unsqueeze(0).expand(N_, -1, -1, -1) + 0.5) / scale
-        scale = self.base_scale.expand_as(timeline.sigmoid())
+        scale = self.base_scale.sigmoid().expand_as(timeline)
         # time_length = torch.ones_like(timeline) * 0.05 * 2.0
         print(scale)
         exit()
