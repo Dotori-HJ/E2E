@@ -113,6 +113,8 @@ cfg.act_reg = True
 # whether to disable self-attention between action queries
 cfg.disable_query_self_att = False
 
+cfg.two_stage = False
+
 cfg.look_forward_twice = False
 
 cfg.temperature = 10000
