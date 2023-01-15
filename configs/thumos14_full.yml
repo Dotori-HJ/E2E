@@ -55,7 +55,7 @@ img_resize: 256
 img_crop_size: 224
 act_reg: false
 two_stage: true
-mixed_selection: false
+mixed_selection: true
 look_forward_twice: false
 
 
