@@ -79,7 +79,8 @@ class TadTR(nn.Module):
         if not two_stage:
             self.query_embed = nn.Embedding(num_queries, hidden_dim*2)
         elif mixed_selection:
-            self.query_embed = nn.Embedding(num_queries, hidden_dim)
+            # self.query_embed = nn.Embedding(num_queries, hidden_dim)
+            self.query_embed = nn.Embedding(64, hidden_dim)
 
         self.input_proj = nn.ModuleList([
             nn.Sequential(
