@@ -36,14 +36,18 @@ input_type: image
 lr: 0.0001
 batch_size: 4
 
-# fix_encoder: true
-fix_encoder: false
+fix_encoder: true
+# fix_encoder: false
 # fix_encoder: true
 fix_transform: false
 neck: mixer
 # neck: pyramid
 # lr_backbone: 0.0001
 # neck: identity
+act_reg: false
+two_stage: true
+mixed_selection: true
+look_forward_twice: false
 
 # Image
 # img_resize: 440

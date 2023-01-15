@@ -177,7 +177,7 @@ class DeformableTransformer(nn.Module):
             # topk = self.two_stage_num_proposals
             topk_proposals = torch.topk(enc_outputs_class[..., 0], num_topk, dim=1)[1]
             topk_coords_unact = torch.gather(enc_outputs_coord_unact, 1, topk_proposals.unsqueeze(-1).repeat(1, 1, 2))
-            
+
             # topk_coords_unact = enc_outputs_coord_unact
             topk_coords_unact = topk_coords_unact.detach()
             reference_points = topk_coords_unact.sigmoid()
