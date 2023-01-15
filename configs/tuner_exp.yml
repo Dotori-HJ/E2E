@@ -41,9 +41,9 @@ fix_encoder: true
 # fix_encoder: false
 fix_transform: false
 # neck: pyramid
-# neck: mixer
-# lr_backbone: 0.0001
-neck: identity
+neck: mixer
+lr_backbone: 0.0001
+# neck: identity
 act_reg: false
 two_stage: true
 mixed_selection: false
