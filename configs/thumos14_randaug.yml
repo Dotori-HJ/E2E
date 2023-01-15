@@ -9,7 +9,8 @@ dec_layers: 4
 dim_feedforward: 1024
 num_queries: 100
 # num_queries: 40
-dropout: 0.1
+# dropout: 0.1
+dropout: 0.0
 temperature: 20
 
 # data setting
@@ -32,7 +33,7 @@ fix_transform: false
 neck: identity
 # lr_backbone: 0.0001
 two_stage: true
-act_reg: true
+act_reg: false
 
 # Image
 # img_resize: 440
@@ -49,5 +50,5 @@ img_crop_size: 224
 rand_augment_param: rand-m7-n4-mstd0.5-inc1
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_two_stage_act_reg
+output_dir: outputs/thumos14_e2e_slowfast_two_stage_identity
 
