@@ -169,16 +169,16 @@ class DeformableTransformer(nn.Module):
             output_memory, output_proposals = self.gen_encoder_output_proposals(memory, mask_flatten, t)
 
             # num_topk = 40
-            # num_topk = t
+            num_topk = t
             # hack implementation for two-stage Deformable DETR
             enc_outputs_class = self.decoder.class_embed[self.decoder.num_layers](output_memory)
             enc_outputs_coord_unact = self.decoder.segment_embed[self.decoder.num_layers](output_memory) + output_proposals
 
             # topk = self.two_stage_num_proposals
-            # topk_proposals = torch.topk(enc_outputs_class[..., 0], num_topk, dim=1)[1]
-            # topk_proposals = enc_outputs_class[..., 0]
-            # topk_coords_unact = torch.gather(enc_outputs_coord_unact, 1, topk_proposals.unsqueeze(-1).repeat(1, 1, 2))
-            topk_coords_unact = enc_outputs_coord_unact
+            topk_proposals = torch.topk(enc_outputs_class[..., 0], num_topk, dim=1)[1]
+            topk_coords_unact = torch.gather(enc_outputs_coord_unact, 1, topk_proposals.unsqueeze(-1).repeat(1, 1, 2))
+            
+            # topk_coords_unact = enc_outputs_coord_unact
             topk_coords_unact = topk_coords_unact.detach()
             reference_points = topk_coords_unact.sigmoid()
             init_reference_out = reference_points
