@@ -168,7 +168,8 @@ class DeformableTransformer(nn.Module):
         if self.two_stage:
             output_memory, output_proposals = self.gen_encoder_output_proposals(memory, mask_flatten, t)
 
-            num_topk = 40
+            # num_topk = 40
+            num_topk = t
             # hack implementation for two-stage Deformable DETR
             enc_outputs_class = self.decoder.class_embed[self.decoder.num_layers](output_memory)
             enc_outputs_coord_unact = self.decoder.segment_embed[self.decoder.num_layers](output_memory) + output_proposals
