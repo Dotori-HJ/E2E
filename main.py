@@ -77,11 +77,13 @@ def main(args):
 
     # fix the seed
     # print(utils.get_rank())
-    seed = args.seed + utils.get_rank()
+    # seed = args.seed + utils.get_rank()
+    seed = args.seed + args.local_rank
     torch.manual_seed(seed)
     np.random.seed(seed)
     random.seed(seed)
 
+    torch.use_deterministic_algorithms(True)
     torch.cuda.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
     cudnn.benchmark = False
