@@ -46,7 +46,7 @@ neck: mixer
 # neck: identity
 act_reg: false
 two_stage: true
-mixed_selection: true
+mixed_selection: false
 look_forward_twice: false
 
 # Image
