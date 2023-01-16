@@ -127,20 +127,22 @@ class TADDataset(torch.utils.data.Dataset):
         # T H W C -> C T H W.
         imgs = imgs.permute(3, 0, 1, 2)
         # Perform data augmentation.
-        scl, asp = (
-            [0.8, 1.0],
-            [0.75, 1.3333],
-        )
+        # scl, asp = (
+        #     [0.8, 1.0],
+        #     [0.75, 1.3333],
+        # )
         imgs = spatial_sampling(
             imgs,
             spatial_idx=-1,
-            min_scale=-1,
-            max_scale=-1,
+            min_scale=self.short_side_size,
+            max_scale=self.short_side_size,
             crop_size=self.crop_size,
             random_horizontal_flip=True,
             inverse_uniform_sampling=False,
-            aspect_ratio=asp,
-            scale=scl,
+            # aspect_ratio=asp,
+            aspect_ratio=None,
+            # scale=scl,
+            scale=None,
             motion_shift=False
         )
 
@@ -160,8 +162,8 @@ class TADDataset(torch.utils.data.Dataset):
         imgs = spatial_sampling(
             imgs,
             spatial_idx=1,    # center crop
-            min_scale=self.crop_size,
-            max_scale=self.crop_size,
+            min_scale=self.short_side_size,
+            max_scale=self.short_side_size,
             crop_size=self.crop_size,
             random_horizontal_flip=False,
             inverse_uniform_sampling=False,
