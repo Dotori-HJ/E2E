@@ -37,6 +37,7 @@ def get_args_parser():
 
     parser.add_argument('--local_rank', default=0, type=int,
                         help='url used to set up distributed training')
+    parser.add_argument('--y', action='store_true')
 
     # Other options
     parser.add_argument('opt', nargs=argparse.REMAINDER,
