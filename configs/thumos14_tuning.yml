@@ -42,7 +42,7 @@ fix_encoder: true
 fix_transform: false
 neck: mixer
 # neck: pyramid
-lr_backbone: 0.0001
+lr_backbone: 0.00001
 # neck: identity
 act_reg: false
 two_stage: true
