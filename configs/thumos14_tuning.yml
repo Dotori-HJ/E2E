@@ -42,7 +42,7 @@ fix_encoder: true
 fix_transform: false
 neck: mixer
 # neck: pyramid
-# lr_backbone: 0.0001
+lr_backbone: 0.0001
 # neck: identity
 act_reg: false
 two_stage: true
@@ -52,10 +52,10 @@ look_forward_twice: false
 # Image
 # img_resize: 440
 # img_crop_size: 384
-# img_resize: 110
-# img_crop_size: 96
-img_resize: 256
-img_crop_size: 224
+img_resize: 110
+img_crop_size: 96
+# img_resize: 256
+# img_crop_size: 224
 
 # Training
 # act_reg: false
