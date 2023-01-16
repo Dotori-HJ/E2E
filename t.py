@@ -1369,7 +1369,7 @@ transform = create_random_augment(buffer[0].size, "rand-m7-n4-mstd0.5-inc1", "bi
 print(transform)
 # transform = create_random_augment(buffer[0].size, "rand-m7-n3-mstd0.5-inc1", "bilinear")
 # print(transform)
-buffer = transform(buffer)
+buffer_ = transform(buffer)
 # buffer = gpu_transforms(img)
 # print(buffer.size())
 import datasets.video_transforms as video_transforms
@@ -1386,11 +1386,12 @@ import datasets.volume_transforms as volume_transforms
 # buffer = video_transfom(buffer)
 # print(buffer.size())
 
-buffer = [transforms.ToTensor()(img) for img in buffer]
+buffer = [transforms.ToTensor()(img) for img in buffer_]
 buffer = torch.stack(buffer) # T C H W
 
 # save_image(buffer.permute(1, 0, 2, 3).cpu(), "samples/before_sample.png", nrow=8, normalize=False)
 save_image(buffer.cpu(), "samples/before_sample.png", nrow=8, normalize=False)
+
 # buffer = buffer.permute(0, 2, 3, 1) # T H W C
 # # T H W C
 # buffer = tensor_normalize(
@@ -1400,24 +1401,45 @@ save_image(buffer.cpu(), "samples/before_sample.png", nrow=8, normalize=False)
 # buffer = buffer.permute(3, 0, 1, 2)
 # print(buffer.size())
 # Perform data augmentation.
+# print(buffer.size())
+# scl, asp = (
+#     [0.8, 1.0],
+#     [0.75, 1.3333],
+# )
+# buffer = spatial_sampling(
+#     buffer,
+#     spatial_idx=-1,
+#     min_scale=-1,
+#     max_scale=-1,
+#     crop_size=224,
+#     # crop_size=96,
+#     random_horizontal_flip=True,
+#     inverse_uniform_sampling=False,
+#     aspect_ratio=asp,
+#     scale=scl,
+#     motion_shift=False
+# )
+# print(buffer.size())
+# scl, asp = (
+#     [0.8, 1.0],
+#     [0.75, 1.3333],
+# )
+buffer = buffer.permute(1, 0, 2, 3)
 print(buffer.size())
-scl, asp = (
-    [0.8, 1.0],
-    [0.75, 1.3333],
-)
 buffer = spatial_sampling(
     buffer,
-    spatial_idx=-1,
-    min_scale=-1,
-    max_scale=-1,
+    spatial_idx=1,
+    min_scale=224,
+    max_scale=224,
     crop_size=224,
     # crop_size=96,
-    random_horizontal_flip=True,
+    random_horizontal_flip=False,
     inverse_uniform_sampling=False,
-    aspect_ratio=asp,
-    scale=scl,
+    aspect_ratio=None,
+    scale=None,
     motion_shift=False
 )
+
 # if self.rand_erase:
 #     erase_transform = RandomErasing(
 #         args.reprob,
@@ -1445,6 +1467,8 @@ buffer = spatial_sampling(
 # buffer += torch.tensor([0.485, 0.456, 0.406])[:, None, None, None]
 
 print(buffer.size())
+print(buffer.min(), buffer.max())
+buffer = buffer.permute(1, 0, 2, 3)
 save_image(buffer.cpu(), f"samples/sample.png", nrow=8, normalize=False)
 # for i in range(4):
     # print(buffer[i].size())

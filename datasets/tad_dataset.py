@@ -82,39 +82,38 @@ class TADDataset(torch.utils.data.Dataset):
         self._prepare()
         if mode == 'train':
             if fix_transform:
-                self.transforms = video_transforms.Compose([
-                    video_transforms.Resize(self.short_side_size, interpolation='bilinear'),
-                    # video_transforms.CenterCrop(size=(self.short_side_size, self.short_side_size)),
-                    video_transforms.CenterCrop(size=(self.crop_size, self.crop_size)),
-                    volume_transforms.ClipToTensor(),
-                    video_transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                            std=[0.229, 0.224, 0.225])
-                ])
+                self.transforms = self._test_transform
+                # self.transforms = video_transforms.Compose([
+                #     video_transforms.Resize(self.short_side_size, interpolation='bilinear'),
+                #     # video_transforms.CenterCrop(size=(self.short_side_size, self.short_side_size)),
+                #     video_transforms.CenterCrop(size=(self.crop_size, self.crop_size)),
+                #     volume_transforms.ClipToTensor(),
+                #     video_transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                #                             std=[0.229, 0.224, 0.225])
+                # ])
             else:
                 self.transforms = self._train_transform
-                self.train_transforms = video_transforms.Compose([
-                    video_transforms.Resize(self.short_side_size, interpolation='bilinear'),
-                    video_transforms.RandomCrop(self.crop_size),
-                    video_transforms.RandomHorizontalFlip(),
-                    volume_transforms.ClipToTensor(),
-                    video_transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                               std=[0.229, 0.224, 0.225])
-                ])
+                # self.train_transforms = video_transforms.Compose([
+                #     video_transforms.Resize(self.short_side_size, interpolation='bilinear'),
+                #     video_transforms.RandomCrop(self.crop_size),
+                #     video_transforms.RandomHorizontalFlip(),
+                #     volume_transforms.ClipToTensor(),
+                #     video_transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                #                                std=[0.229, 0.224, 0.225])
+                # ])
         else:
-            self.transforms = video_transforms.Compose([
-                video_transforms.Resize(self.short_side_size, interpolation='bilinear'),
-                # video_transforms.CenterCrop(size=(self.short_side_size, self.short_side_size)),
-                video_transforms.CenterCrop(size=(self.crop_size, self.crop_size)),
-                volume_transforms.ClipToTensor(),
-                video_transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                           std=[0.229, 0.224, 0.225])
-            ])
+            self.transforms = self._test_transform
+            # self.transforms = video_transforms.Compose([
+            #     video_transforms.Resize(self.short_side_size, interpolation='bilinear'),
+            #     # video_transforms.CenterCrop(size=(self.short_side_size, self.short_side_size)),
+            #     video_transforms.CenterCrop(size=(self.crop_size, self.crop_size)),
+            #     volume_transforms.ClipToTensor(),
+            #     video_transforms.Normalize(mean=[0.485, 0.456, 0.406],
+            #                                std=[0.229, 0.224, 0.225])
+            # ])
 
     def _train_transform(self, imgs):
         transform = create_random_augment(imgs[0].size, self.rand_augment_param, "bilinear")
-
-        # imgs = self.train_transforms(imgs)
-        # return imgs
 
         imgs = transform(imgs)
         imgs = [transforms.ToTensor()(img) for img in imgs]
@@ -145,17 +144,31 @@ class TADDataset(torch.utils.data.Dataset):
             motion_shift=False
         )
 
-        if self.rand_erase:
-            erase_transform = RandomErasing(
-                0.25,
-                mode='pixel',
-                max_count=1,
-                num_splits=1,
-                device="cpu",
-            )
-            imgs = imgs.permute(1, 0, 2, 3)
-            imgs = erase_transform(imgs)
-            imgs = imgs.permute(1, 0, 2, 3)
+        return imgs
+
+    def _test_transform(self, imgs):
+        imgs = [transforms.ToTensor()(img) for img in imgs]
+        imgs = torch.stack(imgs) # T C H W
+        imgs = imgs.permute(0, 2, 3, 1) # T H W C
+
+        # T H W C
+        imgs = tensor_normalize(
+            imgs, [0.485, 0.456, 0.406], [0.229, 0.224, 0.225]
+        )
+        # T H W C -> C T H W.
+        imgs = imgs.permute(3, 0, 1, 2)
+        imgs = spatial_sampling(
+            imgs,
+            spatial_idx=1,    # center crop
+            min_scale=self.crop_size,
+            max_scale=self.crop_size,
+            crop_size=self.crop_size,
+            random_horizontal_flip=False,
+            inverse_uniform_sampling=False,
+            aspect_ratio=None,
+            scale=None,
+            motion_shift=False
+        )
 
         return imgs
 
