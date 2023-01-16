@@ -89,10 +89,10 @@ def make_img_transform(is_training, resize=110, crop=96, mean=127.5, std=127.5, 
             GroupRandomHorizontalFlip(0.5),
         ]
 
-    if is_training:
-        transforms.append(GroupNormalize(127.5, 127.5, to_rgb=True))
-    else:
-        transforms.append(GroupNormalize(mean, std, to_rgb=True))
+    # if is_training:
+    # transforms.append(GroupNormalize(127.5, 127.5, to_rgb=True))
+    # else:
+    transforms.append(GroupNormalize(mean, std, to_rgb=True))
 
     gpu_transforms = None
     # gpu_transforms = GPUAugment([
