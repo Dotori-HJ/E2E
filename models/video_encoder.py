@@ -226,6 +226,18 @@ class MLP(nn.Module):
         else:
             self.proj = nn.Identity()
 
+        self._init_weights()
+
+    def _init_weights(self):
+        with torch.no_grad():
+            for layer in self.proj_layers:
+                nn.init.kaiming_uniform_(layer.weight)
+                nn.init.zeros_(layer.bias)
+
+            nn.init.zeros_(self.output_layer.weight)
+            nn.init.zeros_(self.output_layer.bias)
+
+
     def forward(self, x):
         if self.pre_norm:
             x = self.norm(x)
@@ -263,13 +275,14 @@ class MixerTuner(nn.Module):
                 temporal_length
             ) for i in range(len(feature_dims) - 1)
         ])
+        self.register_buffer("scale", torch.tensor(0.1))
 
     def forward(self, features):
         for i, layer in enumerate(self.mixers):
             if i == 0:
                 out = layer(features[i]) + features[i+1]
             else:
-                out = layer(out) + features[i+1]
+                out = layer(out) * self.scale + features[i+1]
 
         return out
 
