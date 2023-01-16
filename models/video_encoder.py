@@ -283,7 +283,7 @@ class MixerTuner(nn.Module):
             if i == 0:
                 out = layer(features[i]) + features[i+1]
             else:
-                out = layer(out) * self.scale + features[i+1]
+                out = layer(out) + features[i+1]
 
         return out
 
