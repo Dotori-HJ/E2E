@@ -226,7 +226,7 @@ class MLP(nn.Module):
         else:
             self.proj = nn.Identity()
 
-        self._init_weights()
+        # self._init_weights()
 
     # def _init_weights(self):
     #     with torch.no_grad():
