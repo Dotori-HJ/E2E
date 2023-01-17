@@ -1361,7 +1361,7 @@ img = torch.from_numpy(img).contiguous().to("cuda")
 
 
 
-img = Image.open("00000.png").convert("RGB")
+img = Image.open("000000.png").convert("RGB")
 buffer = [img for i in range(16)]
 # AugmentOp()
 # img = repeat(img, "c h w -> b t c h w", b=4, t=8)
@@ -1428,9 +1428,9 @@ buffer = buffer.permute(1, 0, 2, 3)
 print(buffer.size())
 buffer = spatial_sampling(
     buffer,
-    spatial_idx=1,
-    min_scale=224,
-    max_scale=224,
+    spatial_idx=-1,
+    min_scale=256,
+    max_scale=256,
     crop_size=224,
     # crop_size=96,
     random_horizontal_flip=False,
