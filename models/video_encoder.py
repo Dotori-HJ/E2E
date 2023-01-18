@@ -222,16 +222,16 @@ class MLP(nn.Module):
         else:
             self.proj = nn.Identity()
 
-        self._init_weights()
+    #     self._init_weights()
 
-    def _init_weights(self):
-        with torch.no_grad():
-            # nn.init.kaiming_uniform_(self.linear1.weight, a=math.sqrt(5))
-            nn.init.zeros_(self.linear1.bias)
-            # nn.init.zeros_(self.linear2.weight)
-            nn.init.zeros_(self.linear2.bias)
-            if hasattr(self.proj, 'bias'):
-                nn.init.zeros_(self.proj.bias)
+    # def _init_weights(self):
+    #     with torch.no_grad():
+    #         # nn.init.kaiming_uniform_(self.linear1.weight, a=math.sqrt(5))
+    #         nn.init.zeros_(self.linear1.bias)
+    #         # nn.init.zeros_(self.linear2.weight)
+    #         nn.init.zeros_(self.linear2.bias)
+    #         if hasattr(self.proj, 'bias'):
+    #             nn.init.zeros_(self.proj.bias)
 
     def forward(self, x):
         return self.linear2(F.gelu(self.linear1(x))) + self.proj(x)
@@ -252,8 +252,8 @@ class Mixer(nn.Module):
     def __init__(self, in_dim, hidden_dim, out_dim, temporal_length, conv=False):
         super().__init__()
         self.conv = conv
-        self.norm1 = LayerNorm(in_dim)
-        self.mixer = MLP(temporal_length, int(temporal_length * 4), temporal_length)
+        # self.norm1 = LayerNorm(in_dim)
+        # self.mixer = MLP(temporal_length, int(temporal_length * 4), temporal_length)
         # self.mixer = Pooler()
         self.norm2 = LayerNorm(in_dim)
         self.mlp = MLP(in_dim, hidden_dim, out_dim, conv=conv)
@@ -265,7 +265,7 @@ class Mixer(nn.Module):
             x = self.mixer(self.norm1(x))
             x = self.mlp(self.norm2(x))
         else:
-            x = self.mixer(self.norm1(x))
+            # x = self.mixer(self.norm1(x))
             x = self.mlp(self.norm2(x).transpose(2, 1)).transpose(2, 1)
         return x
 
