@@ -52,10 +52,10 @@ look_forward_twice: false
 # Image
 # img_resize: 440
 # img_crop_size: 384
-img_resize: 110
-img_crop_size: 96
-# img_resize: 256
-# img_crop_size: 224
+# img_resize: 110
+# img_crop_size: 96
+img_resize: 256
+img_crop_size: 224
 
 # Training
 # act_reg: false
@@ -64,4 +64,4 @@ img_crop_size: 96
 rand_augment_param: rand-m7-n4-mstd0.5-inc1
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_10fps_mixer_96
+output_dir: outputs/thumos14_e2e_slowfast_10fps_mixer_224
