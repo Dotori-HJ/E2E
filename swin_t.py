@@ -12,7 +12,7 @@ x = [torch.randn(batch_size, channel, temporal_length).cuda() for channel in cha
 tuner = MixerTuner(channels, temporal_length).cuda()
 optimizer = optim.Adam(tuner.parameters(), lr=1e-4)
 
-print(tuner.mixers[-1].mixer.linear2.weight)
+print(tuner.mixers[-1].mlp.linear2.weight)
 optimizer.zero_grad()
 
 x = tuner(x)
@@ -21,7 +21,7 @@ x.mean().backward()
 
 optimizer.step()
 
-print(tuner.mixers[-1].mixer.linear2.weight)
+print(tuner.mixers[-1].mlp.linear2.weight)
 exit()
 
 import torch

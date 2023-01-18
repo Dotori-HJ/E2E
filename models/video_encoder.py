@@ -236,12 +236,25 @@ class MLP(nn.Module):
     def forward(self, x):
         return self.linear2(F.gelu(self.linear1(x))) + self.proj(x)
 
+class Pooler(nn.Module):
+    def __init__(self, pool_size=3):
+        super().__init__()
+        self.pool = nn.AvgPool1d(
+            pool_size, stride=1,
+            padding=pool_size//2,
+            count_include_pad=False,
+        )
+
+    def forward(self, x):
+        return self.pool(x) - x
+
 class Mixer(nn.Module):
     def __init__(self, in_dim, hidden_dim, out_dim, temporal_length, conv=False):
         super().__init__()
         self.conv = conv
         self.norm1 = LayerNorm(in_dim)
-        self.mixer = MLP(temporal_length, int(temporal_length * 4), temporal_length)
+        # self.mixer = MLP(temporal_length, int(temporal_length * 4), temporal_length)
+        self.mixer = Pooler()
         self.norm2 = LayerNorm(in_dim)
         self.mlp = MLP(in_dim, hidden_dim, out_dim, conv=conv)
 
