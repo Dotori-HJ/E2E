@@ -2,6 +2,7 @@
 Video encoder modules.
 """
 import logging
+import math
 from collections import OrderedDict
 from typing import Dict, List
 
@@ -203,7 +204,7 @@ class PreNormResidual(nn.Module):
         return self.fn(self.norm(x)) + x
 
 class MLP(nn.Module):
-    def __init__(self, in_dim, hidden_dim, out_dim, norm_dim=None, conv=False, pre_norm=True):
+    def __init__(self, in_dim, hidden_dim, out_dim, conv=False, pre_norm=True):
         super().__init__()
         self.pre_norm = pre_norm
         if conv:
@@ -213,11 +214,6 @@ class MLP(nn.Module):
             self.linear1 = nn.Linear(in_dim, hidden_dim)
             self.linear2 = nn.Linear(hidden_dim, out_dim)
 
-        if pre_norm:
-            self.norm = LayerNorm(norm_dim if norm_dim is not None else in_dim)
-        else:
-            self.norm = LayerNorm(norm_dim if norm_dim is not None else out_dim)
-
         if in_dim != out_dim:
             if conv:
                 self.proj = nn.Conv1d(in_dim, out_dim, kernel_size=1)
@@ -226,42 +222,38 @@ class MLP(nn.Module):
         else:
             self.proj = nn.Identity()
 
-        # self._init_weights()
+        self._init_weights()
 
-    # def _init_weights(self):
-    #     with torch.no_grad():
-    #         for layer in self.proj_layers:
-    #             nn.init.kaiming_uniform_(layer.weight)
-    #             nn.init.zeros_(layer.bias)
-
-    #         nn.init.zeros_(self.linear1.bias)
-    #         nn.init.zeros_(self.linear2.weight)
-    #         nn.init.zeros_(self.linear2.bias)
-
+    def _init_weights(self):
+        with torch.no_grad():
+            nn.init.kaiming_uniform_(self.linear1.weight, a=math.sqrt(5))
+            nn.init.zeros_(self.linear1.bias)
+            nn.init.zeros_(self.linear2.weight)
+            nn.init.zeros_(self.linear2.bias)
+            if hasattr(self.proj, 'bias'):
+                nn.init.zeros_(self.proj.bias)
 
     def forward(self, x):
-        if self.pre_norm:
-            x = self.norm(x)
-            return self.linear2(F.gelu(self.linear1(x))) + self.proj(x)
-        else:
-            return self.norm(self.linear2(F.gelu(self.linear1(x))) + self.proj(x))
+        return self.linear2(F.gelu(self.linear1(x))) + self.proj(x)
 
 class Mixer(nn.Module):
-    def __init__(self, in_dim, hidden_dim, out_dim, temporal_length, conv=True):
+    def __init__(self, in_dim, hidden_dim, out_dim, temporal_length, conv=False):
         super().__init__()
         self.conv = conv
-        self.mixer = MLP(temporal_length, int(temporal_length * 4), temporal_length, norm_dim=in_dim)
+        self.norm1 = LayerNorm(in_dim)
+        self.mixer = MLP(temporal_length, int(temporal_length * 4), temporal_length)
+        self.norm2 = LayerNorm(in_dim)
         self.mlp = MLP(in_dim, hidden_dim, out_dim, conv=conv)
 
         # self.channel_mlp = MLP(temporal_length, hidden_dim, temporal_length)
 
     def forward(self, x):
         if self.conv:
-            x = self.mixer(x)
-            x = self.mlp(x)
+            x = self.mixer(self.norm1(x))
+            x = self.mlp(self.norm2(x))
         else:
-            x = self.mixer(x)
-            x = self.mlp(x.transpose(2, 1)).transpose(2, 1)
+            x = self.mixer(self.norm1(x))
+            x = self.mlp(self.norm2(x).transpose(2, 1)).transpose(2, 1)
         return x
 
 class MixerTuner(nn.Module):
@@ -276,7 +268,6 @@ class MixerTuner(nn.Module):
                 temporal_length
             ) for i in range(len(feature_dims) - 1)
         ])
-        self.register_buffer("scale", torch.tensor(0.1))
 
     def forward(self, features):
         for i, layer in enumerate(self.mixers):
