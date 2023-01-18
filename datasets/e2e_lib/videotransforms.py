@@ -284,7 +284,7 @@ class GroupPhotoMetricDistortion(object):
         Returns:
             imgs (array): nhwc
         """
-        
+
         assert imgs.dtype == np.float32, (
             'PhotoMetricDistortion needs the input imgs of dtype np.float32'
             ', please set "to_float32=True" in "LoadFrames" pipeline')
@@ -541,7 +541,7 @@ class TemporalCutOut:
         self.length_ratio = length_ratio
         if not isinstance(self.candidates, (tuple, list)):
             self.candidates = [self.candidates]
-        
+
         if not isinstance(self.length_ratio, (tuple, list)):
             self.length_ratio = [self.length_ratio]
 
@@ -563,7 +563,7 @@ class TemporalCutOut:
                     # cutout_h = int(self.candidates[index][1] * h)
                 cutout_h = cutout_w
                 index = np.random.randint(0, len(self.length_ratio))
-                
+
                 cutout_t = int(n * self.length_ratio[index])
                 t2 = np.clip(t1 + cutout_t, 0, n)
 

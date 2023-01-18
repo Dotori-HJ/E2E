@@ -253,8 +253,8 @@ class Mixer(nn.Module):
         super().__init__()
         self.conv = conv
         self.norm1 = LayerNorm(in_dim)
-        # self.mixer = MLP(temporal_length, int(temporal_length * 4), temporal_length)
-        self.mixer = Pooler()
+        self.mixer = MLP(temporal_length, int(temporal_length * 4), temporal_length)
+        # self.mixer = Pooler()
         self.norm2 = LayerNorm(in_dim)
         self.mlp = MLP(in_dim, hidden_dim, out_dim, conv=conv)
 
