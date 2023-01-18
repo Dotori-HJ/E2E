@@ -40,8 +40,8 @@ batch_size: 4
 fix_encoder: true
 # fix_encoder: false
 fix_transform: false
-neck: pyramid
-# neck: mixer
+# neck: pyramid
+neck: mixer
 lr_backbone: 0.00001
 # neck: identity
 act_reg: true
