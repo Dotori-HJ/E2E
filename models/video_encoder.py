@@ -226,9 +226,9 @@ class MLP(nn.Module):
 
     def _init_weights(self):
         with torch.no_grad():
-            nn.init.kaiming_uniform_(self.linear1.weight, a=math.sqrt(5))
+            # nn.init.kaiming_uniform_(self.linear1.weight, a=math.sqrt(5))
             nn.init.zeros_(self.linear1.bias)
-            nn.init.zeros_(self.linear2.weight)
+            # nn.init.zeros_(self.linear2.weight)
             nn.init.zeros_(self.linear2.bias)
             if hasattr(self.proj, 'bias'):
                 nn.init.zeros_(self.proj.bias)
