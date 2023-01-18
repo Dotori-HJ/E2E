@@ -44,8 +44,8 @@ neck: mixer
 # neck: pyramid
 lr_backbone: 0.00001
 # neck: identity
-act_reg: false
-two_stage: true
+act_reg: true
+two_stage: false
 mixed_selection: false
 look_forward_twice: false
 

@@ -317,7 +317,6 @@ class VideoEncoder(nn.Module):
             raise ValueError('Not supported arch: {}'.format(arch))
 
         self.fix_encoder = fix_encoder
-        print(self.fix_encoder, "!!!!!!!!!!!")
 
         if fix_encoder:
             self._fix_encoder()
