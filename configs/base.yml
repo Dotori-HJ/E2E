@@ -45,7 +45,7 @@ neck: identity
 # lr_backbone: 0.00001
 # neck: identity
 act_reg: true
-two_stage: false
+two_stage: true
 mixed_selection: false
 look_forward_twice: false
 
