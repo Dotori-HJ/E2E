@@ -328,14 +328,14 @@ class GroupPhotoMetricDistortion(object):
 
             # convert color from HSV to BGR
             imgs = np.array([image_utils.hsv2bgr(img) for img in imgs])
-            imgs = np.clip(0, 255, out=imgs)
+            imgs = np.clip(imgs, 0, 255, out=imgs)
 
             # random contrast
             if mode == 0:
                 if np.random.randint(2):
                     alpha = np.random.uniform(self.contrast_lower, self.contrast_upper)
                     imgs *= alpha
-                    imgs = np.clip(0, 255, out=imgs)
+                    imgs = np.clip(imgs, 0, 255, out=imgs)
 
             # randomly swap channels
             if np.random.randint(2):
