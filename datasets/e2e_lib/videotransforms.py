@@ -100,7 +100,8 @@ class GroupRandomHorizontalFlip(object):
         """
         if random.random() < self.p:
             # t x h x w
-            return np.flip(imgs, axis=2).copy()
+            # return np.flip(imgs, axis=2).copy()
+            return np.flip(imgs, axis=2)
         return imgs
 
     def __repr__(self):
@@ -289,37 +290,34 @@ class GroupPhotoMetricDistortion(object):
             'PhotoMetricDistortion needs the input imgs of dtype np.float32'
             ', please set "to_float32=True" in "LoadFrames" pipeline')
 
-        def _filter(img):
-            img[img < 0] = 0
-            img[img > 255] = 255
-            return img
+        # def _filter(img):
+        #     img[img < 0] = 0
+        #     img[img > 255] = 255
+        #     return img
 
         if np.random.uniform(0, 1) <= self.p:
 
             # random brightness
             if np.random.randint(2):
-                delta = np.random.uniform(-self.brightness_delta,
-                                       self.brightness_delta)
+                delta = np.random.uniform(-self.brightness_delta, self.brightness_delta)
                 imgs += delta
-                imgs = _filter(imgs)
+                imgs = np.clip(imgs, 0, 255, out=imgs)
 
             # mode == 0 --> do random contrast first
             # mode == 1 --> do random contrast last
             mode = np.random.randint(2)
             if mode == 1:
                 if np.random.randint(2):
-                    alpha = np.random.uniform(self.contrast_lower,
-                                           self.contrast_upper)
+                    alpha = np.random.uniform(self.contrast_lower, self.contrast_upper)
                     imgs *= alpha
-                    imgs = _filter(imgs)
+                    imgs = np.clip(imgs, 0, 255, out=imgs)
 
             # convert color from BGR to HSV
             imgs = np.array([image_utils.bgr2hsv(img) for img in imgs])
 
             # random saturation
             if np.random.randint(2):
-                imgs[..., 1] *= np.random.uniform(self.saturation_lower,
-                                               self.saturation_upper)
+                imgs[..., 1] *= np.random.uniform(self.saturation_lower, self.saturation_upper)
 
             # random hue
             # if np.random.randint(2):
@@ -330,15 +328,14 @@ class GroupPhotoMetricDistortion(object):
 
             # convert color from HSV to BGR
             imgs = np.array([image_utils.hsv2bgr(img) for img in imgs])
-            imgs = _filter(imgs)
+            imgs = np.clip(0, 255, out=imgs)
 
             # random contrast
             if mode == 0:
                 if np.random.randint(2):
-                    alpha = np.random.uniform(self.contrast_lower,
-                                           self.contrast_upper)
+                    alpha = np.random.uniform(self.contrast_lower, self.contrast_upper)
                     imgs *= alpha
-                    imgs = _filter(imgs)
+                    imgs = np.clip(0, 255, out=imgs)
 
             # randomly swap channels
             if np.random.randint(2):
