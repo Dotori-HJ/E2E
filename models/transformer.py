@@ -52,7 +52,8 @@ class DeformableTransformer(nn.Module):
             self.enc_output_norm = nn.LayerNorm(d_model)
             self.pos_trans = nn.Linear(d_model * 2, d_model * 2)
             self.pos_trans_norm = nn.LayerNorm(d_model * 2)
-            self.base_scale = nn.Parameter(torch.full((1,), fill_value=-math.log((1 - 0.1) / 0.1)))
+            # self.base_scale = nn.Parameter(torch.full((1,), fill_value=-math.log((1 - 0.1) / 0.1)))
+            self.register_buffer('base_scale', torch.full((1,), fill_value=0.1))
         else:
             self.reference_points = nn.Linear(d_model, 1)
 
@@ -94,12 +95,12 @@ class DeformableTransformer(nn.Module):
         mask_flatten_ = memory_padding_mask.view(N_, T_)
         valid_T = torch.sum(~mask_flatten_[:, :], 1)
 
-
         timeline = (torch.linspace(0, T_ - 1, T_, dtype=torch.float32, device=memory.device).unsqueeze(0) + 0.5) / valid_T.unsqueeze(1)
 
         # scale = torch.cat([valid_W.unsqueeze(-1), valid_H.unsqueeze(-1)], 1).view(N_, 1, 1, 2)
         # grid = (grid.unsqueeze(0).expand(N_, -1, -1, -1) + 0.5) / scale
-        scale = self.base_scale.sigmoid().expand_as(timeline)
+        # scale = self.base_scale.sigmoid().expand_as(timeline)
+        scale = self.base_scale.expand_as(timeline)
         # time_length = torch.ones_like(timeline) * 0.05 * 2.0
 
         proposals = torch.stack((timeline, scale), -1).view(N_, -1, 2)
@@ -168,17 +169,17 @@ class DeformableTransformer(nn.Module):
         if self.two_stage:
             output_memory, output_proposals = self.gen_encoder_output_proposals(memory, mask_flatten, t)
 
-            # num_topk = 40
+            num_topk = 40
             # num_topk = t
             # hack implementation for two-stage Deformable DETR
             enc_outputs_class = self.decoder.class_embed[self.decoder.num_layers](output_memory)
             enc_outputs_coord_unact = self.decoder.segment_embed[self.decoder.num_layers](output_memory) + output_proposals
 
             # topk = self.two_stage_num_proposals
-            # topk_proposals = torch.topk(enc_outputs_class[..., 0], num_topk, dim=1)[1]
-            # topk_coords_unact = torch.gather(enc_outputs_coord_unact, 1, topk_proposals.unsqueeze(-1).repeat(1, 1, 2))
+            topk_proposals = torch.topk(enc_outputs_class[..., 0], num_topk, dim=1)[1]
+            topk_coords_unact = torch.gather(enc_outputs_coord_unact, 1, topk_proposals.unsqueeze(-1).repeat(1, 1, 2))
 
-            topk_coords_unact = enc_outputs_coord_unact
+            # topk_coords_unact = enc_outputs_coord_unact
             topk_coords_unact = topk_coords_unact.detach()
             reference_points = topk_coords_unact.sigmoid()
             init_reference_out = reference_points
