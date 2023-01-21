@@ -306,6 +306,7 @@ class MixerTuner(nn.Module):
 
 class SimpleMixer(nn.Module):
     def __init__(self, feature_dims, middle_dim):
+        super().__init__()
         self.linear1 = nn.Linear(feature_dims[-1], middle_dim)
         self.linear2 = nn.Linear(middle_dim, feature_dims[-1])
 
