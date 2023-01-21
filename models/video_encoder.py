@@ -321,7 +321,7 @@ class SimpleMixer(nn.Module):
 
     def forward(self, features):
         x = features[-1]
-        return self.linear2(F.relu(self.linear1(x.transpose(2, 1)))).transpose(2, 1)
+        return self.linear2(F.relu(self.linear1(x.transpose(2, 1)))).transpose(2, 1) + x
 
 
 class VideoEncoder(nn.Module):
