@@ -49,8 +49,10 @@ look_forward_twice: false
 # img_crop_size: 384
 # img_resize: 256
 # img_crop_size: 224
-img_resize: 110
-img_crop_size: 96
+# img_resize: 110
+# img_crop_size: 96
+img_resize: 192
+img_crop_size: 168
 
 # Training
 # act_reg: false
