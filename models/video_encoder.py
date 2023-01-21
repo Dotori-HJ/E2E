@@ -291,6 +291,37 @@ class MixerTuner(nn.Module):
 
         return out
 
+# class AttentionMixer(nn.Module):
+#     def __init__(self, feature_dims, middle_dim, kernel_size=1):
+#         self.num_levels = len(feature_dims)
+
+#         self.proj_layers = nn.ModuleList([
+#             nn.Conv1d(dim, middle_dim, kernel_size=kernel_size, padding=kernel_size//2)
+#             for dim in feature_dims
+#         ])
+#         self.level_emb = nn.Embedding(self.num_levels + 1, middle_dim)
+#         self.emb_token = nn.Embedding(self.)
+#         self.norm
+#         self.
+
+class SimpleMixer(nn.Module):
+    def __init__(self, feature_dims, middle_dim):
+        self.linear1 = nn.Linear(feature_dims[-1], middle_dim)
+        self.linear2 = nn.Linear(middle_dim, feature_dims[-1])
+
+        self._init_weight()
+
+    def _init_weight(self):
+        with torch.no_grad():
+            nn.init.kaiming_uniform_(self.linear1.weight, a=math.sqrt(5))
+            nn.init.zeros_(self.linear1.bias)
+            nn.init.zeros_(self.linear2.weight)
+            nn.init.zeros_(self.linear2.bias)
+
+    def forward(self, features):
+        x = features[-1]
+        return self.linear2(F.relu(self.linear1(x.transpose(2, 1)))).transpose(2, 1)
+
 
 class VideoEncoder(nn.Module):
     def __init__(self, arch='slowfast', fix_encoder=False, neck='pyramid'):
@@ -333,6 +364,8 @@ class VideoEncoder(nn.Module):
             self.neck = Tuner(288, 2304, 3)
         elif neck == "mixer":
             self.neck = MixerTuner(self.pyramid_channels, temporal_length)
+        elif neck == "simple_mixer":
+            self.neck = SimpleMixer(self.pyramid_channels, self.base_channels)
         else:
             assert True, f"neck={neck}"
 
