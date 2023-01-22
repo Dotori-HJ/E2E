@@ -222,16 +222,16 @@ class MLP(nn.Module):
         else:
             self.proj = nn.Identity()
 
-    #     self._init_weights()
+        self._init_weights()
 
-    # def _init_weights(self):
-    #     with torch.no_grad():
-    #         # nn.init.kaiming_uniform_(self.linear1.weight, a=math.sqrt(5))
-    #         nn.init.zeros_(self.linear1.bias)
-    #         # nn.init.zeros_(self.linear2.weight)
-    #         nn.init.zeros_(self.linear2.bias)
-    #         if hasattr(self.proj, 'bias'):
-    #             nn.init.zeros_(self.proj.bias)
+    def _init_weights(self):
+        with torch.no_grad():
+            # nn.init.kaiming_uniform_(self.linear1.weight, a=math.sqrt(5))
+            nn.init.zeros_(self.linear1.bias)
+            # nn.init.zeros_(self.linear2.weight)
+            nn.init.zeros_(self.linear2.bias)
+            if hasattr(self.proj, 'bias'):
+                nn.init.zeros_(self.proj.bias)
 
     def forward(self, x):
         return self.linear2(F.gelu(self.linear1(x))) + self.proj(x)
