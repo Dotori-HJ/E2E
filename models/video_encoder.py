@@ -281,6 +281,7 @@ class MixerTuner(nn.Module):
                 temporal_length
             ) for i in range(len(feature_dims) - 1)
         ])
+        self.norm = LayerNorm(feature_dims[-1])
 
     def forward(self, features):
         for i, layer in enumerate(self.mixers):
@@ -289,6 +290,7 @@ class MixerTuner(nn.Module):
             else:
                 out = layer(out) + features[i+1]
 
+        out = self.norm(out)
         return out
 
 # class AttentionMixer(nn.Module):
