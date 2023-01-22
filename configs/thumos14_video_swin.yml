@@ -36,9 +36,9 @@ batch_size: 1
 # fix_encoder: false
 fix_encoder: true
 fix_transform: false
-neck: simple_mixer
-lr_backbone: 0.0001
-# neck: identity
+# neck: simple_mixer
+# lr_backbone: 0.0001
+neck: identity
 act_reg: true
 two_stage: false
 mixed_selection: false
