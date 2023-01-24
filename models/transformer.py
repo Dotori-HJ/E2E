@@ -425,7 +425,7 @@ def build_deformable_transformer(args):
         two_stage=args.two_stage,
         look_forward_twice=args.look_forward_twice,
         mixed_selection=args.mixed_selection,
-        num_feature_levels=1,
+        num_feature_levels=4,
         dec_n_points=args.dec_n_points,
         enc_n_points=args.enc_n_points)
 
