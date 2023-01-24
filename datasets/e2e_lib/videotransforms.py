@@ -910,7 +910,7 @@ class Pad(object):
         if num_frames == self.dst_sample_frames:
             return imgs
         else:
-            print("pad!!!!")
+            print(f"pad!!!! {imgs.shape}")
             return np.pad(
                 imgs,
                 ((0, self.dst_sample_frames - num_frames), (0, 0), (0, 0), (0, 0)),
