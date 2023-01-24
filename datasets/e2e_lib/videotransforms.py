@@ -897,41 +897,20 @@ class Pad(object):
     minimum size that is divisible by some number.
     Added keys are "pad_shape", "pad_fixed_size", "pad_size_divisor",
     Args:
-        size (tuple, optional): Fixed padding size.
-        size_divisor (int, optional): The divisor of padded size.
+        size (int, optional): Fixed padding size.
         pad_val (float, optional): Padding value, 0 by default.
     """
 
-    def __init__(self, size=None, size_divisor=None, pad_val=0):
-        self.size = size
-        self.size_divisor = size_divisor
+    def __init__(self, dst_sample_frames=256, pad_val=0):
+        self.dst_sample_frames = dst_sample_frames
         self.pad_val = pad_val
-        # only one of size and size_divisor should be valid
-        assert size is not None or size_divisor is not None
-        assert size is None or size_divisor is None
 
-    def _pad_imgs(self, results):
-        """Pad images according to ``self.size``."""
-        for key in results.get('img_fields', ['imgs']):
-            if self.size is not None:
-                padded_imgs = image.impad(
-                    results[key], shape=self.size, pad_val=self.pad_val)
-            elif self.size_divisor is not None:
-                padded_imgs = image.impad_to_multiple(
-                    results[key], self.size_divisor, pad_val=self.pad_val)
-            results[key] = padded_imgs
-        results['pad_tsize'] = padded_imgs.shape[0]
-
-    def __call__(self, results):
-        """Call function to pad images.
-        Args:
-            results (dict): Result dict from loading pipeline.
-        Returns:
-            dict: Updated result dict.
-        """
-        self._pad_imgs(results)
-
-        return results
+    def __call__(self, imgs):
+        print(imgs.shape)
+        return np.pad(
+            imgs,
+            ((0, self.dst_sample_frames - len(imgs)), (0, 0), (0, 0), (0, 0)),
+            mode='constant', constant_values=self.pad_val)
 
     def __repr__(self):
         repr_str = self.__class__.__name__
