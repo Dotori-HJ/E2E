@@ -914,8 +914,7 @@ class Pad(object):
 
     def __repr__(self):
         repr_str = self.__class__.__name__
-        repr_str += f'(size={self.size}, '
-        repr_str += f'size_divisor={self.size_divisor}, '
+        repr_str += f'(dst_sample_frames={self.dst_sample_frames}, '
         repr_str += f'pad_val={self.pad_val})'
         return repr_str
 
