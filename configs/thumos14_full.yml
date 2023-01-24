@@ -21,7 +21,7 @@ dim_feedforward: 1024
 num_queries: 40
 # num_queries: 100
 # dropout: 0.1
-dropout: 0.0
+dropout: 0.1
 temperature: 10000
 # temperature: 20
 
@@ -56,7 +56,7 @@ img_crop_size: 224
 act_reg: true
 two_stage: false
 mixed_selection: false
-look_forward_twice: false
+look_forward_twice: true
 
 
 # Training
@@ -67,4 +67,4 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_10fps_full
+output_dir: outputs/thumos14_e2e_slowfast_10fps_full_multi_scale
