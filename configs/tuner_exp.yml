@@ -37,7 +37,7 @@ lr: 0.0001
 batch_size: 4
 
 
-fix_encoder: true
+fix_encoder: false
 # fix_encoder: false
 fix_transform: false
 # neck: pyramid
@@ -65,4 +65,4 @@ img_crop_size: 224
 rand_augment_param: rand-m7-n4-mstd0.5-inc1
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_10fps_tune
+output_dir: outputs/thumos14_e2e_slowfast_10fps_multi_scale
