@@ -86,7 +86,8 @@ class TadTR(nn.Module):
             nn.Sequential(
                 nn.Conv1d(num_channels, hidden_dim, kernel_size=1),
                 nn.GroupNorm(32, hidden_dim),
-            )for num_channels in backbone.pyramid_channels])
+            # ) for num_channels in backbone.pyramid_channels])
+            ) for num_channels in [2304]])
         self.backbone = backbone
         self.position_embedding = position_embedding
         self.aux_loss = aux_loss
