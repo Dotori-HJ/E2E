@@ -413,7 +413,12 @@ class VideoEncoder(nn.Module):
                 out = NestedTensor(video_ft, mask)
             else:
                 # multilevel feature from backbone
-                raise NotImplementedError
+                mask = F.interpolate(mask[None].float(), size=video_ft[0].shape[2], mode='nearest').to(torch.bool)[0]  # [n, t]
+                out: List[NestedTensor] = [
+                    NestedTensor(x, mask)
+                    for x in video_ft
+                ]
+                # raise NotImplementedError
 
         elif len(shape) == 3: # (n,c,t)
             video_ft = tensors
