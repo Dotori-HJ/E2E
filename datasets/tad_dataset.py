@@ -319,15 +319,14 @@ class TADDataset(torch.utils.data.Dataset):
             if dst_clip_length:
                 dst_sample_frames = dst_clip_length // self.img_stride
 
-                if len(imgs) < dst_sample_frames:
-                    if isinstance(imgs, np.ndarray):
-                        imgs = np.pad(imgs, ((0, dst_sample_frames - len(imgs)), (0, 0), (0, 0), (0, 0)), mode='constant', constant_values=128)
-                    else:
-                        tmp = Image.new("RGB", imgs[0].size, (128, 128, 128))
-                        imgs += [tmp for i in range(dst_sample_frames - len(imgs))]
+                # if len(imgs) < dst_sample_frames:
+                #     if isinstance(imgs, np.ndarray):
+                #         imgs = np.pad(imgs, ((0, dst_sample_frames - len(imgs)), (0, 0), (0, 0), (0, 0)), mode='constant', constant_values=128)
+                #     else:
+                #         tmp = Image.new("RGB", imgs[0].size, (128, 128, 128))
+                #         imgs += [tmp for i in range(dst_sample_frames - len(imgs))]
 
-                else:
-                    imgs = imgs[:dst_sample_frames]
+                imgs = imgs[:dst_sample_frames]
         # try:
         #     imgs = self.transforms(imgs)
         # except Exception as e:
@@ -414,7 +413,9 @@ def build(dataset, subset, args, mode):
             mean, std = ([123.675, 116.28, 103.53], [58.395, 57.12, 57.375])
         is_training = mode == 'train' and not args.fix_transform
         transforms, gpu_transforms = make_img_transform(
-            is_training=is_training, mean=mean, std=std, resize=args.img_resize, crop=args.img_crop_size, keep_asr=args.resize_keep_asr)
+            is_training=is_training, mean=mean, std=std, resize=args.img_resize, crop=args.img_crop_size,
+            num_frames=args.slice_len, keep_asr=args.resize_keep_asr
+        )
         # transforms = None
         # gpu_transforms = GPUAugment([
         #     KA.RandomAffine(30, translate=0.1, shear=0.3, p=0.5, same_on_batch=True),

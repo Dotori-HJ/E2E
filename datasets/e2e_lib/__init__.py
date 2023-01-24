@@ -47,7 +47,7 @@ def load_video_frames(frame_dir, start, seq_len, stride=1, fn_tmpl='img_%07d.jpg
         return frames
 
 
-def make_img_transform(is_training, resize=110, crop=96, mean=127.5, std=127.5, keep_asr=True):
+def make_img_transform(is_training, resize=110, crop=96, mean=127.5, std=127.5, num_frames=128, keep_asr=True):
     from torchvision.transforms import Compose
 
     from .videotransforms import (
@@ -59,6 +59,7 @@ def make_img_transform(is_training, resize=110, crop=96, mean=127.5, std=127.5, 
         GroupResize,
         GroupResizeShorterSide,
         GroupRotate,
+        Pad,
     )
 
     if isinstance(resize, (list, tuple)):
@@ -93,6 +94,7 @@ def make_img_transform(is_training, resize=110, crop=96, mean=127.5, std=127.5, 
     # transforms.append(GroupNormalize(127.5, 127.5, to_rgb=True))
     # else:
     transforms.append(GroupNormalize(mean, std, to_rgb=True))
+    transforms.append(Pad(size=(num_frames, 3, crop, crop)))
 
     gpu_transforms = None
     # gpu_transforms = GPUAugment([

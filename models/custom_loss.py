@@ -41,5 +41,3 @@ if __name__ == "__main__":
     pred = torch.from_numpy(np.random.random([8, 2]))
     target = torch.from_numpy(np.random.random(8) > 0.5).long()
     loss = sigmoid_focal_loss(pred, target)
-    
-
