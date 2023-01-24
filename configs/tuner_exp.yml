@@ -47,7 +47,7 @@ neck: identity
 act_reg: true
 two_stage: false
 mixed_selection: false
-look_forward_twice: false
+look_forward_twice: true
 
 
 # Image
