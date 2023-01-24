@@ -906,11 +906,14 @@ class Pad(object):
         self.pad_val = pad_val
 
     def __call__(self, imgs):
-        print(imgs.shape)
-        return np.pad(
-            imgs,
-            ((0, self.dst_sample_frames - len(imgs)), (0, 0), (0, 0), (0, 0)),
-            mode='constant', constant_values=self.pad_val)
+        num_frames = len(imgs)
+        if num_frames == self.dst_sample_frames:
+            return imgs
+        else:
+            return np.pad(
+                imgs,
+                ((0, self.dst_sample_frames - num_frames), (0, 0), (0, 0), (0, 0)),
+                mode='constant', constant_values=self.pad_val)
 
     def __repr__(self):
         repr_str = self.__class__.__name__
