@@ -27,10 +27,10 @@ temperature: 10000
 
 # data setting
 dataset_name: thumos14
-feature: img30fps
+feature: img10fps
 online_slice: true
-# slice_len: 256
-slice_len: 768
+slice_len: 256
+# slice_len: 768
 slice_overlap: 0.75
 test_slice_overlap: 0.25
 input_type: image
@@ -67,4 +67,4 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_30fps_full
+output_dir: outputs/thumos14_e2e_slowfast_10fps_full
