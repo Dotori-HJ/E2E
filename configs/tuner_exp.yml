@@ -18,7 +18,7 @@ dim_feedforward: 1024
 num_queries: 40
 # num_queries: 100
 # dropout: 0.1
-dropout: 0.0
+dropout: 0.1
 temperature: 10000
 # temperature: 20
 
@@ -41,9 +41,9 @@ fix_encoder: true
 # fix_encoder: false
 fix_transform: false
 # neck: pyramid
-neck: mixer
-lr_backbone: 0.00001
-# neck: identity
+# neck: mixer
+# lr_backbone: 0.00001
+neck: identity
 act_reg: true
 two_stage: false
 mixed_selection: false
