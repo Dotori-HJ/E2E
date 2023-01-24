@@ -86,7 +86,7 @@ def unfold(ip, kernel_size, stride):
 
 class IdentityNeck(nn.Module):
     def forward(self, x):
-        return x[-1]
+        return (x[-1], )
         # return x
 
 
