@@ -86,7 +86,7 @@ class TadTR(nn.Module):
             nn.Sequential(
                 nn.Conv1d(backbone.num_channels, hidden_dim, kernel_size=1),
                 nn.GroupNorm(32, hidden_dim),
-            )])
+            )for i in range(4)])
         self.backbone = backbone
         self.position_embedding = position_embedding
         self.aux_loss = aux_loss
@@ -187,8 +187,8 @@ class TadTR(nn.Module):
         features = self.backbone(samples)
         pos = [self.position_embedding(features)]
         src, mask = features.tensors, features.mask
-        srcs = [self.input_proj[0](src)]
-        masks = [mask]
+        srcs = [proj(src) for proj in self.input_proj]
+        masks = [mask for _ in range(len(self.input_proj))]
 
         query_embeds = None
         if not self.two_stage or self.mixed_selection:

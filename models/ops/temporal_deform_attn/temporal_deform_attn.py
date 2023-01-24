@@ -9,23 +9,23 @@
 # Modified from https://github.com/chengdazhi/Deformable-Convolution-V2-PyTorch/tree/pytorch_1.0.0
 # ------------------------------------------------------------------------------------------------
 
-from __future__ import absolute_import
-from __future__ import print_function
-from __future__ import division
+from __future__ import absolute_import, division, print_function
+
+import math
+import pdb
+import warnings
+
+import torch
+import torch.nn.functional as F
+from torch import nn
+from torch.nn.init import constant_, xavier_uniform_
 
 from opts import cfg
 
 # if not cfg.disable_cuda:
 #     from .functions import TDAFunction
 
-import warnings
-import math
-import pdb
 
-import torch
-from torch import nn
-import torch.nn.functional as F
-from torch.nn.init import xavier_uniform_, constant_
 
 
 
@@ -55,7 +55,7 @@ class DeformAttn(nn.Module):
             warnings.warn("You'd better set d_model in DeformAttn to make the dimension of each attention head a power of 2 "
                           "which is more efficient in our CUDA implementation.")
 
-        assert n_levels == 1, 'multi-level attention is not supported!'
+        # assert n_levels == 1, 'multi-level attention is not supported!'
 
         self.seq2col_step = 64
 
