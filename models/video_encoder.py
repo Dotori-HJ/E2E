@@ -89,9 +89,10 @@ class IdentityNeck(nn.Module):
         super().__init__()
         self.indices = indices
 
-    def forward(self, features):
+    def forward(self, x):
         # return (x[-1], )
-        return [x for x in features[self.indices]]
+        # return [x for x in features[self.indices]]
+        return [x[i] for i in self.indices]
 
 
 class TunerBlock(nn.Module):
@@ -405,7 +406,7 @@ class VideoEncoder(nn.Module):
             self.neck = IdentityNeck(indices)
         elif neck == 'pyramid':
             self.neck = PyramidTuner(self.pyramid_channels, self.base_channels, self.num_channels)
-            self.pyramid_channels = [self.base_channels for _ in self.pyramid_channels[indices]]
+            self.pyramid_channels = [self.base_channels for _ in self.pyramid_channels]
         elif neck == "tuner":
             self.neck = Tuner(288, 2304, 3)
         elif neck == "mixer":
@@ -415,7 +416,7 @@ class VideoEncoder(nn.Module):
         else:
             assert True, f"neck={neck}"
 
-        self.pyramid_channels = [channels for channels in self.pyramid_channels[indices]]
+        self.pyramid_channels = [self.pyramid_channels[i] for i in indices]
 
 
     def forward(self, tensor_list):
