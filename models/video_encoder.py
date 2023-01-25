@@ -321,7 +321,7 @@ class MixerTuner(nn.Module):
         self.input_projs = nn.ModuleList([
             nn.Sequential(
                 nn.Conv1d(feature_dim, self.middle_dim, kernel_size=1),
-                nn.GroupNorm(32, self.middle_dim)
+                # nn.GroupNorm(32, self.middle_dim)
             )
             for feature_dim in feature_dims
         ])
