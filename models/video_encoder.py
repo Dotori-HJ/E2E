@@ -85,9 +85,13 @@ def unfold(ip, kernel_size, stride):
     return out
 
 class IdentityNeck(nn.Module):
-    def forward(self, x):
+    def __init__(self, indices):
+        super().__init__()
+        self.indices = indices
+
+    def forward(self, features):
         # return (x[-1], )
-        return x
+        return [x for x in features[self.indices]]
 
 
 class TunerBlock(nn.Module):
@@ -391,16 +395,17 @@ class VideoEncoder(nn.Module):
         else:
             raise ValueError('Not supported arch: {}'.format(arch))
 
+        indices = [-1]
         self.fix_encoder = fix_encoder
 
         if fix_encoder:
             self._fix_encoder()
 
         if neck == 'identity':
-            self.neck = IdentityNeck()
+            self.neck = IdentityNeck(indices)
         elif neck == 'pyramid':
             self.neck = PyramidTuner(self.pyramid_channels, self.base_channels, self.num_channels)
-            self.pyramid_channels = [self.base_channels for _ in self.pyramid_channels]
+            self.pyramid_channels = [self.base_channels for _ in self.pyramid_channels[indices]]
         elif neck == "tuner":
             self.neck = Tuner(288, 2304, 3)
         elif neck == "mixer":
@@ -410,6 +415,7 @@ class VideoEncoder(nn.Module):
         else:
             assert True, f"neck={neck}"
 
+        self.pyramid_channels = [channels for channels in self.pyramid_channels[indices]]
 
 
     def forward(self, tensor_list):
