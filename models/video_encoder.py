@@ -344,7 +344,7 @@ class MixerTuner(nn.Module):
             multi_features = layer(multi_features)
         multi_features = self.norm(multi_features)
 
-        return multi_features
+        return [multi_features]
 
 # class AttentionMixer(nn.Module):
 #     def __init__(self, feature_dims, middle_dim, kernel_size=1):
