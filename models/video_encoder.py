@@ -224,7 +224,6 @@ class PyramidTuner(nn.Module):
                 out = layer(out) + proj_features[-i+1]
             else:
                 out = layer(out)
-            print(out.size())
             outs.append(out)
         # out = self.output_layer(out) * self.scaler + features[-1]
         # out = self.output_layer(out) + features[-1]
@@ -401,7 +400,7 @@ class VideoEncoder(nn.Module):
             self.neck = IdentityNeck()
         elif neck == 'pyramid':
             self.neck = PyramidTuner(self.pyramid_channels, self.base_channels, self.num_channels)
-            self.pyramid_channels = [channels for channels in self.pyramid_channels]
+            self.pyramid_channels = [self.base_channels for _ in self.pyramid_channels]
         elif neck == "tuner":
             self.neck = Tuner(288, 2304, 3)
         elif neck == "mixer":
@@ -410,6 +409,7 @@ class VideoEncoder(nn.Module):
             self.neck = SimpleMixer(self.pyramid_channels, self.base_channels)
         else:
             assert True, f"neck={neck}"
+
 
 
     def forward(self, tensor_list):
