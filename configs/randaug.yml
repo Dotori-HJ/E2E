@@ -19,8 +19,8 @@ num_queries: 40
 # num_queries: 100
 dropout: 0.1
 # dropout: 0.0
-# temperature: 10000
-temperature: 20
+temperature: 10000
+# temperature: 20
 
 # data setting
 dataset_name: thumos14

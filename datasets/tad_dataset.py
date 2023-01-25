@@ -296,11 +296,11 @@ class TADDataset(torch.utils.data.Dataset):
 
             if len(imgs) < dst_sample_frames:
                 # try:
-                # if isinstance(imgs, np.ndarray):
-                #     imgs = np.pad(imgs, ((0, dst_sample_frames - len(imgs)), (0, 0), (0, 0), (0, 0)), mode='constant', constant_values=128)
-                # else:
-                #     tmp = Image.new("RGB", imgs[0].size, (128, 128, 128))
-                #     imgs += [tmp for i in range(dst_sample_frames - len(imgs))]
+                if isinstance(imgs, np.ndarray):
+                    imgs = np.pad(imgs, ((0, dst_sample_frames - len(imgs)), (0, 0), (0, 0), (0, 0)), mode='constant', constant_values=128)
+                else:
+                    tmp = Image.new("RGB", imgs[0].size, (128, 128, 128))
+                    imgs += [tmp for i in range(dst_sample_frames - len(imgs))]
                 # except:
                 #     pdb.set_trace()
                 self.video_dict[video_name]['feature_length'] = self.slice_len
@@ -319,12 +319,12 @@ class TADDataset(torch.utils.data.Dataset):
             if dst_clip_length:
                 dst_sample_frames = dst_clip_length // self.img_stride
 
-                # if len(imgs) < dst_sample_frames:
-                #     if isinstance(imgs, np.ndarray):
-                #         imgs = np.pad(imgs, ((0, dst_sample_frames - len(imgs)), (0, 0), (0, 0), (0, 0)), mode='constant', constant_values=128)
-                #     else:
-                #         tmp = Image.new("RGB", imgs[0].size, (128, 128, 128))
-                #         imgs += [tmp for i in range(dst_sample_frames - len(imgs))]
+                if len(imgs) < dst_sample_frames:
+                    if isinstance(imgs, np.ndarray):
+                        imgs = np.pad(imgs, ((0, dst_sample_frames - len(imgs)), (0, 0), (0, 0), (0, 0)), mode='constant', constant_values=128)
+                    else:
+                        tmp = Image.new("RGB", imgs[0].size, (128, 128, 128))
+                        imgs += [tmp for i in range(dst_sample_frames - len(imgs))]
 
                 imgs = imgs[:dst_sample_frames]
         # try:
