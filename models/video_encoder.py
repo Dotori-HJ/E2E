@@ -400,6 +400,7 @@ class VideoEncoder(nn.Module):
             self.neck = IdentityNeck()
         elif neck == 'pyramid':
             self.neck = PyramidTuner(self.pyramid_channels, self.base_channels, self.num_channels)
+            self.pyramid_channels = [channels for channels in self.pyramid_channels]
         elif neck == "tuner":
             self.neck = Tuner(288, 2304, 3)
         elif neck == "mixer":
