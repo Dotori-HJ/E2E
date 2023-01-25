@@ -224,6 +224,7 @@ class PyramidTuner(nn.Module):
                 out = layer(out) + proj_features[-i+1]
             else:
                 out = layer(out)
+            print(out.size())
             outs.append(out)
         # out = self.output_layer(out) * self.scaler + features[-1]
         # out = self.output_layer(out) + features[-1]
