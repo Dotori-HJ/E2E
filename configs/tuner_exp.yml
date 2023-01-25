@@ -43,7 +43,7 @@ fix_transform: false
 # neck: pyramid
 neck: mixer
 lr_backbone: 0.00001
-act_reg: false
+act_reg: true
 two_stage: false
 mixed_selection: false
 look_forward_twice: true
