@@ -256,13 +256,13 @@ class MLP(nn.Module):
             self.linear1 = nn.Linear(in_dim, hidden_dim)
             self.linear2 = nn.Linear(hidden_dim, out_dim)
 
-        if in_dim != out_dim:
-            if conv:
-                self.proj = nn.Conv1d(in_dim, out_dim, kernel_size=1)
-            else:
-                self.proj = nn.Linear(in_dim, out_dim)
-        else:
-            self.proj = nn.Identity()
+        # if in_dim != out_dim:
+        #     if conv:
+        #         self.proj = nn.Conv1d(in_dim, out_dim, kernel_size=1)
+        #     else:
+        #         self.proj = nn.Linear(in_dim, out_dim)
+        # else:
+        #     self.proj = nn.Identity()
 
         self._init_weights()
 
@@ -272,11 +272,11 @@ class MLP(nn.Module):
             nn.init.zeros_(self.linear1.bias)
             # nn.init.zeros_(self.linear2.weight)
             nn.init.zeros_(self.linear2.bias)
-            if hasattr(self.proj, 'bias'):
-                nn.init.zeros_(self.proj.bias)
+            # if hasattr(self.proj, 'bias'):
+            #     nn.init.zeros_(self.proj.bias)
 
     def forward(self, x):
-        return self.linear2(F.gelu(self.linear1(x))) + self.proj(x)
+        return self.linear2(F.gelu(self.linear1(x))) + x
 
 class Pooler(nn.Module):
     def __init__(self, pool_size=3):
@@ -312,28 +312,39 @@ class Mixer(nn.Module):
         return x
 
 class MixerTuner(nn.Module):
-    def __init__(self, feature_dims, temporal_length):
+    def __init__(self, feature_dims, middle_dim, temporal_length, num_layers=1):
         super().__init__()
         self.feature_dims = feature_dims
+        self.middle_dim = middle_dim
+        self.num_layers = num_layers
+
+        self.input_projs = nn.ModuleList([
+            nn.Sequential(
+                nn.Conv1d(feature_dim, self.middle_dim, kernel_size=1),
+                nn.GroupNorm(32, self.middle_dim)
+            )
+            for feature_dim in feature_dims
+        ])
         self.mixers = nn.ModuleList([
             Mixer(
-                feature_dims[i],
-                2048,
-                feature_dims[i+1],
-                temporal_length
-            ) for i in range(len(feature_dims) - 1)
+                int(4 * middle_dim),
+                int(4 * middle_dim * 2),
+                int(4 * middle_dim),
+                temporal_length,
+                conv=True,
+            ) for i in range(num_layers)
         ])
-        self.norm = LayerNorm(feature_dims[-1])
+        self.norm = LayerNorm(int(4 * middle_dim))
 
     def forward(self, features):
-        for i, layer in enumerate(self.mixers):
-            if i == 0:
-                out = layer(features[i]) + features[i+1]
-            else:
-                out = layer(out) + features[i+1]
+        features = [layer(x) for layer, x in zip(self.input_projs, features)]
+        multi_features = torch.cat(features, dim=1)
 
-        out = self.norm(out)
-        return out
+        for layer in self.mixers:
+            multi_features = layer(multi_features)
+        multi_features = self.norm(multi_features)
+
+        return multi_features
 
 # class AttentionMixer(nn.Module):
 #     def __init__(self, feature_dims, middle_dim, kernel_size=1):
@@ -410,7 +421,8 @@ class VideoEncoder(nn.Module):
         elif neck == "tuner":
             self.neck = Tuner(288, 2304, 3)
         elif neck == "mixer":
-            self.neck = MixerTuner(self.pyramid_channels, temporal_length)
+            self.neck = MixerTuner(self.pyramid_channels, 256, temporal_length)
+            self.pyramid_channels = [int(256 * 4) for _ in self.pyramid_channels]
         elif neck == "simple_mixer":
             self.neck = SimpleMixer(self.pyramid_channels, self.base_channels)
         else:
