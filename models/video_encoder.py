@@ -142,6 +142,60 @@ class Tuner(nn.Module):
 
         return out
 
+# class PyramidTuner(nn.Module):
+#     def __init__(self, feature_dims:tuple, middle_dim, output_dim):
+#         super().__init__()
+#         kernel_size = 1
+#         self.proj_layers = nn.ModuleList([
+#             nn.Conv1d(dim, middle_dim, kernel_size=kernel_size, padding=kernel_size//2)
+#             for dim in feature_dims
+#         ])
+#         self.middle_layers = nn.ModuleList([
+#             TunerBlock(middle_dim, 2048, middle_dim, kernel_size=kernel_size)
+#             # nn.Conv1d(middle_dim, middle_dim, kernel_size=3)
+#             for _ in range(len(feature_dims))
+#         ])
+#         self.output_layer = nn.Conv1d(middle_dim, output_dim, kernel_size=kernel_size, padding=kernel_size//2)
+
+#         # self.scaler = nn.Parameter(torch.ones(1))
+#         self._init_weights()
+#         # self.apply(self._init_weights)
+
+#     def _init_weights(self):
+#         with torch.no_grad():
+#             for layer in self.proj_layers:
+#                 nn.init.kaiming_uniform_(layer.weight)
+#                 nn.init.zeros_(layer.bias)
+
+#             nn.init.zeros_(self.output_layer.weight)
+#             nn.init.zeros_(self.output_layer.bias)
+
+#     # def _init_weights(self, m):
+#     #     if isinstance(m, nn.Conv1d):
+#     #         # nn.init.kaiming_normal_(m, nn.Conv1d)
+#     #         trunc_normal_(m.weight, std=.02)
+#     #         if isinstance(m, nn.Conv1d) and m.bias is not None:
+#     #             nn.init.zeros_(m.bias)
+#     #     elif isinstance(m, nn.LayerNorm):
+#     #         nn.init.ones_(m.weight)
+#     #         nn.init.zeros_(m.bias)
+
+#     def forward(self, features):
+#         proj_features = [layer(x) for x, layer in zip(features, self.proj_layers)]
+
+#         for i, layer in enumerate(self.middle_layers):
+#             if i == 0:
+#                 out = layer(proj_features[i]) + proj_features[i+1]
+#             elif i != len(self.middle_layers) - 1:
+#                 out = layer(out) + proj_features[i+1]
+#             else:
+#                 out = layer(out)
+#         # out = self.output_layer(out) * self.scaler + features[-1]
+#         out = self.output_layer(out) + features[-1]
+
+#         return out
+
+
 class PyramidTuner(nn.Module):
     def __init__(self, feature_dims:tuple, middle_dim, output_dim):
         super().__init__()
@@ -151,49 +205,31 @@ class PyramidTuner(nn.Module):
             for dim in feature_dims
         ])
         self.middle_layers = nn.ModuleList([
-            TunerBlock(middle_dim, 2048, middle_dim, kernel_size=kernel_size)
+            TunerBlock(middle_dim, 2048, middle_dim, kernel_size=3)
             # nn.Conv1d(middle_dim, middle_dim, kernel_size=3)
             for _ in range(len(feature_dims))
         ])
-        self.output_layer = nn.Conv1d(middle_dim, output_dim, kernel_size=kernel_size, padding=kernel_size//2)
+        # self.output_layer = nn.Conv1d(middle_dim, output_dim, kernel_size=kernel_size, padding=kernel_size//2)
 
-        # self.scaler = nn.Parameter(torch.ones(1))
-        self._init_weights()
-        # self.apply(self._init_weights)
-
-    def _init_weights(self):
-        with torch.no_grad():
-            for layer in self.proj_layers:
-                nn.init.kaiming_uniform_(layer.weight)
-                nn.init.zeros_(layer.bias)
-
-            nn.init.zeros_(self.output_layer.weight)
-            nn.init.zeros_(self.output_layer.bias)
-
-    # def _init_weights(self, m):
-    #     if isinstance(m, nn.Conv1d):
-    #         # nn.init.kaiming_normal_(m, nn.Conv1d)
-    #         trunc_normal_(m.weight, std=.02)
-    #         if isinstance(m, nn.Conv1d) and m.bias is not None:
-    #             nn.init.zeros_(m.bias)
-    #     elif isinstance(m, nn.LayerNorm):
-    #         nn.init.ones_(m.weight)
-    #         nn.init.zeros_(m.bias)
+        # self._init_weights()
 
     def forward(self, features):
         proj_features = [layer(x) for x, layer in zip(features, self.proj_layers)]
 
+        outs = []
         for i, layer in enumerate(self.middle_layers):
             if i == 0:
-                out = layer(proj_features[i]) + proj_features[i+1]
+                out = layer(proj_features[-i])
             elif i != len(self.middle_layers) - 1:
-                out = layer(out) + proj_features[i+1]
+                out = layer(out) + proj_features[-i+1]
             else:
                 out = layer(out)
+            outs.append(out)
         # out = self.output_layer(out) * self.scaler + features[-1]
-        out = self.output_layer(out) + features[-1]
+        # out = self.output_layer(out) + features[-1]
 
-        return out
+        return outs
+
 
 class PreNormResidual(nn.Module):
     def __init__(self, dim, fn):

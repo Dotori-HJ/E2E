@@ -33,13 +33,13 @@ input_type: image
 lr: 0.0001
 batch_size: 1
 
-fix_encoder: false
+fix_encoder: true
 # fix_encoder: true
 fix_transform: false
 # neck: simple_mixer
 # lr_backbone: 0.0001
 neck: identity
-act_reg: true
+act_reg: false
 two_stage: false
 mixed_selection: false
 look_forward_twice: true
@@ -47,12 +47,12 @@ look_forward_twice: true
 # Image
 # img_resize: 440
 # img_crop_size: 384
-# img_resize: 256
-# img_crop_size: 224
+img_resize: 256
+img_crop_size: 224
 # img_resize: 110
 # img_crop_size: 96
-img_resize: 192
-img_crop_size: 168
+# img_resize: 192
+# img_crop_size: 168
 
 # Training
 # act_reg: false
