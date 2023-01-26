@@ -64,6 +64,6 @@ img_crop_size: 224
 rand_augment_param: rand-m7-n4-mstd0.5-inc1
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_10fps_identity_single_scale_pooler_rel_pos_1e-4_ori_channels
+output_dir: outputs/thumos14_e2e_slowfast_10fps_identity_single_scale_pooler_rel_pos_1e-4_half_channels
 
 # tuner 48.77
