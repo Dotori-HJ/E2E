@@ -22,7 +22,7 @@ def get_rel_pos(rel_pos, d):
 
             return new_pos_embed.reshape(-1, d).permute(1, 0)
 
-def cal_rel_pos_temporal(attn, q, q_shape, k_shape, rel_pos_t):
+def cal_rel_pos_temporal(attn, q, rel_pos_t):
     """
     Temporal Relative Positional Embeddings.
     """
@@ -95,6 +95,10 @@ class AdaptivePoolAttention(nn.Module):
         if drop_rate > 0.0:
             self.proj_drop = nn.Dropout(drop_rate)
 
+        self.rel_pos_t = nn.Parameter(
+            torch.zeros(2 * 64 - 1, head_dim)
+        )
+
     def forward(self, x):
         qkv = self.qkv(x)
         qkv = rearrange(qkv, "b t h w (qkv n c) -> qkv (b n) c t h w", qkv=3, n=self.num_heads)
@@ -113,8 +117,6 @@ class AdaptivePoolAttention(nn.Module):
         attn = cal_rel_pos_temporal(
             attn,
             q,
-            q_shape,
-            k_shape,
             self.rel_pos_t,
         )
         attn = attn.softmax(dim=-1)
