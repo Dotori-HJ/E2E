@@ -22,11 +22,10 @@ def get_rel_pos(rel_pos, d):
 
             return new_pos_embed.reshape(-1, d).permute(1, 0)
 
-def cal_rel_pos_temporal(attn, q, has_cls_embed, q_shape, k_shape, rel_pos_t):
+def cal_rel_pos_temporal(attn, q, q_shape, k_shape, rel_pos_t):
     """
     Temporal Relative Positional Embeddings.
     """
-    sp_idx = 1 if has_cls_embed else 0
     q_t, q_h, q_w = q_shape
     k_t, k_h, k_w = k_shape
     dt = int(2 * max(q_t, k_t) - 1)
@@ -45,7 +44,7 @@ def cal_rel_pos_temporal(attn, q, has_cls_embed, q_shape, k_shape, rel_pos_t):
 
     B, n_head, q_N, dim = q.shape
 
-    r_q = q[:, :, sp_idx:].reshape(B, n_head, q_t, q_h, q_w, dim)
+    r_q = q[:, :, :].reshape(B, n_head, q_t, q_h, q_w, dim)
     # [B, H, q_t, q_h, q_w, dim] -> [q_t, B, H, q_h, q_w, dim] -> [q_t, B*H*q_h*q_w, dim]
     r_q = r_q.permute(2, 0, 1, 3, 4, 5).reshape(
         q_t, B * n_head * q_h * q_w, dim
@@ -56,8 +55,8 @@ def cal_rel_pos_temporal(attn, q, has_cls_embed, q_shape, k_shape, rel_pos_t):
     # [B*H*q_h*q_w, q_t, k_t] -> [B, H, q_t, q_h, q_w, k_t]
     rel = rel.view(B, n_head, q_h, q_w, q_t, k_t).permute(0, 1, 4, 2, 3, 5)
 
-    attn[:, :, sp_idx:, sp_idx:] = (
-        attn[:, :, sp_idx:, sp_idx:].view(B, -1, q_t, q_h, q_w, k_t, k_h, k_w)
+    attn[:, :, :, :] = (
+        attn[:, :, :, :].view(B, -1, q_t, q_h, q_w, k_t, k_h, k_w)
         + rel[:, :, :, :, :, :, None, None]
     ).view(B, -1, q_t * q_h * q_w, k_t * k_h * k_w)
 
@@ -115,7 +114,6 @@ class AdaptivePoolAttention(nn.Module):
         attn = cal_rel_pos_temporal(
             attn,
             q,
-            self.has_cls_embed,
             q_shape,
             k_shape,
             self.rel_pos_t,
