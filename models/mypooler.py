@@ -31,8 +31,6 @@ def cal_rel_pos_temporal(attn, q, rel_pos_t):
     dt = int(2 * max(q_t, k_t) - 1)
     # Intepolate rel pos if needed.
     rel_pos_t = get_rel_pos(rel_pos_t, dt)
-    print(rel_pos_t.size())
-    exit()
 
     # Scale up rel pos if shapes for q and k are different.
     q_t_ratio = max(k_t / q_t, 1.0)
@@ -46,21 +44,21 @@ def cal_rel_pos_temporal(attn, q, rel_pos_t):
 
     B, n_head, q_N, dim = q.shape
 
-    r_q = q[:, :, :].reshape(B, n_head, q_t, q_h, q_w, dim)
+    r_q = q[:, :, :].reshape(B, n_head, q_t, 1, 1, dim)
     # [B, H, q_t, q_h, q_w, dim] -> [q_t, B, H, q_h, q_w, dim] -> [q_t, B*H*q_h*q_w, dim]
     r_q = r_q.permute(2, 0, 1, 3, 4, 5).reshape(
-        q_t, B * n_head * q_h * q_w, dim
+        q_t, B * n_head, dim
     )
 
     # [q_t, B*H*q_h*q_w, dim] * [q_t, dim, k_t] = [q_t, B*H*q_h*q_w, k_t] -> [B*H*q_h*q_w, q_t, k_t]
     rel = torch.matmul(r_q, Rt.transpose(1, 2)).transpose(0, 1)
     # [B*H*q_h*q_w, q_t, k_t] -> [B, H, q_t, q_h, q_w, k_t]
-    rel = rel.view(B, n_head, q_h, q_w, q_t, k_t).permute(0, 1, 4, 2, 3, 5)
+    rel = rel.view(B, n_head, 1, 1, q_t, k_t).permute(0, 1, 4, 2, 3, 5)
 
     attn[:, :, :, :] = (
-        attn[:, :, :, :].view(B, -1, q_t, q_h, q_w, k_t, k_h, k_w)
+        attn[:, :, :, :].view(B, -1, q_t, 1, 1, k_t, 1, 1)
         + rel[:, :, :, :, :, :, None, None]
-    ).view(B, -1, q_t * q_h * q_w, k_t * k_h * k_w)
+    ).view(B, -1, q_t, k_t)
 
     return attn
 
@@ -99,7 +97,7 @@ class AdaptivePoolAttention(nn.Module):
             self.proj_drop = nn.Dropout(drop_rate)
 
         self.rel_pos_t = nn.Parameter(
-            torch.zeros(2 * 32 - 1, head_dim)
+            torch.zeros(2 * 64 - 1, head_dim)
         )
 
     def forward(self, x):
