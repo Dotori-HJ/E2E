@@ -276,7 +276,7 @@ class MLP(nn.Module):
             #     nn.init.zeros_(self.proj.bias)
 
     def forward(self, x):
-        return self.linear2(F.gelu(self.linear1(x))) + x
+        return self.linear2(F.gelu(self.linear1(x)))
 
 class Pooler(nn.Module):
     def __init__(self, pool_size=3):
@@ -294,21 +294,25 @@ class Mixer(nn.Module):
     def __init__(self, in_dim, hidden_dim, out_dim, temporal_length, conv=False):
         super().__init__()
         self.conv = conv
-        self.norm1 = LayerNorm(in_dim)
         self.mixer = MLP(temporal_length, int(temporal_length * 4), temporal_length)
+        self.norm1 = LayerNorm(out_dim)
         # self.mixer = Pooler()
-        self.norm2 = LayerNorm(in_dim)
         self.mlp = MLP(in_dim, hidden_dim, out_dim, conv=conv)
+        self.norm2 = LayerNorm(out_dim)
 
         # self.channel_mlp = MLP(temporal_length, hidden_dim, temporal_length)
 
     def forward(self, x):
         if self.conv:
-            x = self.mixer(self.norm1(x))
-            x = self.mlp(self.norm2(x))
+            # x = self.mixer(self.norm1(x)) + x
+            x = self.norm1(self.mixer(x) + x)
+            # x = self.mlp(self.norm2(x)) + x
+            x = self.norm2(self.mlp(x) + x)
         else:
-            x = self.mixer(self.norm1(x))
-            x = self.mlp(self.norm2(x).transpose(2, 1)).transpose(2, 1)
+            # x = self.mixer(self.norm1(x)) + x
+            x = self.norm1(self.mixer(x) + x)
+            # x = self.mlp(self.norm2(x).transpose(2, 1)).transpose(2, 1) + x
+            x = self.norm2(self.mlp(x).transpose(2, 1).transpose(2, 1) + x)
         return x
 
 class MixerTuner(nn.Module):
@@ -318,23 +322,26 @@ class MixerTuner(nn.Module):
         self.middle_dim = middle_dim
         self.num_layers = num_layers
 
+        self.mixer_input_dim = int(4 * middle_dim)
+        self.mixer_hidden_dim = int(self.mixer_input_dim * 2)
+
         self.input_projs = nn.ModuleList([
             nn.Sequential(
                 nn.Conv1d(feature_dim, self.middle_dim, kernel_size=1),
-                # nn.GroupNorm(32, self.middle_dim)
+                nn.GroupNorm(32, self.middle_dim)
             )
             for feature_dim in feature_dims
         ])
         self.mixers = nn.ModuleList([
             Mixer(
-                int(4 * middle_dim),
-                int(4 * middle_dim * 2),
-                int(4 * middle_dim),
+                self.mixer_input_dim,
+                self.mixer_hidden_dim,
+                self.mixer_input_dim,
                 temporal_length,
                 conv=True,
             ) for i in range(num_layers)
         ])
-        self.norm = LayerNorm(int(4 * middle_dim))
+        # self.norm = LayerNorm(self.mixer_input_dim)
 
     def forward(self, features):
         features = [layer(x) for layer, x in zip(self.input_projs, features)]
@@ -342,7 +349,7 @@ class MixerTuner(nn.Module):
 
         for layer in self.mixers:
             multi_features = layer(multi_features)
-        multi_features = self.norm(multi_features)
+        # multi_features = self.norm(multi_features)
 
         return [multi_features]
 
