@@ -488,7 +488,7 @@ class ResNet3dSlowFast(nn.Module):
         state_dict = checkpoint['state_dict']
         state_dict = {k[len('backbone.'):]:v for k, v in state_dict.items() if 'cls_head' not in k}
 
-        self.load_state_dict(state_dict)
+        self.load_state_dict(state_dict, strict=False)
 
     def train(self, mode=True):
         """Set the optimization status when training."""
