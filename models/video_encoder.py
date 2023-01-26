@@ -316,7 +316,7 @@ class Mixer(nn.Module):
         return x
 
 class MixerTuner(nn.Module):
-    def __init__(self, feature_dims, middle_dim, temporal_length, num_layers=1):
+    def __init__(self, feature_dims, middle_dim, temporal_length, num_layers=2):
         super().__init__()
         self.feature_dims = feature_dims
         self.middle_dim = middle_dim
