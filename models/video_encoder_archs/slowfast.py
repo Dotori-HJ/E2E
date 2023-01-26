@@ -541,9 +541,9 @@ class ResNet3dSlowFast(nn.Module):
             x_slow = res_layer(x_slow)
             res_layer_fast = getattr(self.fast_path, layer_name)
             x_fast = res_layer_fast(x_fast)
-            if i in self.out_indices:
-                slow_outs.append(x_slow)
-                fast_outs.append(x_fast)
+            # if i in self.out_indices:
+            #     slow_outs.append(x_slow)
+            #     fast_outs.append(x_fast)
             if (i != len(self.slow_path.res_layers) - 1
                     and self.slow_path.lateral):
                 # No fusion needed in the final stage
@@ -557,22 +557,25 @@ class ResNet3dSlowFast(nn.Module):
 
         # print([x.size() for x in slow_outs])
         # print([x.size() for x in fast_outs])
-        slow_outs = [
-            # F.adaptive_avg_pool3d(x, (None, 1, 1)).flatten(2)
-            pooler(x)
-            for x, pooler in zip(slow_outs[-1], self.slow_poolers)
-        ]
-        fast_outs = [
-            # F.adaptive_avg_pool3d(x, (None, 1, 1)).flatten(2)
-            pooler(x)
-            for x, pooler in zip(fast_outs[-1], self.fast_poolers)
-        ]
+        # slow_outs = [
+        #     # F.adaptive_avg_pool3d(x, (None, 1, 1)).flatten(2)
+        #     pooler(x)
+        #     for x, pooler in zip(slow_outs[-1], self.slow_poolers)
+        # ]
+        # fast_outs = [
+        #     # F.adaptive_avg_pool3d(x, (None, 1, 1)).flatten(2)
+        #     pooler(x)
+        #     for x, pooler in zip(fast_outs[-1], self.fast_poolers)
+        # ]
         # print("---------------------------")
         # print([x.size() for x in slow_outs])
         # print([x.size() for x in fast_outs])
 
         # x_slow = F.adaptive_avg_pool3d(x_slow, (None, 1, 1)).flatten(2)
+        x_slow = self.slow_poolers(x_slow)
         # x_fast = F.adaptive_avg_pool3d(x_fast, (None, 1, 1)).flatten(2)
+        # x_fast = F.adaptive_avg_pool3d(x_fast, (None, 1, 1)).flatten(2)
+        x_fast = self.fast_poolers(x_fast)
 
         # output stride = 1
         if self.slow_upsample == 8:
@@ -584,19 +587,19 @@ class ResNet3dSlowFast(nn.Module):
             x_slow_up = F.interpolate(x_slow, scale_factor=4, mode='linear')
         # output stride = 4
         elif self.slow_upsample == 2:
-            slow_outs = [F.interpolate(x, scale_factor=2, mode='linear') for x in slow_outs]
-            fast_outs = [F.interpolate(x, scale_factor=0.25, mode='linear') for x in fast_outs]
-            # x_fast_down = F.interpolate(x_fast, scale_factor=0.25, mode='linear')
-            # x_slow_up = F.interpolate(x_slow, scale_factor=2, mode='linear')
+            # slow_outs = [F.interpolate(x, scale_factor=2, mode='linear') for x in slow_outs]
+            # fast_outs = [F.interpolate(x, scale_factor=0.25, mode='linear') for x in fast_outs]
+            x_fast_down = F.interpolate(x_fast, scale_factor=0.25, mode='linear')
+            x_slow_up = F.interpolate(x_slow, scale_factor=2, mode='linear')
 
         # print("---------------------------")
         # print([x.size() for x in slow_outs])
         # print([x.size() for x in fast_outs])
         # print("---------------------------")
-        outs = [torch.cat((slow, fast), dim=1) for slow, fast in zip(slow_outs, fast_outs)]
+        # outs = [torch.cat((slow, fast), dim=1) for slow, fast in zip(slow_outs, fast_outs)]
         # print([x.size() for x in outs])
         # exit()
-        # out = torch.cat((x_slow_up, x_fast_down), dim=1)
+        out = torch.cat((x_slow_up, x_fast_down), dim=1)
         return outs
 
 
