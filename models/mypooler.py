@@ -2,6 +2,7 @@ from functools import partial
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from einops import rearrange, reduce
 
 from .pooler import DropPath, Mlp
@@ -26,10 +27,12 @@ def cal_rel_pos_temporal(attn, q, rel_pos_t):
     """
     Temporal Relative Positional Embeddings.
     """
-    q_t, k_t = q.size(1)
+    q_t = k_t = q.size(1)
     dt = int(2 * max(q_t, k_t) - 1)
     # Intepolate rel pos if needed.
     rel_pos_t = get_rel_pos(rel_pos_t, dt)
+    print(rel_pos_t.size())
+    exit()
 
     # Scale up rel pos if shapes for q and k are different.
     q_t_ratio = max(k_t / q_t, 1.0)
