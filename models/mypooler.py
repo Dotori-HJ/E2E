@@ -43,6 +43,7 @@ def cal_rel_pos_temporal(attn, q, rel_pos_t):
     Rt = rel_pos_t[dist_t.long()]
 
     B, n_head, q_N, dim = q.shape
+    print(q.size())
 
     r_q = q[:, :, :].reshape(B, n_head, q_t, 1, 1, dim)
     # [B, H, q_t, q_h, q_w, dim] -> [q_t, B, H, q_h, q_w, dim] -> [q_t, B*H*q_h*q_w, dim]
