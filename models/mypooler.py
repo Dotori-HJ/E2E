@@ -192,6 +192,7 @@ class AdaptivePooler(nn.Module):
         else:
             self.pool_proj = nn.Identity()
 
+        self.proj_norm = norm_layer(base_dim)
         self.apply(self._init_weights)
 
     def _init_weights(self, m):
@@ -209,6 +210,7 @@ class AdaptivePooler(nn.Module):
         x = rearrange(x, "b c ... -> b ... c")
         x = self.drop_path(self.attn(self.norm1(x))) + self.pool_proj(pool_skip)
         x = self.drop_path(self.mlp(self.norm2(x))) + self.proj(x)
+        x = self.proj_norm(x)
         x = rearrange(x, "b ... c -> b c ...")
         return x
 
