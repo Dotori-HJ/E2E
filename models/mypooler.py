@@ -1,8 +1,68 @@
+from functools import partial
+
 import torch
 import torch.nn as nn
 from einops import rearrange, reduce
 
 from .pooler import DropPath, Mlp
+
+
+def get_rel_pos(rel_pos, d):
+    if isinstance(d, int):
+        ori_d = rel_pos.shape[0]
+        if ori_d == d:
+            return rel_pos
+        else:
+            # Interpolate rel pos.
+            new_pos_embed = F.interpolate(
+                rel_pos.reshape(1, ori_d, -1).permute(0, 2, 1),
+                size=d,
+                mode="linear",
+            )
+
+            return new_pos_embed.reshape(-1, d).permute(1, 0)
+
+def cal_rel_pos_temporal(attn, q, has_cls_embed, q_shape, k_shape, rel_pos_t):
+    """
+    Temporal Relative Positional Embeddings.
+    """
+    sp_idx = 1 if has_cls_embed else 0
+    q_t, q_h, q_w = q_shape
+    k_t, k_h, k_w = k_shape
+    dt = int(2 * max(q_t, k_t) - 1)
+    # Intepolate rel pos if needed.
+    rel_pos_t = get_rel_pos(rel_pos_t, dt)
+
+    # Scale up rel pos if shapes for q and k are different.
+    q_t_ratio = max(k_t / q_t, 1.0)
+    k_t_ratio = max(q_t / k_t, 1.0)
+    dist_t = (
+        torch.arange(q_t)[:, None] * q_t_ratio
+        - torch.arange(k_t)[None, :] * k_t_ratio
+    )
+    dist_t += (k_t - 1) * k_t_ratio
+    Rt = rel_pos_t[dist_t.long()]
+
+    B, n_head, q_N, dim = q.shape
+
+    r_q = q[:, :, sp_idx:].reshape(B, n_head, q_t, q_h, q_w, dim)
+    # [B, H, q_t, q_h, q_w, dim] -> [q_t, B, H, q_h, q_w, dim] -> [q_t, B*H*q_h*q_w, dim]
+    r_q = r_q.permute(2, 0, 1, 3, 4, 5).reshape(
+        q_t, B * n_head * q_h * q_w, dim
+    )
+
+    # [q_t, B*H*q_h*q_w, dim] * [q_t, dim, k_t] = [q_t, B*H*q_h*q_w, k_t] -> [B*H*q_h*q_w, q_t, k_t]
+    rel = torch.matmul(r_q, Rt.transpose(1, 2)).transpose(0, 1)
+    # [B*H*q_h*q_w, q_t, k_t] -> [B, H, q_t, q_h, q_w, k_t]
+    rel = rel.view(B, n_head, q_h, q_w, q_t, k_t).permute(0, 1, 4, 2, 3, 5)
+
+    attn[:, :, sp_idx:, sp_idx:] = (
+        attn[:, :, sp_idx:, sp_idx:].view(B, -1, q_t, q_h, q_w, k_t, k_h, k_w)
+        + rel[:, :, :, :, :, :, None, None]
+    ).view(B, -1, q_t * q_h * q_w, k_t * k_h * k_w)
+
+    return attn
+
 
 
 class AdaptivePoolAttention(nn.Module):
@@ -52,6 +112,14 @@ class AdaptivePoolAttention(nn.Module):
         v = self.norm_v(v)
 
         attn = (q * self.scale) @ k.transpose(-2, -1)
+        attn = cal_rel_pos_temporal(
+            attn,
+            q,
+            self.has_cls_embed,
+            q_shape,
+            k_shape,
+            self.rel_pos_t,
+        )
         attn = attn.softmax(dim=-1)
         x = attn @ v
         x = x + q
@@ -71,11 +139,12 @@ class AdaptivePooler(nn.Module):
         base_dim,
         num_heads,
         mlp_ratio=4.0,
-        qkv_bias=False,
+        qkv_bias=True,
         drop_rate=0.0,
         drop_path=0.0,
         act_layer=nn.GELU,
         norm_layer=nn.LayerNorm,
+        norm_eps=1e-6,
         pooler=nn.AdaptiveAvgPool3d,
         pool_size=(None, 1, 1),
         up_rate=None,
@@ -84,6 +153,7 @@ class AdaptivePooler(nn.Module):
 
         self.input_dim = input_dim
         self.base_dim = base_dim
+        self.norm_layer = partial(norm_layer, norm_eps=norm_eps)
 
         # Attention
         self.norm1 = norm_layer(input_dim)
@@ -128,6 +198,18 @@ class AdaptivePooler(nn.Module):
             self.pool_proj = nn.Linear(input_dim, base_dim)
         else:
             self.pool_proj = nn.Identity()
+
+        self.apply(self._init_weights)
+
+    def _init_weights(self, m):
+        if isinstance(m, nn.Linear):
+            nn.init.trunc_normal_(m.weight, std=0.02)
+            if isinstance(m, nn.Linear) and m.bias is not None:
+                nn.init.zeros_(m.bias)
+
+        elif isinstance(m, nn.LayerNorm):
+            nn.init.ones_(m.weight)
+            nn.init.zeros_(m.bias)
 
     def forward(self, x):
         pool_skip = self.pool_skip(x).flatten(2).transpose(-2, -1)

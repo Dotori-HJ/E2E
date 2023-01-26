@@ -9,7 +9,7 @@ dec_layers: 4
 # dim_feedforward: 2048
 dim_feedforward: 1024
 num_queries: 40
-dropout: 0.0
+dropout: 0.1
 temperature: 10000
 # temperature: 20
 
@@ -32,19 +32,19 @@ fix_transform: false
 # neck: pyramid
 # lr_backbone: 0.0001
 neck: identity
-act_reg: false
-two_stage: true
-mixed_selection: true
+act_reg: true
+two_stage: false
+mixed_selection: false
 look_forward_twice: false
 
 
 # Image
 # img_resize: 440
-img_resize: 256
-# img_resize: 110
+# img_resize: 256
+img_resize: 110
 # img_crop_size: 384
-img_crop_size: 224
-# img_crop_size: 96
+# img_crop_size: 224
+img_crop_size: 96
 
 # Training
 # act_reg: false
@@ -54,4 +54,4 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 # rand_augment_param: rand-m7-n2-mstd0.5-inc1
 
 # output
-output_dir: outputs/thumos14_lft
+output_dir: outputs/thumos14_e2e_pooler_96
