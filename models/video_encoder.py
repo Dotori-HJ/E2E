@@ -395,8 +395,8 @@ class VideoEncoder(nn.Module):
         if arch == 'slowfast':
             self.backbone = ResNet3dSlowFast(None, depth=cfg.slowfast_depth,freeze_bn=cfg.freeze_bn, freeze_bn_affine=cfg.freeze_affine, slow_upsample=cfg.slow_upsample)
             self.num_channels = 2304
-            self.pyramid_channels = (288, 576, 1152, 2304)
-            # self.pyramid_channels = (1024, 1024, 1024, 1024)
+            # self.pyramid_channels = (288, 576, 1152, 2304)
+            self.pyramid_channels = (1024, 1024, 1024, 1152)
             self.base_channels = 512
             temporal_length = 64
 
