@@ -7,6 +7,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn.modules.batchnorm import _BatchNorm
 
+from ..mypooler import AdaptivePooler
 from .resnet3d import ConvModule, ResNet3d, kaiming_init
 
 
@@ -456,6 +457,8 @@ class ResNet3dSlowFast(nn.Module):
 
         self.slow_path = build_pathway(slow_pathway)
         self.fast_path = build_pathway(fast_pathway)
+        self.slow_poolers = nn.ModuleList([AdaptivePooler(num_channels, 512, 8) for num_channels in [256, 512, 1024, 2048]])
+        self.fast_poolers = nn.ModuleList([AdaptivePooler(num_channels, 512, 8) for num_channels in [32, 64, 128, 256]])
 
     def init_weights(self, pretrained=None):
         """Initiate the parameters either from existing checkpoint or from
@@ -551,12 +554,14 @@ class ResNet3dSlowFast(nn.Module):
         # print([x.size() for x in slow_outs])
         # print([x.size() for x in fast_outs])
         slow_outs = [
-            F.adaptive_avg_pool3d(x, (None, 1, 1)).flatten(2)
-            for x in slow_outs
+            # F.adaptive_avg_pool3d(x, (None, 1, 1)).flatten(2)
+            pooler(x)
+            for x, pooler in zip(slow_outs, self.slow_poolers)
         ]
         fast_outs = [
-            F.adaptive_avg_pool3d(x, (None, 1, 1)).flatten(2)
-            for x in fast_outs
+            # F.adaptive_avg_pool3d(x, (None, 1, 1)).flatten(2)
+            pooler(x)
+            for x, pooler in zip(fast_outs, self.fast_poolers)
         ]
         # print("---------------------------")
         # print([x.size() for x in slow_outs])

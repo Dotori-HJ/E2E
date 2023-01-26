@@ -1,3 +1,21 @@
+import torch
+
+from models.mypooler import AdaptivePooler
+
+model = AdaptivePooler(2304, 256, 8).cuda()
+x = torch.randn(4, 2304, 128, 14, 14).cuda()
+
+print(x.size())
+out = model(x)
+print(out.size())
+
+x = torch.randn(4, 2304, 64, 14, 14).cuda()
+out = model(x)
+print(out.size())
+
+exit()
+
+
 #!/usr/bin/env python3
 import math
 import numbers
