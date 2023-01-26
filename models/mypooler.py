@@ -26,8 +26,7 @@ def cal_rel_pos_temporal(attn, q, q_shape, k_shape, rel_pos_t):
     """
     Temporal Relative Positional Embeddings.
     """
-    q_t, q_h, q_w = q_shape
-    k_t, k_h, k_w = k_shape
+    q_t, k_t = q.size(1)
     dt = int(2 * max(q_t, k_t) - 1)
     # Intepolate rel pos if needed.
     rel_pos_t = get_rel_pos(rel_pos_t, dt)
