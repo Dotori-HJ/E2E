@@ -99,7 +99,7 @@ class AdaptivePoolAttention(nn.Module):
             self.proj_drop = nn.Dropout(drop_rate)
 
         self.rel_pos_t = nn.Parameter(
-            torch.zeros(2 * 64 - 1, head_dim)
+            torch.zeros(2 * 32 - 1, head_dim)
         )
 
     def forward(self, x):
