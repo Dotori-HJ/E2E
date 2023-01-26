@@ -27,36 +27,31 @@ def cal_rel_pos_temporal(attn, q, rel_pos_t):
     """
     Temporal Relative Positional Embeddings.
     """
-    q_t = k_t = q.size(2)
-    dt = int(2 * max(q_t, k_t) - 1)
+    B, n_head, t, dim = q.size()
+
+    dt = int(2 * t - 1)
     # Intepolate rel pos if needed.
     rel_pos_t = get_rel_pos(rel_pos_t, dt)
 
     # Scale up rel pos if shapes for q and k are different.
-    q_t_ratio = max(k_t / q_t, 1.0)
-    k_t_ratio = max(q_t / k_t, 1.0)
-    dist_t = (
-        torch.arange(q_t)[:, None] * q_t_ratio
-        - torch.arange(k_t)[None, :] * k_t_ratio
-    )
-    dist_t += (k_t - 1) * k_t_ratio
+    dist_t = torch.arange(t)
+    dist_t = dist_t[:, None] - dist_t[None, :]
+    dist_t += (t - 1)
     Rt = rel_pos_t[dist_t.long()]
-
-    B, n_head, q_N, dim = q.shape
 
     r_q = q
     # [B, H, q_t, dim] -> [q_t, B, H, dim] -> [q_t, B*H, dim]
-    r_q = r_q.permute(2, 0, 1, 3).reshape(q_t, B * n_head, dim)
+    r_q = r_q.permute(2, 0, 1, 3).reshape(t, B * n_head, dim)
 
     # [q_t, B*H, dim] * [q_t, dim, k_t] = [q_t, B*H, k_t] -> [B*H, q_t, k_t]
     rel = torch.matmul(r_q, Rt.transpose(1, 2)).transpose(0, 1)
     # [B*H, q_t, k_t] -> [B, H, q_t, k_t]
-    rel = rel.view(B, n_head, q_t, k_t)
+    rel = rel.view(B, n_head, t, t)
 
     attn[:, :, :, :] = (
-        attn[:, :, :, :].view(B, -1, q_t, k_t, 1, 1)
+        attn[:, :, :, :].view(B, -1, t, t, 1, 1)
         + rel[:, :, :, :, None, None]
-    ).view(B, -1, q_t, k_t)
+    ).view(B, -1, t, t)
 
     return attn
 
