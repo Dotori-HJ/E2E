@@ -146,7 +146,7 @@ class AdaptivePooler(nn.Module):
 
         self.input_dim = input_dim
         self.base_dim = base_dim
-        self.norm_layer = partial(norm_layer, norm_eps=norm_eps)
+        norm_layer = partial(norm_layer, eps=norm_eps)
 
         # Attention
         self.norm1 = norm_layer(input_dim)

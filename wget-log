@@ -1,0 +1,15 @@
+--2023-01-26 17:54:33--  https://crcv.ucf.edu/THUMOS14/Validation_set/videos/-76d-7Ju7L0.mp4
+Resolving crcv.ucf.edu (crcv.ucf.edu)... 132.170.214.127
+Connecting to crcv.ucf.edu (crcv.ucf.edu)|132.170.214.127|:443... connected.
+WARNING: cannot verify crcv.ucf.edu's certificate, issued by ‘CN=InCommon RSA Server CA,OU=InCommon,O=Internet2,L=Ann Arbor,ST=MI,C=US’:
+  Unable to locally verify the issuer's authority.
+HTTP request sent, awaiting response... 301 Moved Permanently
+Location: https://www.crcv.ucf.edu/THUMOS14/Validation_set/videos/-76d-7Ju7L0.mp4 [following]
+--2023-01-26 17:54:36--  https://www.crcv.ucf.edu/THUMOS14/Validation_set/videos/-76d-7Ju7L0.mp4
+Resolving www.crcv.ucf.edu (www.crcv.ucf.edu)... 132.170.214.127
+Connecting to www.crcv.ucf.edu (www.crcv.ucf.edu)|132.170.214.127|:443... connected.
+WARNING: cannot verify www.crcv.ucf.edu's certificate, issued by ‘CN=InCommon RSA Server CA,OU=InCommon,O=Internet2,L=Ann Arbor,ST=MI,C=US’:
+  Unable to locally verify the issuer's authority.
+HTTP request sent, awaiting response... 404 Not Found
+2023-01-26 17:54:38 ERROR 404: Not Found.
+

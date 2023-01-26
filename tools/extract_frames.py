@@ -1,10 +1,11 @@
-from re import sub
-import numpy as np
-import os.path as osp
-import concurrent.futures
-import os
 import argparse
+import concurrent.futures
 import json
+import os
+import os.path as osp
+from re import sub
+
+import numpy as np
 
 
 def extract_frames(video_path, dst_dir, fps):
@@ -12,12 +13,13 @@ def extract_frames(video_path, dst_dir, fps):
         os.makedirs(dst_dir)
 
     video_fname = osp.basename(video_path)
-    
-    if not osp.exists(video_path):
-        subdir = 'test_set/TH14_test_set_mp4' if 'test' in video_fname else 'Validation_set/videos'
-        url = f'https://crcv.ucf.edu/THUMOS14/{subdir}/{video_fname}'
-        os.system('wget {} -O {} --no-check-certificate'.format(url, video_path))
-    cmd = 'ffmpeg -i "{}"  -filter:v "fps=fps={}" "{}/img_%07d.jpg"'.format(video_path, fps, dst_dir)
+
+    # if not osp.exists(video_path):
+    #     subdir = 'test_set/TH14_test_set_mp4' if 'test' in video_fname else 'Validation_set/videos'
+    #     url = f'https://crcv.ucf.edu/THUMOS14/{subdir}/{video_fname}'
+    #     os.system('wget {} -O {} --no-check-certificate'.format(url, video_path))
+    # cmd = 'ffmpeg -i "{}"  -filter:v "fps=fps={}" "{}/img_%07d.jpg"'.format(video_path, fps, dst_dir)
+    cmd = f'ffmpeg -i "{video_path}" -vf setpts=N/TB -r 1 -vframes 384 "{dst_dir}/img_%07d.jpg"'    # ActivityNet v1.3
     print(cmd)
     ret_code = os.system(cmd)
     if ret_code == 0:
@@ -47,29 +49,38 @@ def main(subset):
 
     log_dir = 'logs/frame_extracted_{}fps'.format(args.fps)
     mkdir_if_missing(log_dir)
-    mkdir_if_missing(args.video_dir)
+    # mkdir_if_missing(args.video_dir)
 
-    database = json.load(open('data/thumos14/th14_annotations_with_fps_duration.json'))['database']
-    vid_names = list(sorted([x for x in database if database[x]['subset'] == subset]))
+    # database = json.load(open('data/thumos14/th14_annotations_with_fps_duration.json'))['database']
+    # database = json.load(open('/home/ds/HDD2/ActivityNet/activity_net.v1-3.min.json'))['database']
+    # vid_names = list(sorted([x for x in database if database[x]['subset'] == subset]))
+
+    vid_names = os.listdir(args.video_dir)
+    # vid_names = []
 
     start_ind = 0 if args.start is None else args.start
     end_ind = len(vid_names) if args.end is None else min(args.end, len(vid_names))
 
-    vid_names = vid_names[args.start:args.end]
+    # vid_names = vid_names[args.start:args.end]
 
     finished = os.listdir('logs/frame_extracted_{}fps'.format(args.fps))
     videos_todo = list(sorted(set(vid_names).difference(finished)))
     with concurrent.futures.ProcessPoolExecutor(4) as f:
-        futures = [f.submit(extract_frames, osp.join(args.video_dir, x + '.mp4'),
-                            osp.join(args.frame_dir, x), args.fps) for x in videos_todo]
+        # futures = [f.submit(extract_frames, osp.join(args.video_dir, 'v_' + x + '.mp4'),
+        futures = [f.submit(extract_frames, osp.join(args.video_dir, x),
+                            osp.join(args.frame_dir, os.path.splitext(x)[0]), args.fps) for x in videos_todo]
 
     for f in futures:
         f.result()
 
 
 if __name__ == '__main__':
-    main('val')
-    main('test')
+    # main('val')
+    # main('test')
+    main('train')
+    main('validation')
 
 # thumos14
 # python tools/extract_frames.py --video_dir data/thumos14/videos --frame_dir data/thumos14/img10fps --fps  10 -e 4
+
+# python tools/extract_frames.py --video_dir /home/ds/HDD2/ActivityNet/archives/v1-3/train_val --frame_dir /home/ds/SSD/ActivityNet_fixed/train
