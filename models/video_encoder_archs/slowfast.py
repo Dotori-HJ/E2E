@@ -457,8 +457,11 @@ class ResNet3dSlowFast(nn.Module):
 
         self.slow_path = build_pathway(slow_pathway)
         self.fast_path = build_pathway(fast_pathway)
-        self.slow_poolers = nn.ModuleList([AdaptivePooler(num_channels, 512, 8) for num_channels in [256, 512, 1024, 2048]])
-        self.fast_poolers = nn.ModuleList([AdaptivePooler(num_channels, 512, 8) for num_channels in [32, 64, 128, 256]])
+        self.out_indices = (3, )
+        # self.slow_poolers = nn.ModuleList([AdaptivePooler(num_channels, 512, 8) for num_channels in [256, 512, 1024, 2048]])
+        self.slow_poolers = nn.ModuleList([AdaptivePooler(2048, 512, 8)])
+        # self.fast_poolers = nn.ModuleList([AdaptivePooler(num_channels, 512, 8) for num_channels in [32, 64, 128, 256]])
+        self.fast_poolers = nn.ModuleList([AdaptivePooler(256, 512, 8)])
 
     def init_weights(self, pretrained=None):
         """Initiate the parameters either from existing checkpoint or from
@@ -538,8 +541,9 @@ class ResNet3dSlowFast(nn.Module):
             x_slow = res_layer(x_slow)
             res_layer_fast = getattr(self.fast_path, layer_name)
             x_fast = res_layer_fast(x_fast)
-            slow_outs.append(x_slow)
-            fast_outs.append(x_fast)
+            if i in self.out_indices:
+                slow_outs.append(x_slow)
+                fast_outs.append(x_fast)
             if (i != len(self.slow_path.res_layers) - 1
                     and self.slow_path.lateral):
                 # No fusion needed in the final stage
@@ -556,12 +560,12 @@ class ResNet3dSlowFast(nn.Module):
         slow_outs = [
             # F.adaptive_avg_pool3d(x, (None, 1, 1)).flatten(2)
             pooler(x)
-            for x, pooler in zip(slow_outs, self.slow_poolers)
+            for x, pooler in zip(slow_outs[-1], self.slow_poolers)
         ]
         fast_outs = [
             # F.adaptive_avg_pool3d(x, (None, 1, 1)).flatten(2)
             pooler(x)
-            for x, pooler in zip(fast_outs, self.fast_poolers)
+            for x, pooler in zip(fast_outs[-1], self.fast_poolers)
         ]
         # print("---------------------------")
         # print([x.size() for x in slow_outs])
