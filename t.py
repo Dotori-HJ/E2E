@@ -2,6 +2,8 @@ import torch
 
 from models.mypooler import AdaptivePooler
 
+#fjdkslfjdsklfjsdklfjsdlkf
+
 model = AdaptivePooler(2304, 256, 8).cuda()
 x = torch.randn(4, 2304, 128, 14, 14).cuda()
 
