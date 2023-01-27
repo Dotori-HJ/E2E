@@ -1,28 +1,28 @@
-import torch
-import torch.optim as optim
+# import torch
+# import torch.optim as optim
 
-from models.video_encoder import MixerTuner
+# from models.video_encoder import MixerTuner
 
-batch_size = 1
-temporal_length = 5
-channels = [10, 20, 30, 40]
-x = [torch.randn(batch_size, channel, temporal_length).cuda() for channel in channels]
+# batch_size = 1
+# temporal_length = 5
+# channels = [10, 20, 30, 40]
+# x = [torch.randn(batch_size, channel, temporal_length).cuda() for channel in channels]
 
 
-tuner = MixerTuner(channels, temporal_length).cuda()
-optimizer = optim.Adam(tuner.parameters(), lr=1e-4)
+# tuner = MixerTuner(channels, temporal_length).cuda()
+# optimizer = optim.Adam(tuner.parameters(), lr=1e-4)
 
-print(tuner.mixers[-1].mlp.linear2.weight)
-optimizer.zero_grad()
+# print(tuner.mixers[-1].mlp.linear2.weight)
+# optimizer.zero_grad()
 
-x = tuner(x)
-print(x[-1] - x)
-x.mean().backward()
+# x = tuner(x)
+# print(x[-1] - x)
+# x.mean().backward()
 
-optimizer.step()
+# optimizer.step()
 
-print(tuner.mixers[-1].mlp.linear2.weight)
-exit()
+# print(tuner.mixers[-1].mlp.linear2.weight)
+# exit()
 
 import torch
 import torch.optim as optim

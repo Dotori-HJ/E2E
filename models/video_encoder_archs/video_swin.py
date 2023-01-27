@@ -10,6 +10,8 @@ import torch.utils.checkpoint as checkpoint
 from einops import rearrange
 from timm.models.layers import DropPath, trunc_normal_
 
+from ..mypooler import AdaptivePooler
+
 
 class Mlp(nn.Module):
     """ Multilayer perceptron."""
@@ -486,7 +488,8 @@ class SwinTransformer3D(nn.Module):
                  patch_norm=False,
                  frozen_stages=-1,
                  use_checkpoint=False,
-                 out_indices=(0, 1, 2, 3)
+                #  out_indices=(0, 1, 2, 3)
+                 out_indices=(3, )
                  ):
         super().__init__()
 
@@ -543,6 +546,8 @@ class SwinTransformer3D(nn.Module):
             layer = norm_layer(num_features[i_layer])
             layer_name = f'norm{i_layer}'
             self.add_module(layer_name, layer)
+
+        self.pooler = AdaptivePooler(768, 512)
 
         self._freeze_stages()
 
@@ -671,7 +676,8 @@ class SwinTransformer3D(nn.Module):
                 x_out = rearrange(x, 'n c d h w -> n d h w c')
                 x_out = norm_layer(x_out)
                 x_out = rearrange(x_out, 'n d h w c -> n c d h w')
-                x_out = F.adaptive_avg_pool3d(x_out, (None, 1, 1)).flatten(2)
+                # x_out = F.adaptive_avg_pool3d(x_out, (None, 1, 1)).flatten(2)
+                x_out = self.pooler(x_out)
                 outs.append(x_out)
 
             # outs.append(x)
