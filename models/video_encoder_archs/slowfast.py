@@ -460,10 +460,10 @@ class ResNet3dSlowFast(nn.Module):
         self.out_indices = (3, )
         # self.slow_poolers = nn.ModuleList([AdaptivePooler(num_channels, 512, 8) for num_channels in [256, 512, 1024, 2048]])
         # self.slow_poolers = nn.ModuleList([AdaptivePooler(2048, 1024, 8)])
-        self.slow_poolers = nn.ModuleList([AdaptivePooler(2048, 256, 8, up_rate=4)])
+        self.slow_poolers = nn.ModuleList([AdaptivePooler(2048, 512, 8, up_rate=4)])
         # self.fast_poolers = nn.ModuleList([AdaptivePooler(num_channels, 512, 8) for num_channels in [32, 64, 128, 256]])
         # self.fast_poolers = nn.ModuleList([AdaptivePooler(256, 128, 8)])
-        self.fast_poolers = nn.ModuleList([AdaptivePooler(256, 32, 8, up_rate=4)])
+        self.fast_poolers = nn.ModuleList([AdaptivePooler(256, 64, 8, up_rate=4)])
 
     def init_weights(self, pretrained=None):
         """Initiate the parameters either from existing checkpoint or from
