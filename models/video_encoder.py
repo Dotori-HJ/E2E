@@ -397,7 +397,7 @@ class VideoEncoder(nn.Module):
             self.num_channels = 2304
             # self.pyramid_channels = (288, 576, 1152, 2304)
             # self.pyramid_channels = (1024, 1024, 1024, 1152)
-            self.pyramid_channels = (1024, 1024, 1024, 576)
+            self.pyramid_channels = (1024, 1024, 1024, 288)
             self.base_channels = 512
             temporal_length = 64
 
