@@ -15,16 +15,16 @@ dim_feedforward: 1024
 # num_queries: 100
 num_queries: 40
 # dropout: 0.1
-dropout: 0.0
+dropout: 0.1
 temperature: 10000
 # temperature: 20
 
 # data setting
 dataset_name: thumos14
-feature: img30fps
+feature: img10fps
 # feature: img20fps
 online_slice: true
-slice_len: 768
+slice_len: 256
 slice_overlap: 0.75
 test_slice_overlap: 0.25
 input_type: image
@@ -63,4 +63,4 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 
 # output
 # output_dir: outputs/thumos14_swin_base_full_168
-output_dir: outputs/thumos14_swin_base_30fps_identity
+output_dir: outputs/thumos14_swin_base_10fps_identity

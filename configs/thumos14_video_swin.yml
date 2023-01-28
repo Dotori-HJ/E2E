@@ -33,26 +33,26 @@ input_type: image
 lr: 0.0001
 batch_size: 1
 
-fix_encoder: true
+fix_encoder: false
 # fix_encoder: true
 fix_transform: false
 # neck: simple_mixer
 # lr_backbone: 0.0001
 neck: identity
-act_reg: false
+act_reg: true
 two_stage: false
 mixed_selection: false
-look_forward_twice: true
+look_forward_twice: false
 
 # Image
 # img_resize: 440
 # img_crop_size: 384
-img_resize: 256
-img_crop_size: 224
+# img_resize: 256
+# img_crop_size: 224
 # img_resize: 110
 # img_crop_size: 96
-# img_resize: 192
-# img_crop_size: 168
+img_resize: 192
+img_crop_size: 168
 
 # Training
 # act_reg: false
@@ -62,5 +62,5 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 # rand_augment_param: rand-m8-n3-mstd0.5-inc1
 
 # output
-output_dir: outputs/thumos14_swin_base_full_168_multi_scale_lft
+output_dir: outputs/thumos14_swin_base_full_168
 # output_dir: outputs/thumos14_swin_base_identity_multi_scale_lft

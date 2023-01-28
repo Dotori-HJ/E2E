@@ -411,6 +411,7 @@ class VideoEncoder(nn.Module):
             self.backbone = SwinTransformer3D(pretrained=cfg.pretrained_model, **params[cfg.size])
             self.num_channels = self.backbone.num_features[-1]
             self.pyramid_channels = self.backbone.num_features
+            self.pyramid_channels[-1] = 512
             self.base_channels = 512
             temporal_length = 128
         else:
