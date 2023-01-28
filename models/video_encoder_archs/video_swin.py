@@ -677,6 +677,7 @@ class SwinTransformer3D(nn.Module):
                 x_out = norm_layer(x_out)
                 x_out = rearrange(x_out, 'n d h w c -> n c d h w')
                 # x_out = F.adaptive_avg_pool3d(x_out, (None, 1, 1)).flatten(2)
+                print(x_out.size())
                 x_out = self.pooler(x_out)
                 outs.append(x_out)
 
