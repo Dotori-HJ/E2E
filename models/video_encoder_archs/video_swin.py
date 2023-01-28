@@ -547,7 +547,7 @@ class SwinTransformer3D(nn.Module):
             layer_name = f'norm{i_layer}'
             self.add_module(layer_name, layer)
 
-        self.pooler = AdaptivePooler(768, 512)
+        self.pooler = AdaptivePooler(768, 512, 8)
 
         self._freeze_stages()
 
