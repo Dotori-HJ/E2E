@@ -496,8 +496,14 @@ class VideoEncoder(nn.Module):
     def _fix_encoder(self):
         logging.info('freezing the backbone')
         self.backbone.requires_grad_(False)
-        self.backbone.slow_poolers.requires_grad_(True)
-        self.backbone.fast_poolers.requires_grad_(True)
+        if hasattr(self.backbone, "slow_poolers"):
+            self.backbone.slow_poolers.requires_grad_(True)
+        if hasattr(self.backbone, "fast_poolers"):
+            self.backbone.fast_poolers.requires_grad_(True)
+        if hasattr(self.backbone, "pooler"):
+            self.backbone.pooler.requires_grad_(True)
+        if hasattr(self.backbone, "poolers"):
+            self.backbone.poolers.requires_grad_(True)
 
 
 class EmptyEncoder(nn.Module):
