@@ -42,7 +42,7 @@ neck: identity
 act_reg: true
 two_stage: false
 mixed_selection: false
-look_forward_twice: false
+look_forward_twice: true
 
 # Image
 # img_resize: 440
@@ -63,4 +63,4 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 
 # output
 # output_dir: outputs/thumos14_swin_base_full_168
-output_dir: outputs/thumos14_swin_base_10fps_identity
+output_dir: outputs/thumos14_swin_base_10fps_identity_lft
