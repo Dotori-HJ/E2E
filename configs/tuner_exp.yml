@@ -46,7 +46,7 @@ lr_backbone: 0.0001
 act_reg: true
 two_stage: false
 mixed_selection: false
-look_forward_twice: true
+look_forward_twice: false
 
 
 # Image
@@ -64,6 +64,6 @@ img_crop_size: 224
 rand_augment_param: rand-m7-n4-mstd0.5-inc1
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_10fps_identity_single_scale_pooler_rel_pos_1e-4_quad
+output_dir: outputs/thumos14_e2e_slowfast_10fps_identity_single_scale_pooler_rel_pos_1e-4_no_lft
 
 # tuner 48.77
