@@ -489,7 +489,7 @@ class VideoEncoder(nn.Module):
                 # fully convolutional feature extraction
                 video_ft = self.backbone(tensor_list.tensors)  # [n,c,t, h, w]
 
-            video_ft = self.fpn(self.tdm(video_ft))
+            video_ft = self.fpn(self.tdm(video_ft[0]))
             video_ft = self.neck(video_ft)
             # if isinstance(video_ft, (list, tuple)) and len(video_ft) == 1:
             #     video_ft = video_ft[0]
