@@ -229,6 +229,8 @@ class TDM(nn.Module):
             self.add_module(layer_name, td_layer)
             self.td_layers.append(layer_name)
 
+        self.apply(self.init_weights)
+
     @staticmethod
     def make_td_layer(
         num_layer,
@@ -415,9 +417,7 @@ class FPN(nn.Module):
             self.lateral_convs.append(l_conv)
             self.fpn_convs.append(fpn_conv)
 
-        for proj in self.fpn_convs:
-            nn.init.xavier_uniform_(proj.weight, gain=1)
-            nn.init.zeros_(proj.bias)
+        self.apply(self.init_weights)
 
     # default init_weights for conv(msra) and norm in ConvModule
     def init_weights(self):
