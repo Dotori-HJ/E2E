@@ -48,6 +48,7 @@ class PositionEmbeddingSine(nn.Module):
         dim_t = self.temperature ** (2 * torch.div(dim_t, 2, rounding_mode='trunc') / self.num_pos_feats)
 
         pos_x = x_embed[:, :, None] / dim_t  # N x T x C
+        print('pos_x', pos_x.size())
         # n,c,t
         pos_x = torch.stack((pos_x[:, :, 0::2].sin(), pos_x[:, :, 1::2].cos()), dim=3).flatten(2)
         pos = pos_x.permute(0, 2, 1)    # N x C x T
