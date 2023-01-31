@@ -189,7 +189,6 @@ class TadTR(nn.Module):
         srcs, masks, pos = [], [], []
         for i, feat in enumerate(features):
             src, mask = feat.tensors, feat.mask
-            print(src.size())
             # srcs.append(self.input_proj[i](src))
             srcs.append(src)
             masks.append(mask)
