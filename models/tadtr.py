@@ -193,8 +193,8 @@ class TadTR(nn.Module):
             srcs.append(src)
             masks.append(mask)
             print(feat.tensors.size())
-            print(self.position_embedding(feat).size())
-            pos.append(self.position_embedding(feat))
+            print(self.position_embedding(src).size())
+            pos.append(self.position_embedding(src))
         # pos = [self.position_embedding(feat) for feat in features]
         # src, mask = features.tensors, features.mask
         # srcs = [proj(src) for proj in self.input_proj]
