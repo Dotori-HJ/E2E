@@ -87,23 +87,22 @@ class DeformableTransformer(nn.Module):
         pos = torch.stack((pos[:, :, :, 0::2].sin(), pos[:, :, :, 1::2].cos()), dim=4).flatten(2)
         return pos
 
-    def gen_encoder_output_proposals(self, memory, memory_padding_mask, temporal_length):
+    def gen_encoder_output_proposals(self, memory, memory_padding_mask, temporal_lengths):
         N_, S_, C_ = memory.shape
-        T_ = temporal_length
         proposals = []
 
-        mask_flatten_ = memory_padding_mask.view(N_, T_)
-        valid_T = torch.sum(~mask_flatten_[:, :], 1)
+        _cur = 0
+        base_scale = 4.0
+        for lvl, T_ in enumerate(temporal_lengths):
+            mask_flatten_ = memory_padding_mask[:, _cur:(_cur + T_)].view(N_, T_)
+            valid_T = torch.sum(~mask_flatten_[:, :], 1)
 
-        timeline = (torch.linspace(0, T_ - 1, T_, dtype=torch.float32, device=memory.device).unsqueeze(0) + 0.5) / valid_T.unsqueeze(1)
+            timeline = (torch.linspace(0, T_ - 1, T_, dtype=torch.float32, device=memory.device).unsqueeze(0) + 0.5) / valid_T.unsqueeze(1)
 
-        # scale = torch.cat([valid_W.unsqueeze(-1), valid_H.unsqueeze(-1)], 1).view(N_, 1, 1, 2)
-        # grid = (grid.unsqueeze(0).expand(N_, -1, -1, -1) + 0.5) / scale
-        # scale = self.base_scale.sigmoid().expand_as(timeline)
-        scale = self.base_scale.expand_as(timeline)
-        # time_length = torch.ones_like(timeline) * 0.05 * 2.0
-
-        proposals = torch.stack((timeline, scale), -1).view(N_, -1, 2)
+            scale = torch.ones_like(timeline) * 0.05 * (2.0 ** lvl)
+            proposal = torch.stack((timeline, scale), -1).view(N_, -1, 2)
+            proposals.append(proposal)
+            _cur += T_
 
         output_proposals = proposals
         output_proposals_valid = ((output_proposals > 0.01) & (output_proposals < 0.99)).all(-1, keepdim=True)
@@ -167,7 +166,7 @@ class DeformableTransformer(nn.Module):
 
         bs, t, c = memory.shape
         if self.two_stage:
-            output_memory, output_proposals = self.gen_encoder_output_proposals(memory, mask_flatten, t)
+            output_memory, output_proposals = self.gen_encoder_output_proposals(memory, mask_flatten, temporal_lens)
 
             num_topk = 40
             # num_topk = t
@@ -425,7 +424,7 @@ def build_deformable_transformer(args):
         two_stage=args.two_stage,
         look_forward_twice=args.look_forward_twice,
         mixed_selection=args.mixed_selection,
-        num_feature_levels=1,
+        num_feature_levels=4,
         dec_n_points=args.dec_n_points,
         enc_n_points=args.enc_n_points)
 
