@@ -415,6 +415,10 @@ class FPN(nn.Module):
             self.lateral_convs.append(l_conv)
             self.fpn_convs.append(fpn_conv)
 
+        for proj in self.fpn_convs:
+            nn.init.xavier_uniform_(proj.weight, gain=1)
+            nn.init.zeros_(proj.bias)
+
     # default init_weights for conv(msra) and norm in ConvModule
     def init_weights(self):
         """Initialize the weights of FPN module."""

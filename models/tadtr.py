@@ -101,9 +101,9 @@ class TadTR(nn.Module):
         self.class_embed.bias.data = torch.ones(num_classes) * bias_value
         nn.init.constant_(self.segment_embed.layers[-1].weight.data, 0)
         nn.init.constant_(self.segment_embed.layers[-1].bias.data, 0)
-        for proj in self.input_proj:
-            nn.init.xavier_uniform_(proj[0].weight, gain=1)
-            nn.init.constant_(proj[0].bias, 0)
+        # for proj in self.input_proj:
+        #     nn.init.xavier_uniform_(proj[0].weight, gain=1)
+        #     nn.init.constant_(proj[0].bias, 0)
 
         num_pred = (transformer.decoder.num_layers + 1) if two_stage else transformer.decoder.num_layers
         if with_segment_refine:
