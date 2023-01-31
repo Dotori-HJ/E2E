@@ -47,6 +47,7 @@ class PositionEmbeddingSine(nn.Module):
 
         dim_t = torch.arange(self.num_pos_feats, dtype=torch.float32, device=x.device)
         dim_t = self.temperature ** (2 * torch.div(dim_t, 2, rounding_mode='trunc') / self.num_pos_feats)
+        print('dim_t', dim_t.size())
 
         pos_x = x_embed[:, :, None] / dim_t  # N x T x C
         print('pos_x', pos_x.size())
