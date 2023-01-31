@@ -490,7 +490,6 @@ class VideoEncoder(nn.Module):
                 video_ft = self.backbone(tensor_list.tensors)  # [n,c,t, h, w]
 
             video_ft = self.neck(video_ft)[-1]
-            print(video_ft.size())
             video_ft = self.fpn(self.tdm(video_ft))
             # if isinstance(video_ft, (list, tuple)) and len(video_ft) == 1:
             #     video_ft = video_ft[0]
