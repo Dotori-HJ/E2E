@@ -16,6 +16,7 @@ from torch import nn
 from torch.nn.modules.normalization import GroupNorm
 from torchvision.models._utils import IntermediateLayerGetter
 
+from models.tdm import FPN, TDM
 from models.video_encoder_archs.slowfast import ResNet3dSlowFast
 from models.video_encoder_archs.tsm import TSM
 from models.video_encoder_archs.video_mae import VisionTransformer
@@ -417,11 +418,31 @@ class VideoEncoder(nn.Module):
         else:
             raise ValueError('Not supported arch: {}'.format(arch))
 
-        indices = [-1]
+        indices = [0, 1, 2, 3]
         self.fix_encoder = fix_encoder
 
         if fix_encoder:
             self._fix_encoder()
+
+        self.tdm = TDM(
+            in_channels=self.num_channels,
+            stage_layers=(1, 1, 1),
+            out_channels=512,
+            conv_layer=nn.Conv1d,
+            # norm_layer=nn.SyncBatchNorm,
+            norm_layer=nn.LayerNorm,
+            act=nn.ReLU,
+            out_indices=(0, 1, 2, 3),
+        )
+        self.fpn = FPN(
+            in_channels=[self.num_channels, 512, 512, 512],
+            out_channels=256,
+            num_outs=4,
+            start_level=0,
+            conv_layer=nn.Conv1d,
+            lateral_norm_layer=nn.LayerNorm,
+            # fpn_norm_layer=,
+        )
 
         if neck == 'identity':
             self.neck = IdentityNeck(indices)
@@ -438,7 +459,8 @@ class VideoEncoder(nn.Module):
         else:
             assert True, f"neck={neck}"
 
-        self.pyramid_channels = [self.pyramid_channels[i] for i in indices]
+        # self.pyramid_channels = [self.pyramid_channels[i] for i in indices]
+        self.pyramid_channels = [256 for i in indices]
 
 
     def forward(self, tensor_list):
@@ -467,6 +489,7 @@ class VideoEncoder(nn.Module):
                 # fully convolutional feature extraction
                 video_ft = self.backbone(tensor_list.tensors)  # [n,c,t, h, w]
 
+            video_ft = self.fpn(self.tdm(video_ft))
             video_ft = self.neck(video_ft)
             # if isinstance(video_ft, (list, tuple)) and len(video_ft) == 1:
             #     video_ft = video_ft[0]

@@ -1,20 +1,50 @@
 import torch
+import torch.nn as nn
 
-from models.mypooler import AdaptivePooler
+from models.tdm import FPN, TDM
 
-#fjdkslfjdsklfjsdklfjsdlkf
+#     typename='TDM',
+#     in_channels=512,
+#     stage_layers=(1, 1, 1, 1),
+#     out_channels=512,
+#     conv_cfg=dict(typename='Conv1d'),
+#     norm_cfg=dict(typename='SyncBN'),
+#     act_cfg=dict(typename='ReLU'),
+#     out_indices=(0, 1, 2, 3, 4)),
+# dict(
+#     typename='FPN',
+#     in_channels=[512, 512, 512, 512, 512],
+#     out_channels=256,
+#     num_outs=5,
+#     start_level=0,
+#     conv_cfg=dict(typename='Conv1d'),
+#     norm_cfg=dict(typename='SyncBN'))
+tdm = TDM(
+    in_channels=512,
+    stage_layers=(1, 1, 1, 1),
+    out_channels=512,
+    conv_layer=nn.Conv1d,
+    # norm_layer=nn.SyncBatchNorm,
+    norm_layer=nn.LayerNorm,
+    act=nn.ReLU,
+    out_indices=(0, 1, 2, 3, 4),
+).cuda()
+fpn = FPN(
+    in_channels=[512, 512, 512, 512, 512],
+    out_channels=256,
+    num_outs=5,
+    start_level=0,
+    conv_layer=nn.Conv1d,
+    lateral_norm_layer=nn.LayerNorm,
+    # fpn_norm_layer=,
+).cuda()
 
-model = AdaptivePooler(2304, 256, 8).cuda()
-x = torch.randn(4, 2304, 128, 14, 14).cuda()
 
-print(x.size())
-out = model(x)
-print(out.size())
-
-x = torch.randn(4, 2304, 64, 14, 14).cuda()
-out = model(x)
-print(out.size())
-
+b, t, c = 1, 256, 512
+x = torch.randn(b, c, t).cuda()
+out = tdm(x)
+out = fpn(out)
+print([x.size() for x in out])
 exit()
 
 

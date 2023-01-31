@@ -82,12 +82,12 @@ class TadTR(nn.Module):
             self.query_embed = nn.Embedding(num_queries, hidden_dim)
             # self.query_embed = nn.Embedding(64, hidden_dim)
 
-        self.input_proj = nn.ModuleList([
-            nn.Sequential(
-                nn.Conv1d(num_channels, hidden_dim, kernel_size=1),
-                nn.GroupNorm(32, hidden_dim),
-            ) for num_channels in backbone.pyramid_channels])
-            # ) for num_channels in [2304]])
+        # self.input_proj = nn.ModuleList([
+        #     nn.Sequential(
+        #         nn.Conv1d(num_channels, hidden_dim, kernel_size=1),
+        #         nn.GroupNorm(32, hidden_dim),
+        #     ) for num_channels in backbone.pyramid_channels])
+        #     # ) for num_channels in [2304]])
         self.backbone = backbone
         self.position_embedding = position_embedding
         self.aux_loss = aux_loss
@@ -189,7 +189,8 @@ class TadTR(nn.Module):
         srcs, masks, pos = [], [], []
         for i, feat in enumerate(features):
             src, mask = feat.tensors, feat.mask
-            srcs.append(self.input_proj[i](src))
+            # srcs.append(self.input_proj[i](src))
+            srcs.append(src)
             masks.append(mask)
             pos.append(self.position_embedding(feat))
         # pos = [self.position_embedding(feat) for feat in features]
