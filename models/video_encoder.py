@@ -418,7 +418,7 @@ class VideoEncoder(nn.Module):
         else:
             raise ValueError('Not supported arch: {}'.format(arch))
 
-        indices = [0, 1, 2, 3]
+        indices = [-1]
         self.fix_encoder = fix_encoder
 
         if fix_encoder:
@@ -489,8 +489,8 @@ class VideoEncoder(nn.Module):
                 # fully convolutional feature extraction
                 video_ft = self.backbone(tensor_list.tensors)  # [n,c,t, h, w]
 
-            video_ft = self.fpn(self.tdm(video_ft[0]))
-            video_ft = self.neck(video_ft)
+            video_ft = self.neck(video_ft)[-1]
+            video_ft = self.fpn(self.tdm(video_ft))
             # if isinstance(video_ft, (list, tuple)) and len(video_ft) == 1:
             #     video_ft = video_ft[0]
 
