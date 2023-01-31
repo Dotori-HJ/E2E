@@ -154,9 +154,7 @@ class ConvModule(nn.Module):
     def forward(self, x, activate=True, norm=True):
         for layer in self.order:
             if layer == "conv":
-                print(x.size())
-                exit()
-                x = self.conv(x)
+                x = self.conv(x[-1])
             elif layer == "norm" and norm and self.with_norm:
                 if isinstance(self.norm, nn.LayerNorm):
                     ndim = x.ndim
