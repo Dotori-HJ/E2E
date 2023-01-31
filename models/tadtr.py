@@ -186,15 +186,16 @@ class TadTR(nn.Module):
                 samples = nested_tensor_from_tensor_list(samples)  # (n, c, t)
 
         features = self.backbone(samples)
+        print(features)
         srcs, masks, pos = [], [], []
         for i, feat in enumerate(features):
             src, mask = feat.tensors, feat.mask
             # srcs.append(self.input_proj[i](src))
             srcs.append(src)
             masks.append(mask)
-            print(feat.tensors.size())
-            print(self.position_embedding(src).size())
-            pos.append(self.position_embedding(src))
+            print('feat.tensors', feat.tensors.size())
+            print('pos', self.position_embedding(feat).size())
+            pos.append(self.position_embedding(feat))
         # pos = [self.position_embedding(feat) for feat in features]
         # src, mask = features.tensors, features.mask
         # srcs = [proj(src) for proj in self.input_proj]
