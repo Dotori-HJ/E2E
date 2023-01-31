@@ -104,7 +104,7 @@ class DeformableTransformer(nn.Module):
             proposals.append(proposal)
             _cur += T_
 
-        output_proposals = proposals
+        output_proposals = torch.cat(proposals, 1)
         output_proposals_valid = ((output_proposals > 0.01) & (output_proposals < 0.99)).all(-1, keepdim=True)
         output_proposals = torch.log(output_proposals / (1 - output_proposals))
         output_proposals = output_proposals.masked_fill(memory_padding_mask.unsqueeze(-1), float('inf'))
