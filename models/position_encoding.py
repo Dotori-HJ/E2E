@@ -50,7 +50,7 @@ class PositionEmbeddingSine(nn.Module):
         print('dim_t', dim_t.size())
 
         pos_x = x_embed[:, :, None] / dim_t  # N x T x C
-        print('pos_x', pos_x.size())
+        print('pos_x', 'x_embed', pos_x.size(), x_embed.size())
         # n,c,t
         pos_x = torch.stack((pos_x[:, :, 0::2].sin(), pos_x[:, :, 1::2].cos()), dim=3).flatten(2)
         pos = pos_x.permute(0, 2, 1)    # N x C x T
