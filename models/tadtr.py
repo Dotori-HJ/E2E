@@ -34,6 +34,7 @@ from util.misc import (
 )
 
 from .custom_loss import sigmoid_focal_loss
+from .dn_components import compute_dn_loss, dn_post_process, prepare_for_dn
 from .transformer import build_deformable_transformer
 from .video_encoder import build_video_encoder
 
@@ -201,17 +202,17 @@ class TadTR(nn.Module):
                 samples = nested_tensor_from_tensor_list(samples)  # (n, c, t)
 
         features = self.backbone(samples)
-        srcs, masks, pos = [], [], []
-        for i, feat in enumerate(features):
-            src, mask = feat.tensors, feat.mask
-            # srcs.append(self.input_proj[i](src))
-            srcs.append(src)
-            masks.append(mask)
-            pos.append(self.position_embedding(feat))
-        # pos = [self.position_embedding(feat) for feat in features]
-        # src, mask = features.tensors, features.mask
-        # srcs = [proj(src) for proj in self.input_proj]
-        # masks = [mask for _ in range(len(self.input_proj))]
+        # srcs, masks, pos = [], [], []
+        # for i, feat in enumerate(features):
+        #     src, mask = feat.tensors, feat.mask
+        #     # srcs.append(self.input_proj[i](src))
+        #     srcs.append(src)
+        #     masks.append(mask)
+        #     pos.append(self.position_embedding(feat))
+        pos = [self.position_embedding(feat) for feat in features]
+        src, mask = features.tensors, features.mask
+        srcs = [proj(src) for proj in self.input_proj]
+        masks = [mask for _ in range(len(self.input_proj))]
 
         query_embeds = None
         if self.two_stage:
