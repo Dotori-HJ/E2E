@@ -209,7 +209,8 @@ class TadTR(nn.Module):
         #     srcs.append(src)
         #     masks.append(mask)
         #     pos.append(self.position_embedding(feat))
-        pos = [self.position_embedding(feat) for feat in features]
+        # pos = [self.position_embedding(feat) for feat in features]
+        pos = [self.position_embedding(features)]
         src, mask = features.tensors, features.mask
         srcs = [proj(src) for proj in self.input_proj]
         masks = [mask for _ in range(len(self.input_proj))]
@@ -486,6 +487,13 @@ class SetCriterion(nn.Module):
                 l_dict = self.get_loss(loss, enc_outputs, bin_targets, indices, num_segments, **kwargs)
                 l_dict = {k + f'_enc': v for k, v in l_dict.items()}
                 losses.update(l_dict)
+
+        # dn loss computation
+        aux_num = 0
+        if 'aux_outputs' in outputs:
+            aux_num = len(outputs['aux_outputs'])
+        dn_losses = compute_dn_loss(mask_dict, self.training, aux_num, self.focal_alpha)
+        losses.update(dn_losses)
 
         self.indices = indices
         return losses
