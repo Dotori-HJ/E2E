@@ -133,7 +133,7 @@ def test(model, criterion, postprocessor, data_loader, base_ds, device, output_d
     cnt = 0
     for (samples, targets) in tqdm.tqdm(data_loader, total=len(data_loader)):
         samples = samples.to(device)
-        outputs = model((samples.tensors, samples.mask))
+        outputs, _ = model((samples.tensors, samples.mask))
 
         # raw_res.append((outputs, targets))
         video_duration = torch.FloatTensor(
