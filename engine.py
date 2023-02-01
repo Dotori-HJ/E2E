@@ -24,7 +24,7 @@ from datasets.tad_eval import TADEvaluator
 
 def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
                     data_loader: Iterable, optimizer: torch.optim.Optimizer,
-                    device: torch.device, epoch: int, cfg, max_norm: float = 0, gpu_transforms=None):
+                    device: torch.device, epoch: int, cfg, max_norm: float = 0, gpu_transforms=None, use_dn=True):
     model.train()
     criterion.train()
 
@@ -41,6 +41,17 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
             samples.tensors = gpu_transforms(samples.tensors)
         targets = [{k: v.to(device) if k in ['segments', 'labels']
                     else v for k, v in t.items()} for t in targets]
+
+        if use_dn:
+            scalar = 5
+            label_noise_scale = 0.2
+            segment_noise_scale = 0.4
+            dn_args=(targets, scalar, label_noise_scale, segment_noise_scale, 0)
+            outputs, mask_dict = model((samples.tensors, samples.mask), dn_args=dn_args)
+            loss_dict = criterion(outputs, targets, mask_dict)
+        else:
+            outputs = model((samples.tensors, samples.mask))
+            loss_dict = criterion(outputs, targets)
 
         outputs = model((samples.tensors, samples.mask))
         loss_dict = criterion(outputs, targets)
