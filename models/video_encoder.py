@@ -424,25 +424,25 @@ class VideoEncoder(nn.Module):
         if fix_encoder:
             self._fix_encoder()
 
-        self.tdm = TDM(
-            in_channels=self.num_channels,
-            stage_layers=(1, 1, 1),
-            out_channels=512,
-            conv_layer=nn.Conv1d,
-            # norm_layer=nn.SyncBatchNorm,
-            norm_layer=nn.LayerNorm,
-            act=nn.ReLU,
-            out_indices=(0, 1, 2, 3),
-        )
-        self.fpn = FPN(
-            in_channels=[self.num_channels, 512, 512, 512],
-            out_channels=256,
-            num_outs=4,
-            start_level=0,
-            conv_layer=nn.Conv1d,
-            lateral_norm_layer=nn.LayerNorm,
-            # fpn_norm_layer=,
-        )
+        # self.tdm = TDM(
+        #     in_channels=self.num_channels,
+        #     stage_layers=(1, 1, 1),
+        #     out_channels=512,
+        #     conv_layer=nn.Conv1d,
+        #     # norm_layer=nn.SyncBatchNorm,
+        #     norm_layer=nn.LayerNorm,
+        #     act=nn.ReLU,
+        #     out_indices=(0, 1, 2, 3),
+        # )
+        # self.fpn = FPN(
+        #     in_channels=[self.num_channels, 512, 512, 512],
+        #     out_channels=256,
+        #     num_outs=4,
+        #     start_level=0,
+        #     conv_layer=nn.Conv1d,
+        #     lateral_norm_layer=nn.LayerNorm,
+        #     # fpn_norm_layer=,
+        # )
 
         if neck == 'identity':
             self.neck = IdentityNeck(indices)
@@ -490,7 +490,7 @@ class VideoEncoder(nn.Module):
                 video_ft = self.backbone(tensor_list.tensors)  # [n,c,t, h, w]
 
             video_ft = self.neck(video_ft)[-1]
-            video_ft = self.fpn(self.tdm(video_ft))
+            # video_ft = self.fpn(self.tdm(video_ft))
             # if isinstance(video_ft, (list, tuple)) and len(video_ft) == 1:
             #     video_ft = video_ft[0]
 

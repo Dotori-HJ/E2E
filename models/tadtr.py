@@ -77,17 +77,30 @@ class TadTR(nn.Module):
         self.class_embed = nn.Linear(hidden_dim, num_classes)
         self.segment_embed = MLP(hidden_dim, hidden_dim, 2, 3)
         if not two_stage:
-            self.query_embed = nn.Embedding(num_queries, hidden_dim*2)
+            if not use_dab:
+                self.query_embed = nn.Embedding(num_queries, hidden_dim*2)
+            else:
+                self.tgt_embed = nn.Embedding(num_queries, hidden_dim - 1)
+                self.refpoint_embed = nn.Embedding(num_queries, 2)
+                # if random_refpoints_xy:
+                #     # import ipdb; ipdb.set_trace()
+                #     self.refpoint_embed.weight.data[:, :2].uniform_(0,1)
+                #     self.refpoint_embed.weight.data[:, :2] = inverse_sigmoid(self.refpoint_embed.weight.data[:, :2])
+                #     self.refpoint_embed.weight.data[:, :2].requires_grad = False
         elif mixed_selection:
             self.query_embed = nn.Embedding(num_queries, hidden_dim)
             # self.query_embed = nn.Embedding(64, hidden_dim)
 
-        # self.input_proj = nn.ModuleList([
-        #     nn.Sequential(
-        #         nn.Conv1d(num_channels, hidden_dim, kernel_size=1),
-        #         nn.GroupNorm(32, hidden_dim),
-        #     ) for num_channels in backbone.pyramid_channels])
-        #     # ) for num_channels in [2304]])
+        if self.num_patterns > 0:
+            self.patterns_embed = nn.Embedding(self.num_patterns, hidden_dim)
+
+
+        self.input_proj = nn.ModuleList([
+            nn.Sequential(
+                nn.Conv1d(num_channels, hidden_dim, kernel_size=1),
+                nn.GroupNorm(32, hidden_dim),
+            ) for num_channels in backbone.pyramid_channels])
+            # ) for num_channels in [2304]])
         self.backbone = backbone
         self.position_embedding = position_embedding
         self.aux_loss = aux_loss
@@ -101,9 +114,9 @@ class TadTR(nn.Module):
         self.class_embed.bias.data = torch.ones(num_classes) * bias_value
         nn.init.constant_(self.segment_embed.layers[-1].weight.data, 0)
         nn.init.constant_(self.segment_embed.layers[-1].bias.data, 0)
-        # for proj in self.input_proj:
-        #     nn.init.xavier_uniform_(proj[0].weight, gain=1)
-        #     nn.init.constant_(proj[0].bias, 0)
+        for proj in self.input_proj:
+            nn.init.xavier_uniform_(proj[0].weight, gain=1)
+            nn.init.constant_(proj[0].bias, 0)
 
         num_pred = (transformer.decoder.num_layers + 1) if two_stage else transformer.decoder.num_layers
         if with_segment_refine:
@@ -199,8 +212,28 @@ class TadTR(nn.Module):
         # masks = [mask for _ in range(len(self.input_proj))]
 
         query_embeds = None
-        if not self.two_stage or self.mixed_selection:
-            query_embeds = self.query_embed.weight
+        if self.two_stage:
+            if self.mixed_selection:
+                query_embeds = self.query_embed.weight
+            else:
+                query_embeds = None
+        elif self.use_dab:
+            if self.num_patterns == 0:
+                tgt_all_embed = tgt_embed = self.tgt_embed.weight           # nq, 256
+                refanchor = self.refpoint_embed.weight      # nq, 2
+                # query_embeds = torch.cat((tgt_embed, refanchor), dim=1)
+            else:
+                # multi patterns
+                tgt_embed = self.tgt_embed.weight           # nq, 256
+                pat_embed = self.patterns_embed.weight      # num_pat, 256
+                tgt_embed = tgt_embed.repeat(self.num_patterns, 1) # nq*num_pat, 256
+                pat_embed = pat_embed[:, None, :].repeat(1, self.num_queries, 1).flatten(0, 1) # nq*num_pat, 256
+                tgt_all_embed = tgt_embed + pat_embed
+                refanchor = self.refpoint_embed.weight.repeat(self.num_patterns, 1)      # nq*num_pat, 4
+                query_embeds = torch.cat((tgt_all_embed, refanchor), dim=1)
+        else:
+             query_embeds = self.query_embed.weight
+
         hs, init_reference, inter_references, memory, enc_outputs_class, enc_outputs_coord_unact = self.transformer(
                 srcs, masks, pos, query_embeds)
 
