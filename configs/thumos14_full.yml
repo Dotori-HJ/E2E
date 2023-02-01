@@ -13,9 +13,9 @@ pretrained_model: https://download.openmmlab.com/mmaction/recognition/slowfast/s
 
 
 # model setting
-enc_layers: 4
-dec_layers: 4
-dim_feedforward: 1024
+enc_layers: 6
+dec_layers: 6
+dim_feedforward: 2048
 # dim_feedforward: 2048
 num_queries: 40
 # num_queries: 100
@@ -42,7 +42,7 @@ fix_encoder: false
 # fix_encoder: true
 fix_transform: false
 # neck: pyramid
-# lr_backbone: 0.00001
+lr_backbone: 0.00001
 neck: identity
 
 # Image

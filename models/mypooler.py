@@ -124,7 +124,6 @@ class AdaptivePoolAttention(nn.Module):
 
         return x
 
-
 class AdaptivePooler(nn.Module):
     def __init__(
         self,
