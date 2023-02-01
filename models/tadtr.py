@@ -178,7 +178,7 @@ class TadTR(nn.Module):
         # NOTE: stop gradient here to stablize training
         return rois_abs.view((B*N, 3)).detach()
 
-    def forward(self, samples):
+    def forward(self, samples, dn_args=None):
         """ The forward expects a NestedTensor, which consists of:
                - samples.tensors: batched images, of shape [batch_size x 3 x H x W]
                - samples.mask: a binary mask of shape [batch_size x H x W], containing 1 on padded pixels
@@ -236,8 +236,16 @@ class TadTR(nn.Module):
         else:
              query_embeds = self.query_embed.weight
 
+
+        input_query_label, input_query_bbox, attn_mask, mask_dict = \
+            prepare_for_dn(dn_args, tgt_all_embed, refanchor, src.size(0), self.training, self.num_queries, self.num_classes,
+                           self.hidden_dim, self.label_enc)
+
+        query_embeds = torch.cat((input_query_label, input_query_bbox), dim=2)
         hs, init_reference, inter_references, memory, enc_outputs_class, enc_outputs_coord_unact = self.transformer(
                 srcs, masks, pos, query_embeds)
+
+        outputs_class, outputs_coord = dn_post_process(outputs_class, outputs_coord, mask_dict)
 
         outputs_classes = []
         outputs_coords = []
@@ -292,7 +300,7 @@ class TadTR(nn.Module):
             enc_outputs_coord = enc_outputs_coord_unact.sigmoid()
             out['enc_outputs'] = {'pred_logits': enc_outputs_class, 'pred_segments': enc_outputs_coord}
 
-        return out
+        return out, mask_dict
 
     @torch.jit.unused
     def _set_aux_loss(self, outputs_class, outputs_coord):
