@@ -270,7 +270,7 @@ def compute_dn_loss(mask_dict, training, aux_num, focal_alpha):
         losses.update(tgt_loss_labels(output_known_class[-1], known_labels, num_tgt, focal_alpha))
         losses.update(tgt_loss_boxes(output_known_coord[-1], known_bboxs, num_tgt))
     else:
-        losses['tgt_loss_bbox'] = torch.as_tensor(0.).to('cuda')
+        losses['tgt_loss_segments'] = torch.as_tensor(0.).to('cuda')
         losses['tgt_loss_giou'] = torch.as_tensor(0.).to('cuda')
         losses['tgt_loss_ce'] = torch.as_tensor(0.).to('cuda')
         losses['tgt_class_error'] = torch.as_tensor(0.).to('cuda')
