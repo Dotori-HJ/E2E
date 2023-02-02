@@ -153,7 +153,7 @@ def prepare_for_dn(dn_args, tgt_weight, embedweight, batch_size, training, num_q
             'known_indice': torch.as_tensor(known_indice).long(),
             'batch_idx': torch.as_tensor(batch_idx).long(),
             'map_known_indice': torch.as_tensor(map_known_indice).long(),
-            'known_lbs_bboxes': (known_labels, known_bboxs),
+            'known_lbs_segments': (known_labels, known_bboxs),
             'know_idx': know_idx,
             'pad_size': pad_size
         }
@@ -179,7 +179,7 @@ def dn_post_process(outputs_class, outputs_coord, mask_dict):
         output_known_coord = outputs_coord[:, :, :mask_dict['pad_size'], :]
         outputs_class = outputs_class[:, :, mask_dict['pad_size']:, :]
         outputs_coord = outputs_coord[:, :, mask_dict['pad_size']:, :]
-        mask_dict['output_known_lbs_bboxes']=(output_known_class,output_known_coord)
+        mask_dict['output_known_lbs_segments']=(output_known_class,output_known_coord)
     return outputs_class, outputs_coord
 
 
@@ -191,8 +191,8 @@ def prepare_for_loss(mask_dict):
     Returns:
 
     """
-    output_known_class, output_known_coord = mask_dict['output_known_lbs_bboxes']
-    known_labels, known_bboxs = mask_dict['known_lbs_bboxes']
+    output_known_class, output_known_coord = mask_dict['output_known_lbs_segments']
+    known_labels, known_bboxs = mask_dict['known_lbs_segments']
     map_known_indice = mask_dict['map_known_indice']
 
     known_indice = mask_dict['known_indice']
@@ -213,14 +213,14 @@ def tgt_loss_boxes(src_boxes, tgt_boxes, num_tgt,):
     """
     if len(tgt_boxes) == 0:
         return {
-            'tgt_loss_bbox': torch.as_tensor(0.).to('cuda'),
+            'tgt_loss_segments': torch.as_tensor(0.).to('cuda'),
             'tgt_loss_giou': torch.as_tensor(0.).to('cuda'),
         }
 
     loss_bbox = F.l1_loss(src_boxes, tgt_boxes, reduction='none')
 
     losses = {}
-    losses['tgt_loss_bbox'] = loss_bbox.sum() / num_tgt
+    losses['tgt_loss_segments'] = loss_bbox.sum() / num_tgt
 
     loss_giou = 1 - torch.diag(segment_ops.segment_iou(
         segment_ops.segment_cw_to_t1t2(src_boxes),
@@ -264,7 +264,7 @@ def compute_dn_loss(mask_dict, training, aux_num, focal_alpha):
            focal_alpha:  for focal loss
        """
     losses = {}
-    if training and 'output_known_lbs_bboxes' in mask_dict:
+    if training and 'output_known_lbs_segments' in mask_dict:
         known_labels, known_bboxs, output_known_class, output_known_coord, \
         num_tgt = prepare_for_loss(mask_dict)
         losses.update(tgt_loss_labels(output_known_class[-1], known_labels, num_tgt, focal_alpha))
@@ -278,7 +278,7 @@ def compute_dn_loss(mask_dict, training, aux_num, focal_alpha):
     if aux_num:
         for i in range(aux_num):
             # dn aux loss
-            if training and 'output_known_lbs_bboxes' in mask_dict:
+            if training and 'output_known_lbs_segments' in mask_dict:
                 l_dict = tgt_loss_labels(output_known_class[i], known_labels, num_tgt, focal_alpha)
                 l_dict = {k + f'_{i}': v for k, v in l_dict.items()}
                 losses.update(l_dict)
@@ -287,7 +287,7 @@ def compute_dn_loss(mask_dict, training, aux_num, focal_alpha):
                 losses.update(l_dict)
             else:
                 l_dict = dict()
-                l_dict['tgt_loss_bbox'] = torch.as_tensor(0.).to('cuda')
+                l_dict['tgt_loss_segments'] = torch.as_tensor(0.).to('cuda')
                 l_dict['tgt_class_error'] = torch.as_tensor(0.).to('cuda')
                 l_dict['tgt_loss_giou'] = torch.as_tensor(0.).to('cuda')
                 l_dict['tgt_loss_ce'] = torch.as_tensor(0.).to('cuda')
