@@ -249,8 +249,6 @@ class TadTR(nn.Module):
         hs, init_reference, inter_references, memory, enc_outputs_class, enc_outputs_coord_unact = self.transformer(
                 srcs, masks, pos, query_embeds)
 
-        outputs_class, outputs_coord = dn_post_process(outputs_class, outputs_coord, mask_dict)
-
         outputs_classes = []
         outputs_coords = []
         # gather outputs from each decoder layer
@@ -275,6 +273,8 @@ class TadTR(nn.Module):
             outputs_coords.append(outputs_coord)
         outputs_class = torch.stack(outputs_classes)
         outputs_coord = torch.stack(outputs_coords)
+
+        outputs_class, outputs_coord = dn_post_process(outputs_class, outputs_coord, mask_dict)
 
         if not self.with_act_reg:
             out = {'pred_logits': outputs_class[-1],
