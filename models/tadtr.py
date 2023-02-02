@@ -73,6 +73,7 @@ class TadTR(nn.Module):
         """
         super().__init__()
         self.num_queries = num_queries
+        self.num_classes = num_classes
         self.transformer = transformer
         self.num_patterns = num_patterns
         self.use_dab = use_dab
