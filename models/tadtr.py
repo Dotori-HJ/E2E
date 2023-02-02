@@ -77,7 +77,7 @@ class TadTR(nn.Module):
         self.transformer = transformer
         self.num_patterns = num_patterns
         self.use_dab = use_dab
-        self.hihidden_dim = hidden_dim = transformer.d_model
+        self.hidden_dim = hidden_dim = transformer.d_model
         self.class_embed = nn.Linear(hidden_dim, num_classes)
         self.segment_embed = MLP(hidden_dim, hidden_dim, 2, 3)
         if not two_stage:
