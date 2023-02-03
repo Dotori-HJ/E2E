@@ -11,9 +11,9 @@ pretrained_model: https://github.com/SwinTransformer/storage/releases/download/v
 enc_layers: 4
 dec_layers: 4
 # dim_feedforward: 2048
-dim_feedforward: 2048
+dim_feedforward: 1024
 # num_queries: 100
-num_queries: 100
+num_queries: 40
 # dropout: 0.1
 dropout: 0.0
 # temperature: 10000
