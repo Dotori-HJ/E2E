@@ -192,7 +192,8 @@ class AdaptivePooler(nn.Module):
         else:
             self.proj = nn.Identity()
 
-        self.pool_skip = pooler(pool_size)
+        # self.pool_skip = pooler(pool_size)
+        self.pool_skip = nn.Conv3d(input_dim, base_dim, kernel_size=(1, 7, 7))
         if input_dim != base_dim:
             self.pool_proj = nn.Linear(input_dim, base_dim)
         else:
