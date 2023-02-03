@@ -85,6 +85,7 @@ class AdaptivePoolAttention(nn.Module):
         self.proj = nn.Linear(base_dim, base_dim)
 
         self.pooler = pooler(pool_size)
+        self.pool_size = pool_size
 
         if drop_rate > 0.0:
             self.proj_drop = nn.Dropout(drop_rate)
@@ -121,6 +122,9 @@ class AdaptivePoolAttention(nn.Module):
         x = self.proj(x)
         if self.drop_rate > 0.0:
             x = self.proj_drop(x)
+
+        if self.pool_size[1] != 1 or self.pool_size[2] != 1:
+            x = rearrange(x, "b (t h w) c -> b t h w c", h=self.pool_size[1], w=self.pool_size[2])
 
         return x
 
