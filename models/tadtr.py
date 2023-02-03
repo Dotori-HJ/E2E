@@ -207,8 +207,8 @@ class TadTR(nn.Module):
         srcs, masks, pos = [], [], []
         for i, feat in enumerate(features):
             src, mask = feat.tensors, feat.mask
-            # srcs.append(self.input_proj[i](src))
-            srcs.append(src)
+            srcs.append(self.input_proj[i](src))
+            # srcs.append(src)
             masks.append(mask)
             pos.append(self.position_embedding(feat))
         # pos = [self.position_embedding(feat) for feat in features]
