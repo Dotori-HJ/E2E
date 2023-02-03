@@ -86,9 +86,9 @@ class AdaptivePoolAttention(nn.Module):
 
         # self.pooler = pooler(pool_size)
         # self.pool_size = pool_size
-        self.pooler_q = nn.Conv3d(input_dim, base_dim, kernel_size=(1, 7, 7))
-        self.pooler_k = nn.Conv3d(input_dim, base_dim, kernel_size=(1, 7, 7))
-        self.pooler_v = nn.Conv3d(input_dim, base_dim, kernel_size=(1, 7, 7))
+        self.pooler_q = nn.Conv3d(head_dim, head_dim, kernel_size=(1, 7, 7))
+        self.pooler_k = nn.Conv3d(head_dim, head_dim, kernel_size=(1, 7, 7))
+        self.pooler_v = nn.Conv3d(head_dim, head_dim, kernel_size=(1, 7, 7))
 
         if drop_rate > 0.0:
             self.proj_drop = nn.Dropout(drop_rate)
