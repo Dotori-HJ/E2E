@@ -280,7 +280,7 @@ class AdaptivePoolingLayer(nn.Module):
         else:
             self.pool_proj = nn.Identity()
 
-        # self.proj_norm = norm_layer(mlp_dim_out)
+        self.proj_norm = norm_layer(mlp_dim_out)
         self.apply(self._init_weights)
 
     def _init_weights(self, m):
