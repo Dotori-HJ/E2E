@@ -247,7 +247,7 @@ class TadTR(nn.Module):
 
         query_embeds = torch.cat((input_query_label, input_query_bbox), dim=2)
         hs, init_reference, inter_references, memory, enc_outputs_class, enc_outputs_coord_unact = self.transformer(
-                srcs, masks, pos, query_embeds)
+                srcs, masks, pos, query_embeds, attn_mask)
 
         outputs_classes = []
         outputs_coords = []
@@ -491,11 +491,11 @@ class SetCriterion(nn.Module):
                 losses.update(l_dict)
 
         # dn loss computation
-        # aux_num = 0
-        # if 'aux_outputs' in outputs:
-        #     aux_num = len(outputs['aux_outputs'])
-        # dn_losses = compute_dn_loss(mask_dict, self.training, aux_num, self.focal_alpha)
-        # losses.update(dn_losses)
+        aux_num = 0
+        if 'aux_outputs' in outputs:
+            aux_num = len(outputs['aux_outputs'])
+        dn_losses = compute_dn_loss(mask_dict, self.training, aux_num, self.focal_alpha)
+        losses.update(dn_losses)
 
         self.indices = indices
         return losses
