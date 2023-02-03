@@ -459,8 +459,8 @@ class VideoEncoder(nn.Module):
         else:
             assert True, f"neck={neck}"
 
-        # self.pyramid_channels = [self.pyramid_channels[i] for i in indices]
-        self.pyramid_channels = [256 for i in indices]
+        self.pyramid_channels = [self.pyramid_channels[i] for i in indices]
+        # self.pyramid_channels = [256 for i in indices]
 
 
     def forward(self, tensor_list):
