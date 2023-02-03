@@ -329,7 +329,7 @@ class AdaptivePooler(nn.Module):
         norm_layer = partial(norm_layer, eps=norm_eps)
 
         self.layers = nn.ModuleList([AdaptivePoolingLayer(
-            input_dim,
+            input_dim if i == 0 else base_dim,
             base_dim,
             num_heads=num_heads,
             mlp_ratio=mlp_ratio,
