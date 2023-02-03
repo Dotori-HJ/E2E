@@ -345,6 +345,7 @@ class AdaptivePooler(nn.Module):
 
     def forward(self, x):
         for layer in self.layers:
+            print(x.size())
             x = layer(x)
         return x
 
