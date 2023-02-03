@@ -46,7 +46,8 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
             scalar = 5
             label_noise_scale = 0.2
             segment_noise_scale = 0.4
-            dn_args=(targets, scalar, label_noise_scale, segment_noise_scale, 0)
+            contrastive = True
+            dn_args = (targets, scalar, label_noise_scale, segment_noise_scale, 0, contrastive)
             outputs, mask_dict = model((samples.tensors, samples.mask), dn_args=dn_args)
             loss_dict = criterion(outputs, targets, mask_dict)
         else:
