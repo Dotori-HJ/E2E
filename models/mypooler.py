@@ -194,10 +194,11 @@ class AdaptivePooler(nn.Module):
 
         # self.pool_skip = pooler(pool_size)
         self.pool_skip = nn.Conv3d(input_dim, base_dim, kernel_size=(1, 7, 7))
-        if input_dim != base_dim:
-            self.pool_proj = nn.Linear(input_dim, base_dim)
-        else:
-            self.pool_proj = nn.Identity()
+        # if input_dim != base_dim:
+        #     self.pool_proj = nn.Linear(input_dim, base_dim)
+        # else:
+        #     self.pool_proj = nn.Identity()
+        self.pool_proj = nn.Identity()
 
         # self.proj_norm = norm_layer(mlp_dim_out)
         self.apply(self._init_weights)
@@ -215,9 +216,6 @@ class AdaptivePooler(nn.Module):
     def forward(self, x):
         pool_skip = self.pool_skip(x).flatten(2).transpose(-2, -1)
         x = rearrange(x, "b c ... -> b ... c")
-        print(pool_skip.size())
-        print(self.pool_proj(pool_skip).size())
-        print(self.drop_path(self.attn(self.norm1(x))).size())
         x = self.drop_path(self.attn(self.norm1(x))) + self.pool_proj(pool_skip)
         x = self.drop_path(self.mlp(self.norm2(x))) + self.proj(x)
         x = self.proj_norm(x)
