@@ -11,13 +11,13 @@ pretrained_model: https://github.com/SwinTransformer/storage/releases/download/v
 enc_layers: 4
 dec_layers: 4
 # dim_feedforward: 2048
-dim_feedforward: 1024
+dim_feedforward: 2048
 # num_queries: 100
-num_queries: 40
-dropout: 0.1
-# dropout: 0.0
-temperature: 10000
-# temperature: 20
+num_queries: 100
+# dropout: 0.1
+dropout: 0.0
+# temperature: 10000
+temperature: 20
 
 # data setting
 dataset_name: thumos14
@@ -42,7 +42,7 @@ neck: identity
 act_reg: true
 two_stage: false
 mixed_selection: false
-look_forward_twice: false
+look_forward_twice: true
 
 # Image
 # img_resize: 440
@@ -62,5 +62,5 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 # rand_augment_param: rand-m8-n3-mstd0.5-inc1
 
 # output
-output_dir: outputs/thumos14_swin_base_full_168
+output_dir: outputs/thumos14_swin_base_full_168_dn
 # output_dir: outputs/thumos14_swin_base_identity_multi_scale_lft
