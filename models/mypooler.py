@@ -222,6 +222,19 @@ class AdaptivePooler(nn.Module):
         x = rearrange(x, "b ... c -> b c ...")
         return x
 
+
+class SimpleConvPooler(nn.Module):
+    def __init__(self, input_dim, output_dim=None, kernel_size=(1, 7, 7)):
+        super().__init__()
+
+        self.input_dim = input_dim
+        self.output_dim = output_dim if output_dim is not None else input_dim
+
+        self.conv = nn.Conv3d(input_dim, output_dim, kernel_size=kernel_size)
+
+    def forward(self, x):
+        return self.conv(x).flatten(3)
+
 # class AdaptivePoolingLayer(nn.Module):
 #     def __init__(
 #         self,

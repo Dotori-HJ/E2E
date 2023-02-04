@@ -7,7 +7,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn.modules.batchnorm import _BatchNorm
 
-from ..mypooler import AdaptivePooler
+from ..mypooler import AdaptivePooler, SimpleConvPooler
 from .resnet3d import ConvModule, ResNet3d, kaiming_init
 
 
@@ -459,11 +459,11 @@ class ResNet3dSlowFast(nn.Module):
         self.fast_path = build_pathway(fast_pathway)
         self.out_indices = (3, )
         # self.slow_poolers = nn.ModuleList([AdaptivePooler(num_channels, 512, 8) for num_channels in [256, 512, 1024, 2048]])
-        # self.slow_poolers = nn.ModuleList([AdaptivePooler(2048, 2048, 8)])
-        self.slow_poolers = nn.ModuleList([AdaptivePooler(2048, 512, 8)])
+        self.slow_poolers = nn.ModuleList([SimpleConvPooler(2048, 512)])
+        # self.slow_poolers = nn.ModuleList([AdaptivePooler(2048, 512, 8)])
         # self.fast_poolers = nn.ModuleList([AdaptivePooler(num_channels, 512, 8) for num_channels in [32, 64, 128, 256]])
-        # self.fast_poolers = nn.ModuleList([AdaptivePooler(256, 256, 8)])
-        self.fast_poolers = nn.ModuleList([AdaptivePooler(256, 64, 8)])
+        self.fast_poolers = nn.ModuleList([SimpleConvPooler(2048, 512)])
+        # self.fast_poolers = nn.ModuleList([AdaptivePooler(256, 64, 8)])
 
     def init_weights(self, pretrained=None):
         """Initiate the parameters either from existing checkpoint or from
