@@ -66,4 +66,4 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_10fps_full_dino_conv_pooler
+output_dir: outputs/thumos14_e2e_slowfast_10fps_full_dino_simple_conv_pooler
