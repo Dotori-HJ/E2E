@@ -233,7 +233,7 @@ class SimpleConvPooler(nn.Module):
         self.conv = nn.Conv3d(input_dim, output_dim, kernel_size=kernel_size)
 
     def forward(self, x):
-        return self.conv(x).flatten(3)
+        return self.conv(x).flatten(2)
 
 # class AdaptivePoolingLayer(nn.Module):
 #     def __init__(
