@@ -578,7 +578,8 @@ class ResNet3dSlowFast(nn.Module):
 
         # x_fast = F.adaptive_avg_pool3d(x_fast, (None, 1, 1)).flatten(2)
         x_fast = self.fast_poolers[0](x_fast)
-
+        print(self.slow_upsample)
+        exit()
         # output stride = 1
         if self.slow_upsample == 8:
             x_fast_down = x_fast
