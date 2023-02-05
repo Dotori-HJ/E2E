@@ -62,5 +62,5 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 # rand_augment_param: rand-m8-n3-mstd0.5-inc1
 
 # output
-output_dir: outputs/thumos14_swin_base_full_168_dino
+output_dir: outputs/thumos14_swin_base_full_168_dino_pooler
 # output_dir: outputs/thumos14_swin_base_identity_multi_scale_lft
