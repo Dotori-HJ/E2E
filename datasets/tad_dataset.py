@@ -333,9 +333,11 @@ class TADDataset(torch.utils.data.Dataset):
         #     # traceback.print_exc()
         #     raise IOError("failed to transform {} from {}".format(video_name, frame_dir))
         imgs = self.transforms(imgs)
-        print(imgs.size())
-        if len(imgs) < dst_sample_frames:
-            F.pad(imgs, ())
+        c, t, h, w = imgs.size()
+        if t < dst_sample_frames:
+            imgs = torch.cat((
+                imgs, torch.zeros(c, dst_sample_frames - t, h, w, dtype=imgs.dtype)
+            ), dim=1)
 
         if isinstance(imgs, np.ndarray):
             imgs = torch.from_numpy(np.ascontiguousarray(imgs.transpose([3,0,1,2]))).float()   # thwc -> cthw
