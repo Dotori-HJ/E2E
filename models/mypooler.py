@@ -86,9 +86,9 @@ class AdaptivePoolAttention(nn.Module):
 
         # self.pooler = pooler(pool_size)
         # self.pool_size = pool_size
-        self.pooler_q = nn.Conv3d(head_dim, head_dim, kernel_size=(1, 7, 7))
-        self.pooler_k = nn.Conv3d(head_dim, head_dim, kernel_size=(1, 7, 7))
-        self.pooler_v = nn.Conv3d(head_dim, head_dim, kernel_size=(1, 7, 7))
+        self.pooler_q = nn.Conv3d(head_dim, head_dim, kernel_size=(1, 7, 7), bias=False)
+        self.pooler_k = nn.Conv3d(head_dim, head_dim, kernel_size=(1, 7, 7), bias=False)
+        self.pooler_v = nn.Conv3d(head_dim, head_dim, kernel_size=(1, 7, 7), bias=False)
 
         if drop_rate > 0.0:
             self.proj_drop = nn.Dropout(drop_rate)
@@ -193,7 +193,8 @@ class AdaptivePooler(nn.Module):
             self.proj = nn.Identity()
 
         # self.pool_skip = pooler(pool_size)
-        self.pool_skip = nn.Conv3d(input_dim, base_dim, kernel_size=(1, 7, 7))
+        # self.pool_skip = nn.Conv3d(input_dim, base_dim, kernel_size=(1, 7, 7))
+        self.pool_skip = nn.MaxPool3d(input_dim, base_dim, kernel_size=(1, 7, 7))
         # if input_dim != base_dim:
         #     self.pool_proj = nn.Linear(input_dim, base_dim)
         # else:

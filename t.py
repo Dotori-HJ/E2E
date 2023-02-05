@@ -1525,7 +1525,6 @@ save_image(buffer.cpu(), f"samples/sample.png", nrow=8, normalize=False)
     # save_image(buffer[i].cpu(), f"samples/sample_{i}.png", nrow=8, normalize=False)
 
 
-# from torchvision.models import resnet50
+import torchvision.models
 
-# model = resnet50()
-# print(model)
+torchvision.models.resnet18()
