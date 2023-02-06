@@ -9,8 +9,8 @@ import torch.nn as nn
 from PIL import Image
 
 
-# def load_video_frames(frame_dir, start, seq_len, stride=1, fn_tmpl='img_%07d.jpg'):
-def load_video_frames(frame_dir, start, seq_len, stride=1, fn_tmpl='%05d.png'):
+def load_video_frames(frame_dir, start, seq_len, stride=1, fn_tmpl='img_%07d.jpg'):
+# def load_video_frames(frame_dir, start, seq_len, stride=1, fn_tmpl='%05d.png'):
     '''
     Load a sequence of video frames into memory. 
 
