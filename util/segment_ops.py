@@ -9,8 +9,9 @@
 """
 Utilities for segment manipulation and IoU.
 """
-import torch
 import numpy as np
+import torch
+
 # from torchvision.ops.boxes import box_area
 
 
@@ -78,7 +79,7 @@ def segment_iou(segments1, segments2):
     """
     # degenerate boxes gives inf / nan results
     # so do an early check
-    assert (segments1[:, 1] >= segments1[:, 0]).all()
+    assert (segments1[:, 1] >= segments1[:, 0]).all(), segments1
 
     area1 = segment_length(segments1)
     area2 = segment_length(segments2)

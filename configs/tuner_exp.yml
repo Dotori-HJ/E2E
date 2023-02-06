@@ -24,7 +24,7 @@ temperature: 20
 
 # data setting
 dataset_name: thumos14
-feature: img10fps
+feature: img15fps
 online_slice: true
 slice_len: 256
 # slice_len: 768
@@ -52,14 +52,12 @@ look_forward_twice: true
 # Image
 # img_resize: 440
 # img_crop_size: 384
-# img_resize: 110
-# img_crop_size: 96
-img_resize: 256
-img_crop_size: 224
+img_resize: 110
+img_crop_size: 96
+# img_resize: 256
+# img_crop_size: 224
 
 # Training
-# act_reg: false
-# set_cost_class: 2
 # activation: 'gelu'
 rand_augment_param: rand-m7-n4-mstd0.5-inc1
 

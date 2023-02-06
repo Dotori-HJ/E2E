@@ -26,9 +26,11 @@ temperature: 20
 
 # data setting
 dataset_name: thumos14
-feature: img10fps
+# feature: img10fps
+feature: img15fps
 online_slice: true
-slice_len: 256
+# slice_len: 256
+slice_len: 384
 # slice_len: 768
 slice_overlap: 0.75
 test_slice_overlap: 0.25
@@ -48,10 +50,10 @@ neck: identity
 # Image
 # img_resize: 440
 # img_crop_size: 384
-# img_resize: 110
-# img_crop_size: 96
-img_resize: 256
-img_crop_size: 224
+img_resize: 110
+img_crop_size: 96
+# img_resize: 256
+# img_crop_size: 224
 act_reg: false
 two_stage: false
 mixed_selection: false
@@ -59,11 +61,9 @@ look_forward_twice: true
 
 
 # Training
-# act_reg: false
-# set_cost_class: 2
 # activation: 'gelu'
 rand_augment_param: rand-m7-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_10fps_full_dino_slow_fast
+output_dir: outputs/thumos14_e2e_slowfast_10fps_full_dino_slow_fast_96

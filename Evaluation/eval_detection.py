@@ -1,21 +1,16 @@
 import json
+import logging
+import pdb
 import sys
-
-import urllib.error, urllib.parse
+import traceback
+import urllib.error
+import urllib.parse
 
 import numpy as np
 import pandas as pd
-
-from .utils import get_blocked_videos
-from .utils import interpolated_prec_rec
-from .utils import segment_iou
-import pdb
-import traceback
-import logging
-
-
 from joblib import Parallel, delayed
 
+from .utils import get_blocked_videos, interpolated_prec_rec, segment_iou
 
 logger_initilized = False
 
@@ -41,7 +36,7 @@ def setup_logger(log_file_path, name=None, level=logging.INFO):
         log_file_handler = logging.FileHandler(log_file_path)
         log_file_handler.setFormatter(log_formatter)
         root_logger.addHandler(log_file_handler)
- 
+
     log_formatter = logging.Formatter(
             "[%(asctime)s][%(levelname)s]: %(message)s",
             datefmt="%m/%d %H:%M:%S")
@@ -60,7 +55,7 @@ def get_classes(anno_dict):
     if 'classes' in anno_dict:
         classes = anno_dict['classes']
     else:
-        
+
         database = anno_dict['database']
         all_gts = []
         for vid in database:
@@ -77,10 +72,10 @@ class ANETdetection(object):
     def __init__(self, ground_truth_filename=None, prediction_filename=None,
                  ground_truth_fields=GROUND_TRUTH_FIELDS,
                  prediction_fields=PREDICTION_FIELDS,
-                 tiou_thresholds=np.linspace(0.5, 0.95, 10), 
-                 subset='validation', verbose=False, 
+                 tiou_thresholds=np.linspace(0.5, 0.95, 10),
+                 subset='validation', verbose=False,
                  check_status=False, log_path=None, exclude_videos=None):
-        
+
         if not ground_truth_filename:
             raise IOError('Please input a valid ground truth file.')
         if not prediction_filename:
@@ -93,14 +88,14 @@ class ANETdetection(object):
         else:
             logger = logging.getLogger()
         self.logger = logger
-        
+
         self.tiou_thresholds = tiou_thresholds
         self.verbose = verbose
         self.gt_fields = ground_truth_fields
         self.pred_fields = prediction_fields
         self.ap = None
         self.check_status = check_status
-        
+
         self.blocked_videos = exclude_videos if exclude_videos else list()
         # self.blocked_videos = ['video_test_0000270', 'video_test_0001292', 'video_test_0001496']
         # Import ground truth and predictions.
@@ -168,7 +163,7 @@ class ANETdetection(object):
                                      'label': label_lst,
                                      'difficult': difficult_lst})
         self.class_list = [x for x in class_list]
-        
+
         return ground_truth, activity_index
 
     def _import_prediction(self, prediction_filename):
@@ -295,7 +290,7 @@ def compute_average_precision_detection(ground_truth, prediction, tiou_threshold
     ap : float
         Average precision score.
     """
-    
+
     npos = float(len(ground_truth))
     lock_gt = np.ones((len(tiou_thresholds),len(ground_truth))) * -1
     # Sort predictions by decreasing score order.
@@ -336,7 +331,7 @@ def compute_average_precision_detection(ground_truth, prediction, tiou_threshold
                 tp[tidx, idx] = 1
                 lock_gt[tidx, this_gt.loc[jdx]['index']] = idx
                 break
-                    
+
             if fp[tidx, idx] == 0 and tp[tidx, idx] == 0:
                 fp[tidx, idx] = 1
 
