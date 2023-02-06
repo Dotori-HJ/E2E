@@ -54,7 +54,7 @@ neck: identity
 # img_crop_size: 96
 img_resize: 256
 img_crop_size: 224
-act_reg: true
+act_reg: false
 two_stage: false
 mixed_selection: false
 look_forward_twice: true
@@ -66,4 +66,4 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_10fps_full_dino_avg_act_reg
+output_dir: outputs/thumos14_e2e_slowfast_10fps_full_dino_avg_no_act_reg
