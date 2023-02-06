@@ -342,8 +342,6 @@ class SetCriterion(nn.Module):
         self.num_classes = num_classes
         self.matcher = matcher
         self.weight_dict = weight_dict
-        print(self.weight_dict)
-        exit()
         self.losses = losses
         self.focal_alpha = focal_alpha
 
@@ -467,6 +465,8 @@ class SetCriterion(nn.Module):
             kwargs = {}
             losses.update(self.get_loss(loss, outputs, targets, indices, num_segments, **kwargs))
 
+        print(losses, self.losses)
+        exit()
         # In case of auxiliary losses, we repeat this process with the output of each intermediate layer.
         if 'aux_outputs' in outputs:
             for i, aux_outputs in enumerate(outputs['aux_outputs']):
