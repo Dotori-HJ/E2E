@@ -460,10 +460,10 @@ class ResNet3dSlowFast(nn.Module):
         self.out_indices = (3, )
         # self.slow_poolers = nn.ModuleList([AdaptivePooler(num_channels, 512, 8) for num_channels in [256, 512, 1024, 2048]])
         # self.slow_poolers = nn.ModuleList([SimpleConvPooler(2048, 512)])
-        self.slow_poolers = nn.ModuleList([AdaptivePooler(2048, 512, 8)])
+        # self.slow_poolers = nn.ModuleList([AdaptivePooler(2048, 512, 8)])
         # self.fast_poolers = nn.ModuleList([AdaptivePooler(num_channels, 512, 8) for num_channels in [32, 64, 128, 256]])
         # self.fast_poolers = nn.ModuleList([SimpleConvPooler(256, 64)])
-        self.fast_poolers = nn.ModuleList([AdaptivePooler(256, 64, 8)])
+        # self.fast_poolers = nn.ModuleList([AdaptivePooler(256, 64, 8)])
 
     def init_weights(self, pretrained=None):
         """Initiate the parameters either from existing checkpoint or from
@@ -556,9 +556,6 @@ class ResNet3dSlowFast(nn.Module):
                 # print(x_slow.size())
 
         # out = (x_slow, x_fast)
-
-        # print([x.size() for x in slow_outs])
-        # print([x.size() for x in fast_outs])
         # slow_outs = [
         #     # F.adaptive_avg_pool3d(x, (None, 1, 1)).flatten(2)
         #     pooler(x)
@@ -569,41 +566,30 @@ class ResNet3dSlowFast(nn.Module):
         #     pooler(x)
         #     for x, pooler in zip(fast_outs[-1], self.fast_poolers)
         # ]
-        # print("---------------------------")
-        # print([x.size() for x in slow_outs])
-        # print([x.size() for x in fast_outs])
 
-        # x_slow = F.adaptive_avg_pool3d(x_slow, (None, 1, 1)).flatten(2)
-        x_slow = self.slow_poolers[0](x_slow)
+        x_slow = F.adaptive_avg_pool3d(x_slow, (None, 1, 1)).flatten(2)
+        # x_slow = self.slow_poolers[0](x_slow)
 
-        # x_fast = F.adaptive_avg_pool3d(x_fast, (None, 1, 1)).flatten(2)
-        x_fast = self.fast_poolers[0](x_fast)
-        # print(x_fast.size(), x_slow.size())
-        # output stride = 1
-        if self.slow_upsample == 8:
-            x_fast_down = x_fast
-            x_slow_up = F.interpolate(x_slow, scale_factor=8, mode='linear')
-        # output stride = 2
-        elif self.slow_upsample == 4:
-            x_fast_down = F.interpolate(x_fast, scale_factor=0.5, mode='linear')
-            x_slow_up = F.interpolate(x_slow, scale_factor=4, mode='linear')
-        # output stride = 4
-        elif self.slow_upsample == 2:
-            # slow_outs = [F.interpolate(x, scale_factor=2, mode='linear') for x in slow_outs]
-            # fast_outs = [F.interpolate(x, scale_factor=0.25, mode='linear') for x in fast_outs]
-            x_fast_down = F.interpolate(x_fast, scale_factor=0.25, mode='linear')
-            x_slow_up = F.interpolate(x_slow, scale_factor=2, mode='linear')
+        x_fast = F.adaptive_avg_pool3d(x_fast, (None, 1, 1)).flatten(2)
+        # x_fast = self.fast_poolers[0](x_fast)
 
-        # print("---------------------------")
-        # print([x.size() for x in slow_outs])
-        # print([x.size() for x in fast_outs])
-        # print("---------------------------")
+        # # output stride = 1
+        # if self.slow_upsample == 8:
+        #     x_fast_down = x_fast
+        #     x_slow_up = F.interpolate(x_slow, scale_factor=8, mode='linear')
+        # # output stride = 2
+        # elif self.slow_upsample == 4:
+        #     x_fast_down = F.interpolate(x_fast, scale_factor=0.5, mode='linear')
+        #     x_slow_up = F.interpolate(x_slow, scale_factor=4, mode='linear')
+        # # output stride = 4
+        # elif self.slow_upsample == 2:
+        #     x_fast_down = F.interpolate(x_fast, scale_factor=0.25, mode='linear')
+        #     x_slow_up = F.interpolate(x_slow, scale_factor=2, mode='linear')
+
         # outs = [torch.cat((slow, fast), dim=1) for slow, fast in zip(slow_outs, fast_outs)]
-        # print([x.size() for x in outs])
-        # exit()
-        out = torch.cat((x_slow_up, x_fast_down), dim=1)
+        # out = torch.cat((x_slow_up, x_fast_down), dim=1)
         # return outs
-        return [out]
+        return [x_fast, x_slow]
 
 
 if __name__ == '__main__':

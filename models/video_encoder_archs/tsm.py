@@ -1,23 +1,20 @@
 # Mostly copied from the official repo of TSM paper https://github.com/mit-han-lab/temporal-shift-module/blob/master/ops/models.py
 
-import sys
-import os
 import logging
+import os
+import sys
 
 import torch
-from torch import nn
 import torch.nn.functional as F
-
 import torchvision
-
+from torch import nn
 
 dirname = os.path.dirname(__file__)
 sys.path.insert(0, os.path.join(dirname, '..'))
 from opts import cfg
 
-
 # this variable is helpful for recover the video sequence from batched images
-BATCH_SIZE = None   
+BATCH_SIZE = None
 VERBOSE = False
 
 
@@ -45,9 +42,9 @@ class TemporalShift(nn.Module):
 
         fold = c // fold_div
         if inplace:
-            # Due to some out of order error when performing parallel computing. 
+            # Due to some out of order error when performing parallel computing.
             # May need to write a CUDA kernel.
-            raise NotImplementedError  
+            raise NotImplementedError
             # out = InplaceShift.apply(x, fold)
         else:
             out = torch.zeros_like(x)
@@ -107,10 +104,10 @@ class TemporalPool(nn.Module):
         x = x.transpose(1, 2).contiguous().view(nt // 2, c, h, w)
         return x
 
-    
+
 
 def make_temporal_shift(net, n_div=8, place='blockres'):
- 
+
     # import torchvision
     # if isinstance(net, torchvision.models.ResNet):
     if place == 'block':
@@ -145,7 +142,7 @@ def make_temporal_shift(net, n_div=8, place='blockres'):
         net.layer2 = make_block_temporal(net.layer2)
         net.layer3 = make_block_temporal(net.layer3)
         net.layer4 = make_block_temporal(net.layer4)
-   
+
 
 def make_temporal_pool(net, n_segment):
     import torchvision
@@ -189,16 +186,16 @@ class TSM(nn.Module):
                 self.add_module(name, module)
 
             if is_shift:
-                make_temporal_shift(self, 
+                make_temporal_shift(self,
                                     n_div=self.shift_div, place=self.shift_place)
         else:
             raise ValueError("Unsupported arch {}".format(arch))
-        
+
 
     def extract_features(self, x):
         '''Extract 5D feature maps'''
         N, C, T, H, W = x.shape
-         
+
         global BATCH_SIZE
         BATCH_SIZE = N
         x = x.transpose(1, 2).flatten(0, 1).contiguous()  # (n*t, c, h, w)
@@ -223,7 +220,7 @@ class TSM(nn.Module):
     def load_pretrained_weight(self, ckpt_path=None):
         if ckpt_path is None:
             ckpt_path = 'https://hanlab.mit.edu/projects/tsm/models/TSM_kinetics_RGB_resnet50_shift8_blockres_avg_segment8_e100_dense.pth'
-        
+
         logging.info('loading pretrained model {}'.format(ckpt_path))
 
         if ckpt_path.startswith('http'):
@@ -234,7 +231,7 @@ class TSM(nn.Module):
         checkpoint = checkpoint['state_dict']
 
         base_dict = {'.'.join(k.split('.')[2:]): v for k, v in list(checkpoint.items())}
-        
+
         self.load_state_dict(base_dict, strict=False)
 
     def train(self, mode=True):
@@ -242,7 +239,7 @@ class TSM(nn.Module):
         if self.frozen_stages >= 0:
             logging.info('freeze 0 to {} stage (0-index)'.format(self.frozen_stages))
         self._freeze_stages()
-        
+
         if self._freeze_bn and mode:
             for name, m in self.named_modules():
                 if isinstance(m, nn.BatchNorm2d):
@@ -250,7 +247,7 @@ class TSM(nn.Module):
                     if self._freeze_bn_affine:
                         m.weight.requires_grad_(False)
                         m.bias.requires_grad_(False)
-                
+
 
     def _freeze_stages(self):
         """Prevent all the parameters from being optimized before
@@ -324,7 +321,7 @@ def test_shift():
 def measure_time(model, x, repeat=20, warmup=10):
     for _ in range(warmup):
         y = model(x)
-    
+
     s = time.time()
     for _ in range(repeat):
         y = model(x)
@@ -336,15 +333,16 @@ def measure_time(model, x, repeat=20, warmup=10):
 if __name__ == '__main__':
     logging.getLogger().setLevel(logging.INFO)
     import time
+
     import numpy as np
     s = time.time()
     # from flop_count import flop_count
     import os
     os.environ['CUDA_VISIBLE_DEVICES'] = '2'
     is_shift = True
-    
+
     model = TSM(arch='resnet18', is_shift=is_shift).cuda()
-    
+
     model.eval()
     model.requires_grad_(False)
 
@@ -358,6 +356,5 @@ if __name__ == '__main__':
 
     time_cost = measure_time(model, x, repeat=20, warmup=10)
     memory = torch.cuda.max_memory_allocated() / 1024 / 1024
-    
+
     print('Time {:.2f}ms {:.0f}M memory {:.1f}GFLOPS'.format(time_cost*1000, memory, flops))
-    

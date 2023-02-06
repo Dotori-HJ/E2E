@@ -397,8 +397,8 @@ class VideoEncoder(nn.Module):
             self.backbone = ResNet3dSlowFast(None, depth=cfg.slowfast_depth,freeze_bn=cfg.freeze_bn, freeze_bn_affine=cfg.freeze_affine, slow_upsample=cfg.slow_upsample)
             self.num_channels = 2304
             # self.pyramid_channels = (288, 576, 1152, 2304)
-            # self.pyramid_channels = (1024, 1024, 1024, 1152)
-            self.pyramid_channels = (1024, 1024, 1024, 576)
+            self.pyramid_channels = (1024, 1024, 512, 2048)
+            # self.pyramid_channels = (1024, 1024, 1024, 576)
             self.base_channels = 512
             temporal_length = 64
 
@@ -418,7 +418,7 @@ class VideoEncoder(nn.Module):
         else:
             raise ValueError('Not supported arch: {}'.format(arch))
 
-        indices = [-1]
+        indices = [-1, -2]
         self.fix_encoder = fix_encoder
 
         if fix_encoder:
