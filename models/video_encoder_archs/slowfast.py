@@ -460,10 +460,10 @@ class ResNet3dSlowFast(nn.Module):
         self.out_indices = (3, )
         # self.slow_poolers = nn.ModuleList([AdaptivePooler(num_channels, 512, 8) for num_channels in [256, 512, 1024, 2048]])
         # self.slow_poolers = nn.ModuleList([SimpleConvPooler(2048, 512)])
-        self.slow_poolers = nn.ModuleList([AdaptivePooler(2048, 512, 8)])
+        # self.slow_poolers = nn.ModuleList([AdaptivePooler(2048, 512, 8)])
         # self.fast_poolers = nn.ModuleList([AdaptivePooler(num_channels, 512, 8) for num_channels in [32, 64, 128, 256]])
         # self.fast_poolers = nn.ModuleList([SimpleConvPooler(256, 64)])
-        self.fast_poolers = nn.ModuleList([AdaptivePooler(256, 64, 8)])
+        # self.fast_poolers = nn.ModuleList([AdaptivePooler(256, 64, 8)])
 
     def init_weights(self, pretrained=None):
         """Initiate the parameters either from existing checkpoint or from
@@ -550,11 +550,11 @@ class ResNet3dSlowFast(nn.Module):
                 x_fast_lateral = conv_lateral(x_fast)
                 x_slow = torch.cat((x_slow, x_fast_lateral), dim=1)
 
-        # x_slow = F.adaptive_avg_pool3d(x_slow, (None, 1, 1)).flatten(2)
-        x_slow = self.slow_poolers[0](x_slow)
+        x_slow = F.adaptive_avg_pool3d(x_slow, (None, 1, 1)).flatten(2)
+        # x_slow = self.slow_poolers[0](x_slow)
 
-        # x_fast = F.adaptive_avg_pool3d(x_fast, (None, 1, 1)).flatten(2)
-        x_fast = self.fast_poolers[0](x_fast)
+        x_fast = F.adaptive_avg_pool3d(x_fast, (None, 1, 1)).flatten(2)
+        # x_fast = self.fast_poolers[0](x_fast)
 
         # # output stride = 1
         if self.slow_upsample == 8:
