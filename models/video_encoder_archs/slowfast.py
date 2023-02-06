@@ -436,7 +436,7 @@ class ResNet3dSlowFast(nn.Module):
                      pool1_stride_t=1),
                  freeze_bn=True,
                  freeze_bn_affine=False,
-                 slow_upsample=2,
+                 slow_upsample=8,
                  frozen_stages=-1):
         super().__init__()
         slow_pathway['depth'] = depth
@@ -580,7 +580,6 @@ class ResNet3dSlowFast(nn.Module):
         x_fast = self.fast_poolers[0](x_fast)
         # print(x_fast.size(), x_slow.size())
         # output stride = 1
-        self.slow_upsample = 8
         if self.slow_upsample == 8:
             x_fast_down = x_fast
             x_slow_up = F.interpolate(x_slow, scale_factor=8, mode='linear')

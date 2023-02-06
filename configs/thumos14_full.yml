@@ -42,7 +42,7 @@ fix_encoder: false
 # fix_encoder: true
 fix_transform: false
 # neck: pyramid
-# lr_backbone: 0.00001
+lr_backbone: 0.00001
 neck: identity
 
 # Image
@@ -66,4 +66,4 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_10fps_full_dino_conv_pooler_max_upsample
+output_dir: outputs/thumos14_e2e_slowfast_10fps_full_dino_conv_pooler_max_upsample_lr1e-5

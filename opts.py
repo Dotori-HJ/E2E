@@ -196,7 +196,7 @@ cfg.fix_encoder = False
 cfg.fix_transform = False
 cfg.tsm_base_model = 'resnet50'
 cfg.slowfast_depth = 50
-cfg.slow_upsample = 2
+cfg.slow_upsample = 8
 cfg.temporal_upsample = False
 cfg.temporal_upscale = 1
 
