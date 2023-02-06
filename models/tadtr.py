@@ -150,7 +150,7 @@ class TadTR(nn.Module):
             # RoIAlign params
             self.roi_size = 16
             self.roi_scale = 0
-            self.num_level = 2
+            self.num_level = 1
             self.roi_extractor = ROIAlign(self.roi_size, self.roi_scale)
             self.actionness_pred = nn.Sequential(
                 nn.Linear(self.roi_size * hidden_dim * self.num_level, hidden_dim),
