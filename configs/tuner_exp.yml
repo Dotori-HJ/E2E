@@ -43,7 +43,7 @@ fix_transform: false
 # neck: pyramid
 neck: identity
 # lr_backbone: 0.00001
-act_reg: true
+act_reg: false
 two_stage: false
 mixed_selection: false
 look_forward_twice: true
@@ -62,6 +62,6 @@ img_crop_size: 224
 rand_augment_param: rand-m7-n4-mstd0.5-inc1
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_10fps_identity_dino_spatial_pooler
+output_dir: outputs/thumos14_e2e_slowfast_10fps_identity_dino_spatial_pooler_1layer_no_reduction
 
 # tuner 48.77
