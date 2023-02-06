@@ -493,6 +493,7 @@ class VideoEncoder(nn.Module):
             # video_ft = self.fpn(self.tdm(video_ft))
             # if isinstance(video_ft, (list, tuple)) and len(video_ft) == 1:
             #     video_ft = video_ft[0]
+            print(video_ft.size())
 
             if not isinstance(video_ft, (list, tuple)):
                 if video_ft.ndim == 5:
