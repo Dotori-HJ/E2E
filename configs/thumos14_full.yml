@@ -27,10 +27,10 @@ temperature: 20
 # data setting
 dataset_name: thumos14
 # feature: img10fps
-feature: img15fps
+feature: img10fps
 online_slice: true
-# slice_len: 256
-slice_len: 384
+slice_len: 256
+# slice_len: 384
 # slice_len: 768
 slice_overlap: 0.75
 test_slice_overlap: 0.25
