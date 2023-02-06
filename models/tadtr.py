@@ -342,7 +342,6 @@ class SetCriterion(nn.Module):
         self.num_classes = num_classes
         self.matcher = matcher
         self.weight_dict = weight_dict
-        print(self.weight_dict)
         self.losses = losses
         self.focal_alpha = focal_alpha
 
@@ -416,7 +415,7 @@ class SetCriterion(nn.Module):
         pred_actionness = outputs['pred_actionness']
         loss_actionness = F.l1_loss(pred_actionness.view(-1), gt_iou.view(-1).detach())
 
-        losses['loss_actness'] = loss_actionness
+        losses['loss_actionness'] = loss_actionness
         return losses
 
     def _get_src_permutation_idx(self, indices):
