@@ -141,7 +141,7 @@ cfg.eos_coef = 0.1
 cfg.focal_alpha = 0.25
 
 # Set cost weight
-cfg.set_cost_class = 2    # Class coefficient 
+cfg.set_cost_class = 6    # Class coefficient 
 cfg.set_cost_seg = 5      # Segment L1 coefficient 
 cfg.set_cost_iou = 2      # Segment IoU coefficient
 
