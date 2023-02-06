@@ -50,10 +50,10 @@ neck: identity
 # Image
 # img_resize: 440
 # img_crop_size: 384
-# img_resize: 110
-# img_crop_size: 96
-img_resize: 256
-img_crop_size: 224
+img_resize: 110
+img_crop_size: 96
+# img_resize: 256
+# img_crop_size: 224
 act_reg: true
 two_stage: false
 mixed_selection: false
@@ -66,4 +66,4 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_10fps_full_dino_avg_upsample_act_reg
+output_dir: outputs/thumos14_e2e_slowfast_10fps_full_dino_spatial_pooler_96
