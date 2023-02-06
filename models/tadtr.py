@@ -342,6 +342,8 @@ class SetCriterion(nn.Module):
         self.num_classes = num_classes
         self.matcher = matcher
         self.weight_dict = weight_dict
+        print(self.weight_dict)
+        exit()
         self.losses = losses
         self.focal_alpha = focal_alpha
 
