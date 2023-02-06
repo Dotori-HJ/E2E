@@ -43,7 +43,7 @@ fix_transform: false
 # neck: pyramid
 neck: identity
 lr_backbone: 0.00001
-act_reg: false
+act_reg: true
 two_stage: false
 mixed_selection: false
 look_forward_twice: true
@@ -52,10 +52,10 @@ look_forward_twice: true
 # Image
 # img_resize: 440
 # img_crop_size: 384
-img_resize: 110
-img_crop_size: 96
-# img_resize: 256
-# img_crop_size: 224
+# img_resize: 110
+# img_crop_size: 96
+img_resize: 256
+img_crop_size: 224
 
 # Training
 # activation: 'gelu'
