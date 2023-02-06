@@ -232,10 +232,13 @@ class DeformableTransformer(nn.Module):
         # decoder
         hs, inter_references = self.decoder(tgt, reference_points, memory,
                                             temporal_lens, level_start_index, valid_ratios, query_embed if not self.use_dab else None, mask_flatten, attn_mask=attn_mask)
+
+
+        memory = torch.split(memory.transpose(2, 1), temporal_lens.tolist(), dim=-1)
         inter_references_out = inter_references
         if self.two_stage:
-            return hs, init_reference_out, inter_references_out, memory.transpose(1, 2), enc_outputs_class, enc_outputs_coord_unact
-        return hs, init_reference_out, inter_references_out, memory.transpose(1, 2), None, None
+            return hs, init_reference_out, inter_references_out, memory, enc_outputs_class, enc_outputs_coord_unact
+        return hs, init_reference_out, inter_references_out, memory, None, None
 
 
 class DeformableTransformerEncoderLayer(nn.Module):

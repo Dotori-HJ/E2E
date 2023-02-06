@@ -150,9 +150,10 @@ class TadTR(nn.Module):
             # RoIAlign params
             self.roi_size = 16
             self.roi_scale = 0
+            self.num_level = 2
             self.roi_extractor = ROIAlign(self.roi_size, self.roi_scale)
             self.actionness_pred = nn.Sequential(
-                nn.Linear(self.roi_size * hidden_dim, hidden_dim),
+                nn.Linear(self.roi_size * hidden_dim * self.num_level, hidden_dim),
                 nn.ReLU(inplace=True),
                 nn.Linear(hidden_dim, hidden_dim),
                 nn.ReLU(inplace=True),
@@ -282,12 +283,18 @@ class TadTR(nn.Module):
         else:
             # perform RoIAlign
             B, N = outputs_coord[-1].shape[:2]
-            origin_feat = memory
+            # origin_feat = memory
 
-            rois = self._to_roi_align_format(
-                outputs_coord[-1], origin_feat.shape[2], scale_factor=1.5)
-            roi_features = self.roi_extractor(origin_feat, rois)
-            roi_features = roi_features.view((B, N, -1))
+            # extract rois
+            roi_features = []
+            for origin_feat in memory:
+                rois = self._to_roi_align_format(
+                    outputs_coord[-1], origin_feat.shape[2], scale_factor=1.5)
+                roi_feature = self.roi_extractor(origin_feat, rois)
+                roi_feature = roi_feature.view((B, N, -1))
+                roi_features.append(roi_feature)
+            roi_features = torch.cat(roi_features, -1)
+
             pred_actionness = self.actionness_pred(roi_features)
 
             last_layer_cls = outputs_class[-1]
