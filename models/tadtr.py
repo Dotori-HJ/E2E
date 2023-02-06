@@ -465,8 +465,6 @@ class SetCriterion(nn.Module):
             kwargs = {}
             losses.update(self.get_loss(loss, outputs, targets, indices, num_segments, **kwargs))
 
-        print(losses, self.losses)
-        exit()
         # In case of auxiliary losses, we repeat this process with the output of each intermediate layer.
         if 'aux_outputs' in outputs:
             for i, aux_outputs in enumerate(outputs['aux_outputs']):
