@@ -52,7 +52,7 @@ neck: identity
 # img_crop_size: 96
 img_resize: 256
 img_crop_size: 224
-act_reg: true
+act_reg: false
 two_stage: false
 mixed_selection: false
 look_forward_twice: true
