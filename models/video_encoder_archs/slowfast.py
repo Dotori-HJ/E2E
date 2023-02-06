@@ -8,6 +8,7 @@ import torch.nn.functional as F
 from torch.nn.modules.batchnorm import _BatchNorm
 
 from ..mypooler import AdaptivePooler, SimpleConvPooler
+from ..spatial_pooler import SpatialPooler
 from .resnet3d import ConvModule, ResNet3d, kaiming_init
 
 
@@ -458,10 +459,12 @@ class ResNet3dSlowFast(nn.Module):
         self.slow_path = build_pathway(slow_pathway)
         self.fast_path = build_pathway(fast_pathway)
         self.out_indices = (3, )
-        # self.slow_poolers = nn.ModuleList([AdaptivePooler(num_channels, 512, 8) for num_channels in [256, 512, 1024, 2048]])
+        self.slow_poolers = nn.ModuleList([SpatialPooler('twpool', input_dim=2048, base_dim=512)])
+        self.fast_poolers = nn.ModuleList([SpatialPooler('twpool', input_dim=256, base_dim=64)])
+        # self.slow_poolers = nn.ModuleList([SpatialPooler('avg')])
+        # self.fast_poolers = nn.ModuleList([SpatialPooler('avg')])
         # self.slow_poolers = nn.ModuleList([SimpleConvPooler(2048, 512)])
         # self.slow_poolers = nn.ModuleList([AdaptivePooler(2048, 512, 8)])
-        # self.fast_poolers = nn.ModuleList([AdaptivePooler(num_channels, 512, 8) for num_channels in [32, 64, 128, 256]])
         # self.fast_poolers = nn.ModuleList([SimpleConvPooler(256, 64)])
         # self.fast_poolers = nn.ModuleList([AdaptivePooler(256, 64, 8)])
 
@@ -550,11 +553,11 @@ class ResNet3dSlowFast(nn.Module):
                 x_fast_lateral = conv_lateral(x_fast)
                 x_slow = torch.cat((x_slow, x_fast_lateral), dim=1)
 
-        x_slow = F.adaptive_avg_pool3d(x_slow, (None, 1, 1)).flatten(2)
-        # x_slow = self.slow_poolers[0](x_slow)
+        # x_slow = F.adaptive_avg_pool3d(x_slow, (None, 1, 1)).flatten(2)
+        x_slow = self.slow_poolers[0](x_slow)
 
-        x_fast = F.adaptive_avg_pool3d(x_fast, (None, 1, 1)).flatten(2)
-        # x_fast = self.fast_poolers[0](x_fast)
+        # x_fast = F.adaptive_avg_pool3d(x_fast, (None, 1, 1)).flatten(2)
+        x_fast = self.fast_poolers[0](x_fast)
 
         # # output stride = 1
         if self.slow_upsample == 8:
