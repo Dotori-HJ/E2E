@@ -24,7 +24,7 @@ temperature: 20
 
 # data setting
 dataset_name: thumos14
-feature: img15fps
+feature: img10fps
 online_slice: true
 slice_len: 256
 # slice_len: 768
