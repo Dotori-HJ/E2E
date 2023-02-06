@@ -537,15 +537,11 @@ class ResNet3dSlowFast(nn.Module):
             x_fast_lateral = self.slow_path.conv1_lateral(x_fast)
             x_slow = torch.cat((x_slow, x_fast_lateral), dim=1)
 
-        slow_outs, fast_outs = [], []
         for i, layer_name in enumerate(self.slow_path.res_layers):
             res_layer = getattr(self.slow_path, layer_name)
             x_slow = res_layer(x_slow)
             res_layer_fast = getattr(self.fast_path, layer_name)
             x_fast = res_layer_fast(x_fast)
-            # if i in self.out_indices:
-            #     slow_outs.append(x_slow)
-            #     fast_outs.append(x_fast)
             if (i != len(self.slow_path.res_layers) - 1
                     and self.slow_path.lateral):
                 # No fusion needed in the final stage
@@ -553,19 +549,6 @@ class ResNet3dSlowFast(nn.Module):
                 conv_lateral = getattr(self.slow_path, lateral_name)
                 x_fast_lateral = conv_lateral(x_fast)
                 x_slow = torch.cat((x_slow, x_fast_lateral), dim=1)
-                # print(x_slow.size())
-
-        # out = (x_slow, x_fast)
-        # slow_outs = [
-        #     # F.adaptive_avg_pool3d(x, (None, 1, 1)).flatten(2)
-        #     pooler(x)
-        #     for x, pooler in zip(slow_outs[-1], self.slow_poolers)
-        # ]
-        # fast_outs = [
-        #     # F.adaptive_avg_pool3d(x, (None, 1, 1)).flatten(2)
-        #     pooler(x)
-        #     for x, pooler in zip(fast_outs[-1], self.fast_poolers)
-        # ]
 
         x_slow = F.adaptive_avg_pool3d(x_slow, (None, 1, 1)).flatten(2)
         # x_slow = self.slow_poolers[0](x_slow)
