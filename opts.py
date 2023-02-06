@@ -132,7 +132,7 @@ cfg.aux_loss = True
 
 # Loss weight 
 cfg.act_loss_coef = 4
-cfg.cls_loss_coef = 1
+cfg.cls_loss_coef = 2
 cfg.seg_loss_coef = 5
 cfg.iou_loss_coef = 2
 # Relative classification weight of the no-action class
