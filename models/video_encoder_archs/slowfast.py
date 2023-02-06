@@ -573,7 +573,7 @@ class ResNet3dSlowFast(nn.Module):
         out = torch.cat((x_slow_up, x_fast_down), dim=1)
         # return outs
         # return [x_fast, x_slow]
-        return out
+        return [out]
 
 
 if __name__ == '__main__':
