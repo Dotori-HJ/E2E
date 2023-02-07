@@ -52,4 +52,4 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/tadtr_224_twpool_layer6
+output_dir: outputs/tadtr_224_twpool_layer8
