@@ -187,10 +187,10 @@ class TemporalWiseAttentionPooling(nn.Module):
         qkv_bias=True,
         drop_rate=0.0,
         drop_path=0.0,
-        act_layer=nn.GELU,
+        act_layer=nn.ReLU,
         norm_layer=nn.LayerNorm,
         num_layers=4,
-        skip='avg'
+        skip='max'
     ):
         super().__init__()
         self.input_dim = input_dim
