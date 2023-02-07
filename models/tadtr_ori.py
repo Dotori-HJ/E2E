@@ -330,7 +330,7 @@ class SetCriterion(nn.Module):
 
         gt_iou = iou_mat.max(dim=1)[0]
         pred_actionness = outputs['pred_actionness']
-        loss_actionness = F.l1_loss(pred_actionness.view(-1), gt_iou.view(-1).detach())   
+        loss_actionness = F.l1_loss(pred_actionness.view(-1), gt_iou.view(-1).detach())
 
         losses['loss_actionness'] = loss_actionness
         return losses
@@ -390,7 +390,7 @@ class SetCriterion(nn.Module):
                     # we do not compute actionness loss for aux outputs
                     if 'actionness' in loss:
                         continue
-         
+
                     kwargs = {}
                     if loss == 'labels':
                         # Logging is enabled only for the last layer
@@ -429,7 +429,7 @@ class PostProcess(nn.Module):
             topk_values, topk_indexes = torch.topk(prob.view(
                 out_logits.shape[0], -1), min(cfg.postproc_ins_topk, prob.shape[1]*prob.shape[2]), dim=1)
             scores = topk_values
-            topk_segments = topk_indexes // out_logits.shape[2]
+            topk_segments = torch.div(topk_indexes, out_logits.shape[2], rounding_mode='trunc')
             labels = topk_indexes % out_logits.shape[2]
 
             # bs, nq, 2; bs, num, 2
@@ -506,7 +506,7 @@ def build(args):
     losses = ['labels', 'segments']
 
     weight_dict = {
-        'loss_ce': args.cls_loss_coef, 
+        'loss_ce': args.cls_loss_coef,
         'loss_seg': args.seg_loss_coef,
         'loss_iou': args.iou_loss_coef}
 
