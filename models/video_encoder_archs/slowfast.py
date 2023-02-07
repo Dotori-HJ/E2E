@@ -461,7 +461,6 @@ class ResNet3dSlowFast(nn.Module):
         self.slow_path = build_pathway(slow_pathway)
         self.fast_path = build_pathway(fast_pathway)
         self.out_indices = (3, )
-        pooler = 'avg'
         if pooler == 'avg':
             self.slow_poolers = nn.ModuleList([SpatialPooler('avg')])
             self.fast_poolers = nn.ModuleList([SpatialPooler('avg')])
