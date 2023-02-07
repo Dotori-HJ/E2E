@@ -45,6 +45,7 @@ act_reg: True
 two_stage: false
 mixed_selection: false
 look_forward_twice: false
+pooler: avg
 
 
 # Training
