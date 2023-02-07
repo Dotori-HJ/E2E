@@ -125,6 +125,8 @@ cfg.mixed_selection = False
 
 cfg.temperature = 10000
 
+cfg.pooler = 'twpool'
+
 
 # ----- Loss and matcher setting -------
 # Enable auxiliary decoding losses (loss at each layer)

@@ -394,7 +394,7 @@ class VideoEncoder(nn.Module):
         self.use_upsample = cfg.temporal_upsample
 
         if arch == 'slowfast':
-            self.backbone = ResNet3dSlowFast(None, depth=cfg.slowfast_depth,freeze_bn=cfg.freeze_bn, freeze_bn_affine=cfg.freeze_affine, slow_upsample=cfg.slow_upsample)
+            self.backbone = ResNet3dSlowFast(None, depth=cfg.slowfast_depth,freeze_bn=cfg.freeze_bn, freeze_bn_affine=cfg.freeze_affine, slow_upsample=cfg.slow_upsample, pooler=cfg.pooler)
             self.num_channels = self.backbone.num_channels
             # self.pyramid_channels = (288, 576, 1152, 2304)
             # self.pyramid_channels = (1024, 1024, 256, 2048)

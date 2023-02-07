@@ -438,7 +438,9 @@ class ResNet3dSlowFast(nn.Module):
                  freeze_bn=True,
                  freeze_bn_affine=False,
                  slow_upsample=8,
-                 frozen_stages=-1):
+                 frozen_stages=-1,
+                 pooler='twpool'
+                 ):
         super().__init__()
         slow_pathway['depth'] = depth
         fast_pathway['depth'] = depth

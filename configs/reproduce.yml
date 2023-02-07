@@ -18,9 +18,7 @@ dec_layers: 4
 dim_feedforward: 1024
 num_queries: 40
 dropout: 0.1
-# dropout: 0.0
 temperature: 10000
-# temperature: 20
 
 # data setting
 dataset_name: thumos14
@@ -43,16 +41,15 @@ neck: identity
 # Image
 img_resize: 256
 img_crop_size: 224
-act_reg: true
+act_reg: True
 two_stage: false
 mixed_selection: false
 look_forward_twice: false
 
 
 # Training
-# activation: 'gelu'
 rand_augment_param: rand-m7-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/tadtr_224_pooler_reproduce
+output_dir: outputs/tadtr_224_twpool_layer2
