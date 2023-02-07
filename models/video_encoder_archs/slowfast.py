@@ -459,10 +459,17 @@ class ResNet3dSlowFast(nn.Module):
         self.slow_path = build_pathway(slow_pathway)
         self.fast_path = build_pathway(fast_pathway)
         self.out_indices = (3, )
-        self.slow_poolers = nn.ModuleList([SpatialPooler('twpool', input_dim=2048, base_dim=512, num_layers=4)])
-        self.fast_poolers = nn.ModuleList([SpatialPooler('twpool', input_dim=256, base_dim=128, num_layers=4)])
-        # self.slow_poolers = nn.ModuleList([SpatialPooler('avg')])
-        # self.fast_poolers = nn.ModuleList([SpatialPooler('avg')])
+        pooler = 'avg'
+        if pooler == 'avg':
+            self.slow_poolers = nn.ModuleList([SpatialPooler('avg')])
+            self.fast_poolers = nn.ModuleList([SpatialPooler('avg')])
+            self.num_channels = 2304
+        elif pooler == 'twpool':
+            self.slow_poolers = nn.ModuleList([SpatialPooler('twpool', input_dim=2048, base_dim=1024, num_layers=4)])
+            self.fast_poolers = nn.ModuleList([SpatialPooler('twpool', input_dim=256, base_dim=128, num_layers=4)])
+            self.num_channels = 1152
+        else:
+            assert NotImplementedError
         # self.slow_poolers = nn.ModuleList([SimpleConvPooler(2048, 512)])
         # self.slow_poolers = nn.ModuleList([AdaptivePooler(2048, 512, 8)])
         # self.fast_poolers = nn.ModuleList([SimpleConvPooler(256, 64)])
@@ -576,8 +583,8 @@ class ResNet3dSlowFast(nn.Module):
         out = torch.cat((x_slow_up, x_fast_down), dim=1)
         # return outs
         # return [x_fast, x_slow]
-        return [out]
-
+        # return [out]
+        return out
 
 if __name__ == '__main__':
     # from flop_count import flop_count

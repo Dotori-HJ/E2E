@@ -5,7 +5,8 @@
 
 '''build models'''
 
-from .tadtr import build
+from .tadtr_ori import build
+
 
 def build_model(args):
     return build(args)
