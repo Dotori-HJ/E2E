@@ -332,7 +332,7 @@ class SetCriterion(nn.Module):
         pred_actionness = outputs['pred_actionness']
         loss_actionness = F.l1_loss(pred_actionness.view(-1), gt_iou.view(-1).detach())   
 
-        losses['loss_iou'] = loss_actionness
+        losses['loss_actionness'] = loss_actionness
         return losses
 
     def _get_src_permutation_idx(self, indices):
