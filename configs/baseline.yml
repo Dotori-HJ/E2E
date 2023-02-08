@@ -39,10 +39,10 @@ fix_transform: false
 neck: identity
 
 # Image
-img_resize: 290
-img_crop_size: 256
-# img_resize: 320
-# img_crop_size: 288
+# img_resize: 290
+# img_crop_size: 256
+img_resize: 320
+img_crop_size: 288
 # img_resize: 365
 # img_crop_size: 320
 
@@ -68,4 +68,4 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/tadtr_256
+output_dir: outputs/tadtr_288

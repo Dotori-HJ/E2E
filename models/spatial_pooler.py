@@ -219,11 +219,13 @@ class TemporalWiseAttentionPooling(nn.Module):
         self.norm = norm_layer(base_dim)
 
         self.cls_token = nn.Embedding(1, base_dim)
-        self.pool_skip = SpatialPooler(skip)
-        if input_dim != self.output_dim:
-            self.pool_proj = nn.Linear(input_dim, base_dim)
-        else:
-            self.pool_proj = nn.Identity()
+        self.skip = skip
+        if skip is not None:
+            self.pool_skip = SpatialPooler(skip)
+            if input_dim != self.output_dim:
+                self.pool_proj = nn.Linear(input_dim, base_dim)
+            else:
+                self.pool_proj = nn.Identity()
 
         if base_dim != self.output_dim:
             self.output_proj = nn.Linear(base_dim, self.output_dim)
@@ -234,9 +236,10 @@ class TemporalWiseAttentionPooling(nn.Module):
     def forward(self, x):
         b, c, t, h, w = x.size()
 
-        pool_skip = self.pool_skip(x)
-        pool_skip = rearrange(pool_skip, 'b c ... -> b ... c')
-        pool_skip = self.pool_proj(pool_skip)
+        if self.skip is not None:
+            pool_skip = self.pool_skip(x)
+            pool_skip = rearrange(pool_skip, 'b c ... -> b ... c')
+            pool_skip = self.pool_proj(pool_skip)
         x = rearrange(x, 'b c t h w -> b t (h w) c')
         x = self.proj(x)
 
@@ -248,7 +251,9 @@ class TemporalWiseAttentionPooling(nn.Module):
 
         x = self.norm(x)
         x = x[:, :, 0]
-        x = self.output_proj(x) + pool_skip
+        x = self.output_proj(x)
+        if self.skip is not None:
+            x + pool_skip
         x = rearrange(x, 'b t c -> b c t')
 
         return x
