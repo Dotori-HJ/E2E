@@ -1,17 +1,21 @@
 import matplotlib.pyplot as plt
 
-x = [5.61, 5.61, 6.13, 28.0]
-y = [50.83, 54.45, 55.56, 57.83]
-plt.plot(x, y, "r*-", label="224x224")
-plt.ylim(50, 60)
-plt.xlim(0, 30)
-# x = [1.80, 1.80, 1.91, 7.11]
-# y = [42.94, 47.64, 49.77, 52.62]
-# plt.plot(x, y, "b*-", label="96x96")
-# plt.tight_layout()
-plt.xlabel("Memory (GB)")
-plt.ylabel("mAP")
-# plt.legend(loc="best")
+x = [64, 96, 128, 160, 192, 224, 256]
+y = [46.44, 54.42, 54.8, 55.5, 56.0, 56.7, 57.0]
+plt.plot(x, y, "ro-", label="Baseline")
+plt.xticks(x)
+# plt.ylim(10, 60)
+# plt.xlim(0, 30)
 
-plt.savefig("plot.png")
+x = [64, 96, 128, 160, 192, 224, 256]
+y = [46.48, 54.56, 55.24, 56.2, 57.7, 58.59, 59.98]
+plt.plot(x, y, "bo-", label="Baseline + Ours")
+plt.xticks(x)
+
+# plt.tight_layout()
+plt.xlabel("Spatial resolution")
+plt.ylabel("mAP")
+plt.legend(loc="best")
+
+plt.savefig("plot.png", dpi=400)
 plt.close()
