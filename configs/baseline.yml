@@ -41,8 +41,10 @@ neck: identity
 # Image
 # img_resize: 256
 # img_crop_size: 224
-img_resize: 147
-img_crop_size: 128
+img_resize: 220
+img_crop_size: 192
+# img_resize: 147
+# img_crop_size: 128
 # img_resize: 74
 # img_crop_size: 64
 act_reg: true
@@ -57,4 +59,4 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/tadtr_64
+output_dir: outputs/tadtr_192
