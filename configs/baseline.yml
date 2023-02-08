@@ -39,7 +39,7 @@ fix_transform: false
 neck: identity
 
 # Image
-# img_resize: 256
+img_resize: 256
 img_crop_size: 224
 act_reg: true
 two_stage: false
