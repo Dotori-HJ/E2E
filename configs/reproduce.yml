@@ -39,18 +39,20 @@ fix_transform: false
 neck: identity
 
 # Image
-img_resize: 256
-img_crop_size: 224
+# img_resize: 256
+# img_crop_size: 224
+# img_resize: 320
+img_crop_size: 320
 act_reg: true
 two_stage: false
 mixed_selection: false
 look_forward_twice: false
 
-pooler: avg
+# pooler: avg
 
 # Training
 rand_augment_param: rand-m7-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/tadtr_224_ori
+output_dir: outputs/tadtr_320_twpool_1over4_layer4
