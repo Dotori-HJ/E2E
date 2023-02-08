@@ -41,10 +41,10 @@ neck: identity
 # Image
 # img_resize: 256
 # img_crop_size: 224
-img_resize: 290
-img_crop_size: 256
-# img_resize: 320
-# img_crop_size: 288
+# img_resize: 290
+# img_crop_size: 256
+img_resize: 320
+img_crop_size: 288
 act_reg: true
 two_stage: false
 mixed_selection: false
