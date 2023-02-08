@@ -237,7 +237,7 @@ class TemporalWiseAttentionPooling(nn.Module):
         pool_skip = self.pool_skip(x)
         pool_skip = rearrange(pool_skip, 'b c ... -> b ... c')
         pool_skip = self.pool_proj(pool_skip)
-
+        print(x.size(), pool_skip.size())
         x = rearrange(x, 'b c t h w -> b t (h w) c')
         x = self.proj(x)
 
@@ -249,7 +249,6 @@ class TemporalWiseAttentionPooling(nn.Module):
 
         x = self.norm(x)
         x = x[:, :, 0]
-        print(pool_skip.size())
         x = self.output_proj(x) + pool_skip
         x = rearrange(x, 'b t c -> b c t')
 
