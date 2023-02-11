@@ -221,7 +221,13 @@ def get_dataset_info(dataset, feature):
             raise ValueError('unsupported feature, should be one of [i3d2s]')
 
     elif dataset == 'activitynet':
-        raise NotImplementedError
+        subset_mapping = {'train': 'training', 'val': 'validation'}
+        ann_file = path_info['activitynet']['ann_file']
+
+        feature_info = {'local_path': path_info['activitynet']['img']['local_path'],
+        'format': 'jpg', 'fn_templ': '%s', 'img_fn_templ': '/img_%07d.jpg', 'num_frames':384}
+        ft_info_file = path_info['activitynet']['img']['ft_info_file']
+
 
     elif dataset == 'hacs':
         raise NotImplementedError

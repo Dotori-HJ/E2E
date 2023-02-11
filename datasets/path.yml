@@ -14,3 +14,9 @@ thumos14:
     local_path: data/thumos14/videos
     # meta_path_fmt: data/thumos14/metadata_{}_{}fps_{}_{}.pth
     meta_path_fmt: data/thumos14/metadata_{}.pth
+
+activitynet:
+  ann_file: 'data/activitynet/gt.json'
+  img:
+    local_path: data/activitynet/activitynet_384_frames
+    ft_info_file: 'data/activitynet/activitynet_384_info.json'

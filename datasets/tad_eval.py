@@ -70,6 +70,10 @@ class TADEvaluator(object):
             anno_file = 'data/thumos14/th14_annotations_with_fps_duration.json'
             # follow SSN/PGCN/AFSD/MUSES to remove three falsely annotated videos
             self.ignored_videos = ['video_test_0000270', 'video_test_0001292', 'video_test_0001496']
+        elif dataset_name == 'activitynet':
+            subset_mapping = {'train': 'training', 'val': 'validation'}
+            anno_file = 'data/activitynet/gt.json'
+            self.ignored_videos = []
         else:
             raise NotImplementedError
 

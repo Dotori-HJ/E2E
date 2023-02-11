@@ -8,7 +8,6 @@ def gen_thumos14_frames_info(frame_dir, fps):
     result_dict = {}
     anno_dict = json.load(open(osp.expanduser('data/thumos14/th14_annotations_with_fps_duration.json')))['database']
 
-    print(anno_dict.keys())
     for fname in files:
         vid = fname
         num_frames = len(os.listdir(osp.join(frame_dir, vid)))
@@ -28,5 +27,7 @@ def gen_thumos14_frames_info(frame_dir, fps):
 
 
 if __name__ == '__main__':
+    # frame_dir = 'data/thumos14/thumos14_img15fps'
+    # gen_thumos14_frames_info(frame_dir, 15)
     frame_dir = 'data/thumos14/thumos14_img15fps'
     gen_thumos14_frames_info(frame_dir, 15)

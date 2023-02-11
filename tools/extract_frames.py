@@ -5,6 +5,7 @@ import os
 import os.path as osp
 from re import sub
 
+import cv2
 import numpy as np
 
 
@@ -14,12 +15,29 @@ def extract_frames(video_path, dst_dir, fps):
 
     video_fname = osp.basename(video_path)
 
+    cap = cv2.VideoCapture(video_fname)
+    width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+    height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+    # fps = cap.get(cv2.CAP_PROP_FPS)
+    # frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+
+    # # Calculate duration
+    # duration = frame_count / fps
+
     # if not osp.exists(video_path):
     #     subdir = 'test_set/TH14_test_set_mp4' if 'test' in video_fname else 'Validation_set/videos'
     #     url = f'https://crcv.ucf.edu/THUMOS14/{subdir}/{video_fname}'
     #     os.system('wget {} -O {} --no-check-certificate'.format(url, video_path))
     # cmd = 'ffmpeg -i "{}"  -filter:v "fps=fps={}" "{}/img_%07d.jpg"'.format(video_path, fps, dst_dir)
-    cmd = f'ffmpeg -i "{video_path}" -vf setpts=N/TB -r 1 -vframes 384 "{dst_dir}/img_%07d.jpg"'    # ActivityNet v1.3
+    if width > height:
+        cmd = f'ffmpeg -i "{video_path}" -vf "scale=256:-1, setpts=N/TB" -vframes 384 -r 1 "{dst_dir}/img_%07d.jpg"'    # ActivityNet v1.3
+        # cmd = f'ffmpeg -i "{video_path}" -vf "scale=256:-1, setpts=N/((FRAME_RATE)*TB)" -r 1 -vframes 384 "{dst_dir}/img_%07d.jpg"'    # ActivityNet v1.3
+        # cmd = f'ffmpeg -i "{video_path}" -vf "scale=256:-1, setpts=N/TB" -vframes 384 "{dst_dir}/img_%07d.jpg"'    # ActivityNet v1.3
+    else:
+        cmd = f'ffmpeg -i "{video_path}" -vf "scale=-1:256, setpts=N/TB" -vframes 384 -r 1 "{dst_dir}/img_%07d.jpg"'    # ActivityNet v1.3
+        # cmd = f'ffmpeg -i "{video_path}" -vf "scale=-1:256, setpts=N/((FRAME_RATE)*TB)" -r 1 -vframes 384 "{dst_dir}/img_%07d.jpg"'    # ActivityNet v1.3
+        # cmd = f'ffmpeg -i "{video_path}" -vf "scale=-1:256, setpts=N/TB" -vframes 384 "{dst_dir}/img_%07d.jpg"'    # ActivityNet v1.3
+
     print(cmd)
     ret_code = os.system(cmd)
     if ret_code == 0:
@@ -83,4 +101,4 @@ if __name__ == '__main__':
 # thumos14
 # python tools/extract_frames.py --video_dir data/thumos14/videos --frame_dir data/thumos14/img10fps --fps  10 -e 4
 
-# python tools/extract_frames.py --video_dir /home/ds/HDD2/ActivityNet/archives/v1-3/train_val --frame_dir /home/ds/SSD/ActivityNet_fixed/train
+# python tools/extract_frames.py --video_dir /home/ds/HDD2/ActivityNet/archives/v1-3/train_val --frame_dir /home/ds/SSD2/ActivityNet_v1-3_384frames
