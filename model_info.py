@@ -2,6 +2,7 @@ import torch
 from ptflops import get_model_complexity_info
 
 from models.spatial_pooler import TemporalWiseAttentionPooling
+from models.transformer_ori import DeformableTransformer
 from models.video_encoder_archs.slowfast import ResNet3dSlowFast
 
 
@@ -15,73 +16,79 @@ def get_gpu_memory_consumption(model, input):
     after = torch.cuda.max_memory_allocated()
     return (after - before) / 1024 / 1024
 
-# def get_flops(model, input):
-#     input = input.to(torch.float32)
 
-#         model(input)
-#     print(prof.key_averages())
+# ------------------------------------------------------------------------
+# TadTR: End-to-end Temporal Action Detection with Transformer
+# Copyright (c) 2021 - 2012. Xiaolong Liu
+# ------------------------------------------------------------------------
+# Modified from Deformable DETR (https://github.com/fundamentalvision/Deformable-DETR)
+# Copyright (c) 2020 SenseTime. All Rights Reserved.
+# Licensed under the Apache License, Version 2.0
+# ------------------------------------------------------------------------
+# and DETR (https://github.com/facebookresearch/detr)
+# Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
+# ------------------------------------------------------------------------
+'''Entry for training and testing'''
 
+import datetime
+import json
+import logging
+import os
+import os.path as osp
+import random
+import re
+import sys
+import time
+from pathlib import Path
 
-#     # input = torch.randn(1, 2048, 256, 7, 7).cuda()
-#     # model = TemporalWiseAttentionPooling(input_dim=2048, base_dim=512).cuda()
-#     # print(f'The number of GPU meory: {get_gpu_memory_consumption(model, input)}')
-#     # print(f'The number of FLOPs: {get_flops(model, input)}')
-#     # print(f'The number of parameters: {count_parameters(model)}')
+import numpy as np
+import torch
+import torch.backends.cudnn as cudnn
+from torch.utils.data import DataLoader, DistributedSampler
 
-
-#     input = torch.randn(1, 256, 32, 7, 7).cuda()
-#     model = TemporalWiseAttentionPooling(input_dim=256, base_dim=64).cuda()
-    # print(f'The number of GPU meory: {get_gpu_memory_consumption(model, input)}')
-#     print(f'The number of FLOPs: {get_flops(model, input)}')
-#     print(f'The number of parameters: {count_parameters(model)}')
-
-# def get_flops(model, input):
-#     input = input.to(torch.float32)
-#     with torch.autograd.profiler.profile() as prof:
-#         model(input)
-#     flops = sum([v.value for k, v in prof.key_averages().items()]) * input.nelement()
-#     return flops
+import util.misc as utils
+from datasets import build_dataset
+from engine import test, train_one_epoch
+from models import build_model
+from opts import cfg, get_args_parser, update_cfg_from_file, update_cfg_with_args
 
 if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser('', parents=[get_args_parser()])
+    args = parser.parse_args()
+
+    if args.cfg is not None:
+        update_cfg_from_file(cfg, args.cfg)
+
+    update_cfg_with_args(cfg, args.opt)
 
 
     with torch.autograd.profiler.profile(with_flops=True, with_modules=True) as prof:
         before = torch.cuda.max_memory_allocated()
-        backbone = ResNet3dSlowFast(
-            None, depth=50,freeze_bn=True, freeze_bn_affine=True, slow_upsample=8,
-            pooler='avg'
-        ).cuda()
+        model, criterion, postprocessors = build_model(cfg)
+        if not args.resume and not args.eval and cfg.input_type == 'image':
+            model.backbone.backbone.load_pretrained_weight(cfg.pretrained_model)
+
+        model.cuda()
         # with torch.no_grad():
         #     print(f'The number of parameters: {count_parameters(backbone) / 1000 / 1000} M')
 
-        input = torch.randn(1, 3, 256, 224, 224).cuda()
-        x = backbone(input)
+        input = torch.randn(4, 3, 256, 224, 224).cuda()
+        mask = torch.ones(4, 256, dtype=torch.bool).cuda()
+        x = model((input, mask))
 
         after = torch.cuda.max_memory_allocated()
-    macs, params = get_model_complexity_info(backbone, (3, 256, 224, 224), as_strings=True, print_per_layer_stat=True, verbose=True)
-    print('{:<30}  {:<8}'.format('Computational complexity: ', macs))
-    print('{:<30}  {:<8}'.format('Number of parameters: ', params))
+    # macs, params = get_model_complexity_info(model, (3, 256, 224, 224), as_strings=True, print_per_layer_stat=True, verbose=True)
+    # print('{:<30}  {:<8}'.format('Computational complexity: ', macs))
+    # print('{:<30}  {:<8}'.format('Number of parameters: ', params))
     stats = prof.key_averages().table()
     index = stats.find("FLOPs")
     unit = stats[index - 1]
     print(unit)
-    # column_data = [stat for stat in stats]
-    # print(column_data)
     flops = 0
     for k in prof.key_averages():
         flops += k.flops
     print(f'The number of GPU meory: {(after - before) / 1024 / 1024 / 1024} GB')
     print(f'Total FLOPs: {flops / 1000 / 1000}M')
-    # model_a = TemporalWiseAttentionPooling(input_dim=2048, base_dim=512, num_layers=2).cuda()
-    # model_b = TemporalWiseAttentionPooling(input_dim=256, base_dim=64, num_layers=2).cuda()
-    # input_a = torch.randn(1, 2048, 256, 7, 7).cuda()
-    # input_b = torch.randn(1, 256, 32, 7, 7).cuda()
-    # with torch.no_grad():
-    #     print(f'The number of parameters: {(count_parameters(model_a) + count_parameters(model_b)) / 1000 / 1000} M')
 
-    # before = torch.cuda.max_memory_allocated()
-    # x_a = model_a(input_a)
-    # x_b = model_b(input_b)
-    # after = torch.cuda.max_memory_allocated()
-    # print(f'The number of GPU meory: {(after - before) / 1024 / 1024 / 1024} GB')
 
