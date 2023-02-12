@@ -466,8 +466,8 @@ class ResNet3dSlowFast(nn.Module):
             self.fast_poolers = nn.ModuleList([SpatialPooler('avg')])
             self.num_channels = 2304
         elif pooler == 'twpool':
-            self.slow_poolers = nn.ModuleList([SpatialPooler('twpool', input_dim=2048, base_dim=512, num_layers=8)])
-            self.fast_poolers = nn.ModuleList([SpatialPooler('twpool', input_dim=256, base_dim=64, num_layers=8)])
+            self.slow_poolers = nn.ModuleList([SpatialPooler('twpool', input_dim=2048, base_dim=2048, num_layers=4)])
+            self.fast_poolers = nn.ModuleList([SpatialPooler('twpool', input_dim=256, base_dim=256, num_layers=4)])
             # self.num_channels = 2304
             self.num_channels = 576
             # self.num_channels = 288
