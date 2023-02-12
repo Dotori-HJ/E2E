@@ -227,7 +227,7 @@ class TemporalWiseAttentionPooling(nn.Module):
             else:
                 self.pool_proj = nn.Identity()
 
-        self.learnable_pos = nn.Embedding(50, base_dim)
+        # self.learnable_pos = nn.Embedding(50, base_dim)
         if base_dim != self.output_dim:
             self.output_proj = nn.Linear(base_dim, self.output_dim)
         else:
@@ -246,8 +246,8 @@ class TemporalWiseAttentionPooling(nn.Module):
 
         cls_token = repeat(self.cls_token.weight, 'b c -> (b b1) t () c', b1=b, t=t)
         x = torch.cat([cls_token, x], dim=2)
-        pos = repeat(self.learnable_pos.weight, 'n c -> b t n c', b=b, t=t)
-        x = x + pos
+        # pos = repeat(self.learnable_pos.weight, 'n c -> b t n c', b=b, t=t)
+        # x = x + pos
 
         for layer in self.layers:
             x = layer(x, h, w)
