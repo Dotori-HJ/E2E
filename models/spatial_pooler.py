@@ -130,13 +130,13 @@ class SpatialAttention(nn.Module):
         v = rearrange(v, "(b h t) c n -> (b t) h n c", b=x.size(0), h=self.num_heads)
 
         attn = (q * self.scale) @ k.transpose(-2, -1)
-        attn = cal_rel_pos_spatial(
-            attn, q, k, True,
-            (1, h, w),
-            (1, h, w),
-            self.rel_pos_h,
-            self.rel_pos_w,
-        )
+        # attn = cal_rel_pos_spatial(
+        #     attn, q, k, True,
+        #     (1, h, w),
+        #     (1, h, w),
+        #     self.rel_pos_h,
+        #     self.rel_pos_w,
+        # )
         attn = attn.softmax(dim=-1)
         x = attn @ v
         x = rearrange(x, "(b t) h n c -> b t n (h c)", b=b, t=t)
@@ -227,6 +227,7 @@ class TemporalWiseAttentionPooling(nn.Module):
             else:
                 self.pool_proj = nn.Identity()
 
+        self.learnable_pos = nn.Embedding(50, base_dim)
         if base_dim != self.output_dim:
             self.output_proj = nn.Linear(base_dim, self.output_dim)
         else:
@@ -245,6 +246,8 @@ class TemporalWiseAttentionPooling(nn.Module):
 
         cls_token = repeat(self.cls_token.weight, 'b c -> (b b1) t () c', b1=b, t=t)
         x = torch.cat([cls_token, x], dim=2)
+        pos = repeat(self.learnable_pos, 'n c -> b n c', b=b)
+        x = x + pos
 
         for layer in self.layers:
             x = layer(x, h, w)

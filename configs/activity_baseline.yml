@@ -33,6 +33,7 @@ input_type: image
 # training setting (not finialized)
 lr: 0.00005
 batch_size: 4
+set_cost_class: 6
 
 fix_encoder: false
 fix_transform: false
