@@ -116,8 +116,8 @@ class SpatialAttention(nn.Module):
             self.proj_drop = nn.Dropout(drop_rate)
 
         rel_sp_dim = 2 * 7 - 1
-        self.rel_pos_h = nn.Parameter(torch.zeros(rel_sp_dim, head_dim))
-        self.rel_pos_w = nn.Parameter(torch.zeros(rel_sp_dim, head_dim))
+        # self.rel_pos_h = nn.Parameter(torch.zeros(rel_sp_dim, head_dim))
+        # self.rel_pos_w = nn.Parameter(torch.zeros(rel_sp_dim, head_dim))
 
     def forward(self, x, h, w):
         b, t, n, c = x.size()
