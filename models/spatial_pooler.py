@@ -246,7 +246,7 @@ class TemporalWiseAttentionPooling(nn.Module):
 
         cls_token = repeat(self.cls_token.weight, 'b c -> (b b1) t () c', b1=b, t=t)
         x = torch.cat([cls_token, x], dim=2)
-        pos = repeat(self.learnable_pos, 'n c -> b n c', b=b)
+        pos = repeat(self.learnable_pos.weight, 'n c -> b n c', b=b)
         x = x + pos
 
         for layer in self.layers:
