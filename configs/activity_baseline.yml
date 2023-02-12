@@ -39,8 +39,8 @@ fix_encoder: false
 fix_transform: false
 neck: identity
 
-epochs: 16
-lr_step: [14]
+epochs: 12
+lr_step: [9]
 
 # img_resize: 256
 # img_crop_size: 224
