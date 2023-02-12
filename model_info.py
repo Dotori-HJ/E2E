@@ -73,7 +73,7 @@ if __name__ == '__main__':
         # with torch.no_grad():
         #     print(f'The number of parameters: {count_parameters(backbone) / 1000 / 1000} M')
 
-        input = torch.randn(4, 3, 256, 224, 224).cuda()
+        input = torch.randn(4, 3, 256, 256, 256).cuda()
         mask = torch.ones(4, 256, dtype=torch.bool).cuda()
         x = model((input, mask))
 
