@@ -115,9 +115,9 @@ class SpatialAttention(nn.Module):
         if drop_rate > 0.0:
             self.proj_drop = nn.Dropout(drop_rate)
 
-        # rel_sp_dim = 2 * 7 - 1
-        # self.rel_pos_h = nn.Parameter(torch.zeros(rel_sp_dim, head_dim))
-        # self.rel_pos_w = nn.Parameter(torch.zeros(rel_sp_dim, head_dim))
+        rel_sp_dim = 2 * 7 - 1
+        self.rel_pos_h = nn.Parameter(torch.zeros(rel_sp_dim, head_dim))
+        self.rel_pos_w = nn.Parameter(torch.zeros(rel_sp_dim, head_dim))
 
     def forward(self, x, h, w):
         b, t, n, c = x.size()
@@ -130,13 +130,13 @@ class SpatialAttention(nn.Module):
         v = rearrange(v, "(b h t) c n -> (b t) h n c", b=x.size(0), h=self.num_heads)
 
         attn = (q * self.scale) @ k.transpose(-2, -1)
-        # attn = cal_rel_pos_spatial(
-        #     attn, q, k, True,
-        #     (1, h, w),
-        #     (1, h, w),
-        #     self.rel_pos_h,
-        #     self.rel_pos_w,
-        # )
+        attn = cal_rel_pos_spatial(
+            attn, q, k, True,
+            (1, h, w),
+            (1, h, w),
+            self.rel_pos_h,
+            self.rel_pos_w,
+        )
         attn = attn.softmax(dim=-1)
         x = attn @ v
         x = rearrange(x, "(b t) h n c -> b t n (h c)", b=b, t=t)
