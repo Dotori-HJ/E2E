@@ -32,6 +32,7 @@ input_type: image
 
 # training setting (not finialized)
 lr: 0.00005
+lr_backbone: 0.000001
 batch_size: 4
 set_cost_class: 6
 
@@ -50,7 +51,7 @@ act_reg: true
 two_stage: false
 mixed_selection: false
 look_forward_twice: false
-pooler: twpool
+pooler: avg
 
 
 # Training
@@ -58,4 +59,4 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/activitynet_tadtr_224_ours_8batch_deep
+output_dir: outputs/activitynet_tadtr_224_avg_deep
