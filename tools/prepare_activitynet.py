@@ -19,8 +19,8 @@ def gen_activitynet_frames_info(frame_dir, video_paths, num_frames, anno_path):
         if not os.path.exists(folder_path):
             continue
         frames = len(os.listdir(folder_path))
-        if frames != num_frames:
-            print(folder_path)
+        # if frames != num_frames:
+        #     print(folder_path)
         # num_frames = len(os.listdir(osp.join(video_paths, vid)))
         # feature_second = num_frames / anno_dict
         # video_second = anno_dict[vid]['duration']
@@ -28,9 +28,16 @@ def gen_activitynet_frames_info(frame_dir, video_paths, num_frames, anno_path):
         # if diff > 3:
         #     print(vid, feature_second, video_second)
         # feature_fps = anno_dict[vid]['fps'] / 8
-        feature_fps = 384 / anno_dict[vid]['duration']
-        # result_dict[vid] = {'feature_length': frames, 'feature_second': anno_dict[vid]['duration'], 'feature_fps': feature_fps}
-        result_dict[vid] = {'feature_length': frames, 'feature_second': anno_dict[vid]['duration'], 'feature_fps': feature_fps}
+        diff = num_frames - frames
+        fps = frames / anno_dict[vid]['duration']
+        if diff > 0:
+            duration = anno_dict[vid]['duration'] + (1 / fps * diff)
+            print(folder_path)
+        else:
+            duration = anno_dict[vid]['duration']
+        feature_fps = num_frames / duration
+        result_dict[vid] = {'feature_length': frames, 'feature_second': duration, 'feature_fps': feature_fps}
+        # result_dict[vid] = {'feature_length': frames, 'feature_second': 384 * anno_dict[vid]['duration'] / num_frames, 'feature_fps': feature_fps}
 
     # result_dict['num_frames'] = num_frames
     # if not osp.exists('data/thumos14'):
