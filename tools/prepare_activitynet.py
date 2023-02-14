@@ -10,6 +10,7 @@ def gen_activitynet_frames_info(frame_dir, video_paths, num_frames, anno_path):
     with open(anno_path) as f:
         anno_dict = json.load(f)['database']
 
+    num = 0
     result_dict = {}
     for vid in anno_dict.keys():
         if anno_dict[vid]['subset'] == "testing":
@@ -32,6 +33,7 @@ def gen_activitynet_frames_info(frame_dir, video_paths, num_frames, anno_path):
         fps = frames / anno_dict[vid]['duration']
         if diff > 0:
             duration = anno_dict[vid]['duration'] + (1 / fps * diff)
+            num += 1
             print(folder_path)
         else:
             duration = anno_dict[vid]['duration']
@@ -39,6 +41,7 @@ def gen_activitynet_frames_info(frame_dir, video_paths, num_frames, anno_path):
         result_dict[vid] = {'feature_length': frames, 'feature_second': duration, 'feature_fps': feature_fps}
         # result_dict[vid] = {'feature_length': frames, 'feature_second': 384 * anno_dict[vid]['duration'] / num_frames, 'feature_fps': feature_fps}
 
+    print(num)
     # result_dict['num_frames'] = num_frames
     # if not osp.exists('data/thumos14'):
     #     os.makedirs('data/thumos14')
