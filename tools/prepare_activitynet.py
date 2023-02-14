@@ -28,7 +28,8 @@ def gen_activitynet_frames_info(frame_dir, video_paths, num_frames, anno_path):
         # if diff > 3:
         #     print(vid, feature_second, video_second)
         # feature_fps = anno_dict[vid]['fps'] / 8
-        feature_fps = frames / anno_dict[vid]['duration']
+        feature_fps = 384 / anno_dict[vid]['duration']
+        # result_dict[vid] = {'feature_length': frames, 'feature_second': anno_dict[vid]['duration'], 'feature_fps': feature_fps}
         result_dict[vid] = {'feature_length': frames, 'feature_second': anno_dict[vid]['duration'], 'feature_fps': feature_fps}
 
     # result_dict['num_frames'] = num_frames
