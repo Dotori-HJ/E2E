@@ -127,8 +127,8 @@ def test(model, criterion, postprocessor, data_loader, base_ds, device, output_d
     # logging.info('iou range {}'.format(iou_range))
 
     # action_evaluator = None
-    action_evaluator = TADEvaluator(cfg.dataset_name, subset, base_ds, nms_mode=[
-                                          'raw'], iou_range=iou_range, epoch=epoch, topk=cfg.postproc_ins_topk)
+    nms_mode = ['raw', 'nms'] if cfg.dataset_name == 'activitynet' else ['raw']
+    action_evaluator = TADEvaluator(cfg.dataset_name, subset, base_ds, nms_mode=nms_mode, iou_range=iou_range, epoch=epoch, topk=cfg.postproc_ins_topk)
 
     # raw_res = []
     cnt = 0
