@@ -34,7 +34,7 @@ input_type: image
 lr: 0.00005
 lr_backbone: 0.00001
 batch_size: 4
-set_cost_class: 6
+set_cost_class: 2
 
 fix_encoder: false
 fix_transform: false
