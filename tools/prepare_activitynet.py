@@ -1,11 +1,13 @@
 import json
 import os
 import os.path as osp
+import shutil
 
 import cv2
+import numpy as np
 
 
-def gen_activitynet_frames_info(frame_dir, video_paths, num_frames, anno_path):
+def gen_activitynet_frames_info(frame_dir, video_paths, target_frames, anno_path):
     # files = os.listdir(video_paths)
     with open(anno_path) as f:
         anno_dict = json.load(f)['database']
@@ -19,7 +21,18 @@ def gen_activitynet_frames_info(frame_dir, video_paths, num_frames, anno_path):
         folder_path = os.path.join(frame_dir, vid)
         if not os.path.exists(folder_path):
             continue
-        frames = len(os.listdir(folder_path))
+        frame_names = os.listdir(folder_path)
+        num_frames = len(frame_names)
+
+        if num_frames < target_frames:
+            backup_path = folder_path + ".bak"
+            if not os.path.exists(backup_path):
+                os.mkdir(backup_path)
+                shutil.copytree(folder_path, backup_path)
+            indices = np.linspace(0, 1, target_frames)
+            indices = np.round(indices * (num_frames - 1))
+
+            shutil.copy2
         # if frames != num_frames:
         #     print(folder_path)
         # num_frames = len(os.listdir(osp.join(video_paths, vid)))
@@ -29,16 +42,16 @@ def gen_activitynet_frames_info(frame_dir, video_paths, num_frames, anno_path):
         # if diff > 3:
         #     print(vid, feature_second, video_second)
         # feature_fps = anno_dict[vid]['fps'] / 8
-        diff = num_frames - frames
-        fps = frames / anno_dict[vid]['duration']
+        diff = target_frames - num_frames
+        fps = num_frames / anno_dict[vid]['duration']
         if diff > 0:
             duration = anno_dict[vid]['duration'] + (1 / fps * diff)
             num += 1
             print(folder_path)
         else:
             duration = anno_dict[vid]['duration']
-        feature_fps = num_frames / duration
-        result_dict[vid] = {'feature_length': frames, 'feature_second': duration, 'feature_fps': feature_fps}
+        feature_fps = target_frames / duration
+        result_dict[vid] = {'feature_length': num_frames, 'feature_second': duration, 'feature_fps': feature_fps}
         # result_dict[vid] = {'feature_length': frames, 'feature_second': 384 * anno_dict[vid]['duration'] / num_frames, 'feature_fps': feature_fps}
 
     print(num)
@@ -46,7 +59,7 @@ def gen_activitynet_frames_info(frame_dir, video_paths, num_frames, anno_path):
     # if not osp.exists('data/thumos14'):
     #     os.makedirs('data/thumos14')
 
-    with open('data/activitynet/activitynet_{}_info.json'.format(num_frames), 'w') as f:
+    with open('data/activitynet/activitynet_{}_info.json'.format(target_frames), 'w') as f:
         json.dump(result_dict, f)
 
 
