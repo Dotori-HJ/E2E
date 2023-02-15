@@ -43,10 +43,10 @@ neck: identity
 epochs: 12
 lr_step: [9]
 
-img_resize: 256
-img_crop_size: 224
-# img_resize: 110
-# img_crop_size: 96
+# img_resize: 256
+# img_crop_size: 224
+img_resize: 110
+img_crop_size: 96
 act_reg: true
 two_stage: false
 mixed_selection: false
