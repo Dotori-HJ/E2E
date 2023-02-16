@@ -171,7 +171,6 @@ class TADEvaluator(object):
                         raise NotImplementedError
                 self.all_pred[nms_mode] += [[video_id, k] + det for det in dets.tolist()]
 
-
     def nms_whole_dataset(self):
         video_ids = list(set([v['src_vid_name'] for k, v in self.video_dict.items()]))
         all_pred = []
