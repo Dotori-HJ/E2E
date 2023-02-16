@@ -2,6 +2,7 @@ import json
 import os
 import os.path as osp
 import shutil
+from shutil import SameFileError
 
 import cv2
 import numpy as np
@@ -19,23 +20,24 @@ def gen_activitynet_frames_info(frame_dir, video_paths, target_frames, anno_path
             continue
 
         folder_path = os.path.join(frame_dir, vid)
-        if not os.path.exists(folder_path):
-            continue
         frame_names = os.listdir(folder_path)
         num_frames = len(frame_names)
 
         if num_frames < target_frames:
             backup_path = folder_path + ".bak"
             if not os.path.exists(backup_path):
-                os.mkdir(backup_path)
                 shutil.copytree(folder_path, backup_path)
             indices = np.linspace(0, 1, target_frames)
             indices = np.round(indices * (num_frames - 1))
 
-
-            for i, j in enumerate(indices):
-                src_path = os.path.join(backup_path, f"img_{i:07d}.jpg")
-                shutil.copy2
+            for tgt_idx, src_idx in enumerate(indices):
+                src_path = os.path.join(backup_path, f"img_{int(src_idx + 1):07d}.jpg")
+                tgt_path = os.path.join(folder_path, f"img_{tgt_idx + 1:07d}.jpg")
+                shutil.copy2(src_path, tgt_path)
+                # try:
+                #     shutil.copy2(src_path, tgt_path)
+                # except SameFileError:
+                #     pass
         # if frames != num_frames:
         #     print(folder_path)
         # num_frames = len(os.listdir(osp.join(video_paths, vid)))
@@ -47,12 +49,13 @@ def gen_activitynet_frames_info(frame_dir, video_paths, target_frames, anno_path
         # feature_fps = anno_dict[vid]['fps'] / 8
         diff = target_frames - num_frames
         fps = num_frames / anno_dict[vid]['duration']
-        if diff > 0:
-            duration = anno_dict[vid]['duration'] + (1 / fps * diff)
-            num += 1
-            print(folder_path)
-        else:
-            duration = anno_dict[vid]['duration']
+        duration = anno_dict[vid]['duration']
+        # if diff > 0:
+        #     duration = anno_dict[vid]['duration'] + (1 / fps * diff)
+        #     num += 1
+        #     print(folder_path)
+        # else:
+        #     duration = anno_dict[vid]['duration']
         feature_fps = target_frames / duration
         result_dict[vid] = {'feature_length': num_frames, 'feature_second': duration, 'feature_fps': feature_fps}
         # result_dict[vid] = {'feature_length': frames, 'feature_second': 384 * anno_dict[vid]['duration'] / num_frames, 'feature_fps': feature_fps}
