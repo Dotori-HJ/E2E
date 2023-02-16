@@ -32,7 +32,10 @@ def gen_activitynet_frames_info(frame_dir, video_paths, target_frames, anno_path
             indices = np.linspace(0, 1, target_frames)
             indices = np.round(indices * (num_frames - 1))
 
-            shutil.copy2
+
+            for i, j in enumerate(indices):
+                src_path = os.path.join(backup_path, f"img_{i:07d}.jpg")
+                shutil.copy2
         # if frames != num_frames:
         #     print(folder_path)
         # num_frames = len(os.listdir(osp.join(video_paths, vid)))
