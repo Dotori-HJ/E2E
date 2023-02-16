@@ -111,6 +111,9 @@ class TADEvaluator(object):
         self.video_dict = video_dict
         self.stats = {k: dict() for k in self.nms_mode}
         self.subset = subset
+        if dataset_name == 'activitynet':
+            with open("data/activitynet/cuhk_results.json", 'rt') as f:
+                self.cls_scores = json.load(f)['results']
 
     def _get_classes(self, anno_dict):
         if 'classes' in anno_dict:
@@ -167,9 +170,24 @@ class TADEvaluator(object):
                 dets = dets[:self.topk, :]
 
                 # On ActivityNet, follow the tradition to use external video label
-                # if 
                 if assign_cls_labels:
-                        raise NotImplementedError
+                    topk = 2
+
+                    cls_scores = np.asarray(self.cls_scores[video_id])
+                    topk_cls_idx = np.argsort(cls_scores)[::-1][:topk]
+                    topk_cls_score = cls_scores[topk_cls_idx]
+                    # num_segs = min(num_pred, len(dets))
+
+                    # duplicate all segment and assign the topk labels
+                    # K x 1 @ 1 N -> K x N -> KN
+                    # multiply the scores
+                    new_pred_score = np.sqrt(topk_cls_score[:, None] @ dets[:, 2][None, :]).flatten()[:, None]
+                    new_pred_segment = np.tile(dets[:, :2], (topk, 1))
+                    new_pred_label = np.tile(topk_cls_idx[:, None], (1, len(dets))).flatten()[:, None]
+                    dets = np.concatenate(
+                        (new_pred_segment, new_pred_score, new_pred_label), axis=-1
+                    )
+
                 self.all_pred[nms_mode] += [[video_id, k] + det for det in dets.tolist()]
 
     def nms_whole_dataset(self):

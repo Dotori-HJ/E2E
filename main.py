@@ -93,7 +93,6 @@ def main(args):
     #     # We plan to support image input in the future
     #     raise NotImplementedError
 
-    # print(cfg.rand_augment_param)
     model, criterion, postprocessors = build_model(cfg)
 
     if not args.resume and not args.eval and cfg.input_type == 'image':
@@ -206,8 +205,8 @@ def main(args):
     best_metric = -1
     best_metric_txt = ''
 
-    if args.eval and not args.resume:
-        args.resume = osp.join(output_dir, 'model_best.pth')
+    # if args.eval and not args.resume:
+    #     args.resume = osp.join(output_dir, 'model_best.pth')
 
     # start training from this epoch. You do not to set this option.
     start_epoch = 0
@@ -229,7 +228,8 @@ def main(args):
 
     if args.eval:
         test_stats = test(model, criterion, postprocessors,
-                          data_loader_val, base_ds, device, cfg.output_dir, cfg, subset=cfg.test_set, epoch=checkpoint['epoch'], test_mode=True)
+                        #   data_loader_val, base_ds, device, cfg.output_dir, cfg, subset=cfg.test_set, epoch=checkpoint['epoch'], test_mode=True)
+                          data_loader_val, base_ds, device, cfg.output_dir, cfg, subset=cfg.test_set, epoch=0, test_mode=True)
 
         return
 
