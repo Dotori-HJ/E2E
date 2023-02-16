@@ -7,7 +7,7 @@ pretrained_model: https://download.openmmlab.com/mmaction/recognition/slowfast/s
 enc_layers: 4
 dec_layers: 4
 dim_feedforward: 2048
-num_queries: 50
+num_queries: 10
 dropout: 0.0
 temperature: 10000
 
@@ -42,8 +42,8 @@ act_reg: true
 two_stage: false
 mixed_selection: false
 look_forward_twice: false
-pooler: twpool
-# pooler: avg
+# pooler: twpool
+pooler: avg
 
 
 
@@ -52,4 +52,4 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/activitynet_tadtr_224_twpool_binary
+output_dir: outputs/activitynet_tadtr_224_avg_binary_query10
