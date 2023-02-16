@@ -1,0 +1,55 @@
+# e2e setting
+encoder: slowfast
+slowfast_depth: 50
+pretrained_model: https://download.openmmlab.com/mmaction/recognition/slowfast/slowfast_r50_256p_4x16x1_256e_kinetics400_rgb/slowfast_r50_256p_4x16x1_256e_kinetics400_rgb_20200728-145f1097.pth
+
+# model setting
+enc_layers: 4
+dec_layers: 4
+dim_feedforward: 2048
+num_queries: 10
+dropout: 0.0
+temperature: 10000
+
+# data setting
+dataset_name: activitynet
+# feature: img10fps
+feature: 384frames
+online_slice: false
+slice_len: 384
+slice_overlap: 0
+test_slice_overlap: 0
+input_type: image
+
+# training setting (not finialized)
+lr: 0.0001
+batch_size: 4
+set_cost_class: 2
+
+fix_encoder: false
+fix_transform: false
+neck: identity
+
+epochs: 12
+lr_step: [9]
+
+img_resize: 256
+img_crop_size: 224
+binary: true
+# img_resize: 110
+# img_crop_size: 96
+act_reg: true
+two_stage: false
+mixed_selection: false
+look_forward_twice: false
+pooler: twpool
+# pooler: avg
+
+
+
+# Training
+rand_augment_param: rand-m7-n4-mstd0.5-inc1
+rand_erase: false
+
+# output
+output_dir: outputs/activitynet_tadtr_224_ours_binary_query10
