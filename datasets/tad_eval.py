@@ -184,9 +184,7 @@ class TADEvaluator(object):
                     new_pred_score = np.sqrt(topk_cls_score[:, None] @ dets[:, 2][None, :]).flatten()[:, None]
                     new_pred_segment = np.tile(dets[:, :2], (topk, 1))
                     new_pred_label = np.tile(topk_cls_idx[:, None], (1, len(dets))).flatten()[:, None]
-                    dets = np.concatenate(
-                        (new_pred_segment, new_pred_score, new_pred_label), axis=-1
-                    )
+                    dets = np.concatenate((new_pred_segment, new_pred_score, new_pred_label), axis=-1)
 
                 self.all_pred[nms_mode] += [[video_id, k] + det for det in dets.tolist()]
 
