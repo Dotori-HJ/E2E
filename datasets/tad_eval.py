@@ -167,6 +167,7 @@ class TADEvaluator(object):
                 dets = dets[:self.topk, :]
 
                 # On ActivityNet, follow the tradition to use external video label
+                # if 
                 if assign_cls_labels:
                         raise NotImplementedError
                 self.all_pred[nms_mode] += [[video_id, k] + det for det in dets.tolist()]
