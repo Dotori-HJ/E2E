@@ -35,6 +35,7 @@ lr_step: [9]
 
 img_resize: 256
 img_crop_size: 224
+binary: true
 # img_resize: 110
 # img_crop_size: 96
 act_reg: true
@@ -43,7 +44,7 @@ mixed_selection: false
 look_forward_twice: false
 # pooler: twpool
 pooler: avg
-binary: true
+
 
 
 # Training
