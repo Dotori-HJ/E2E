@@ -43,11 +43,11 @@ neck: identity
 # img_crop_size: 256
 # img_resize: 320
 # img_crop_size: 288
-img_resize: 365
-img_crop_size: 320
+# img_resize: 365
+# img_crop_size: 320
 
-# img_resize: 256
-# img_crop_size: 224
+img_resize: 256
+img_crop_size: 224
 # img_resize: 220
 # img_crop_size: 192
 # img_resize: 147
@@ -68,4 +68,4 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/tadtr_320
+output_dir: outputs/tadtr_224
