@@ -31,7 +31,7 @@ def eval_ap(iou, cls, gt, predition):
     return cls, ap
 
 
-def apply_nms(dets_arr, nms_thr=0.4, use_soft_nms=False):
+def apply_nms(dets_arr, nms_thr=0.4, use_soft_nms=False, min_score=0.001):
     # the last column are class ids
     unique_classes = np.unique(dets_arr[:, 3])
     output_dets = []
@@ -111,7 +111,7 @@ class TADEvaluator(object):
         self.video_dict = video_dict
         self.stats = {k: dict() for k in self.nms_mode}
         self.subset = subset
-        
+
         if dataset_name == 'activitynet':
             with open("data/activitynet/cuhk_results.json", 'rt') as f:
                 self.cls_scores = json.load(f)['results']
@@ -187,6 +187,9 @@ class TADEvaluator(object):
                     new_pred_segment = np.tile(dets[:, :2], (topk, 1))
                     new_pred_label = np.tile(topk_cls_idx[:, None], (1, len(dets))).flatten()[:, None]
                     dets = np.concatenate((new_pred_segment, new_pred_score, new_pred_label), axis=-1)
+
+                min_score = 0.001
+                dets = dets[dets[:, 2] > min_score]
 
                 self.all_pred[nms_mode] += [[video_id, k] + det for det in dets.tolist()]
 

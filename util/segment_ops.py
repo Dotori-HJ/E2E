@@ -195,6 +195,7 @@ def temporal_nms(segments, thresh):
     :param thresh:
     :return:
     """
+    # segments = segments[segments[:, 2] > min_score, :]
     t1 = segments[:, 0]
     t2 = segments[:, 1]
     scores = segments[:, 2]
