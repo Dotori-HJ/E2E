@@ -111,6 +111,7 @@ class TADEvaluator(object):
         self.video_dict = video_dict
         self.stats = {k: dict() for k in self.nms_mode}
         self.subset = subset
+        
         if dataset_name == 'activitynet':
             with open("data/activitynet/cuhk_results.json", 'rt') as f:
                 self.cls_scores = json.load(f)['results']
@@ -170,7 +171,8 @@ class TADEvaluator(object):
                 dets = dets[:self.topk, :]
 
                 # On ActivityNet, follow the tradition to use external video label
-                if assign_cls_labels:
+                # if assign_cls_labels:
+                if self.dataset_name == 'activitynet':
                     topk = 2
 
                     cls_scores = np.asarray(self.cls_scores[video_id])
