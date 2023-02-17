@@ -7,7 +7,7 @@ pretrained_model: https://download.openmmlab.com/mmaction/recognition/slowfast/s
 enc_layers: 4
 dec_layers: 4
 dim_feedforward: 2048
-num_queries: 50
+num_queries: 10
 dropout: 0.0
 temperature: 10000
 
@@ -30,8 +30,8 @@ fix_encoder: false
 fix_transform: false
 neck: identity
 
-epochs: 12
-lr_step: [9]
+epochs: 16
+lr_step: [12]
 
 img_resize: 256
 img_crop_size: 224
@@ -52,4 +52,4 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/activitynet_tadtr_224_avg_binary_query50
+output_dir: outputs/activitynet_tadtr_224_avg_long_topk1
