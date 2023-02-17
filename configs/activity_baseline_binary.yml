@@ -22,7 +22,7 @@ test_slice_overlap: 0
 input_type: image
 
 # training setting (not finialized)
-lr: 0.00005
+lr: 0.0001
 batch_size: 4
 set_cost_class: 2
 
@@ -52,4 +52,4 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/activitynet_tadtr_224_avg_long_dp0_query30_layer6_ffn2048_lrdrop
+output_dir: outputs/activitynet_tadtr_224_avg_long_dp0_query30_layer6_ffn2048
