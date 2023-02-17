@@ -336,7 +336,7 @@ class TADDataset(torch.utils.data.Dataset):
             ), dim=1)
 
         if isinstance(imgs, np.ndarray):
-            imgs = torch.from_numpy(np.ascontiguousarray(imgs.transpose([3,0,1,2]))).float()   # thwc -> cthw
+            imgs = torch.from_numpy(np.ascontiguousarray(imgs.transpose([3, 0, 1, 2]))).float()   # thwc -> cthw
         return imgs
 
     def _get_train_label(self, video_name):
