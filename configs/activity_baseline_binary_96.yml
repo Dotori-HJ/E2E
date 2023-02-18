@@ -14,7 +14,7 @@ pretrained_model: https://download.openmmlab.com/mmaction/recognition/slowfast/s
 enc_layers: 4
 dec_layers: 4
 dim_feedforward: 1024
-num_queries: 10
+num_queries: 100
 dropout: 0.1
 temperature: 10000
 
@@ -58,4 +58,4 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/activitynet_tadtr_96_avg_binary_long_lr_drop_backbone_dp01_ffn1024_10query
+output_dir: outputs/activitynet_tadtr_96_avg_binary_long_lr_drop_backbone_dp01_ffn1024_100query
