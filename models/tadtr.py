@@ -621,6 +621,7 @@ def build(args):
         'loss_ce': args.cls_loss_coef,
         'loss_segments': args.seg_loss_coef,
         'loss_iou': args.iou_loss_coef
+        'tgt': 1,
     }
 
     if args.act_reg:
