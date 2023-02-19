@@ -216,10 +216,9 @@ class TADDataset(torch.utils.data.Dataset):
     def remove_duplicated_and_short(self, eps=0.02):
         num_removed = 0
         for vid in self.anno_dict['database'].keys():
-            annotations = self.anno_dict['database'][vid]
+            annotations = self.anno_dict['database'][vid]['annotations']
             valid_annos = []
-            print(annotations)
-            exit()
+
             for anno in annotations:
                 s, e = anno["segment"]
                 l = anno["label"]
@@ -241,7 +240,7 @@ class TADDataset(torch.utils.data.Dataset):
                 else:
                     num_removed += 1
 
-            self.anno_dict['database'][vid] = valid_annos
+            self.anno_dict['database'][vid]['annotations'] = valid_annos
         if num_removed > 0:
             print(f"Removed {num_removed} duplicated and short annotations")
 
