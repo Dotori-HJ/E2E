@@ -401,8 +401,8 @@ class TADDataset(torch.utils.data.Dataset):
 
         # normalized the coordinate
         target['segments'] = np.array(target['segments']) / feature_second
-        print(target['segments'])
-        exit()
+        if (target['segments'] < 0).sum() + (target['segments'] > feature_second).sum() > 0:
+            print("!!!!!, video_name")
 
         if len(target['segments']) > 0:
             target['segments'] = segment_t1t2_to_cw(target['segments'])
