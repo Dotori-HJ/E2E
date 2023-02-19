@@ -15,6 +15,7 @@ import time
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import torch
 
 from Evaluation.eval_detection import compute_average_precision_detection
 from opts import cfg
