@@ -36,7 +36,7 @@ lr: 0.00005
 lr_backbone: 0.000001
 # lr_backbone: 0.00001
 batch_size: 4
-set_cost_class: 6
+set_cost_class: 2
 
 fix_encoder: false
 fix_transform: false
@@ -66,4 +66,4 @@ rand_erase: false
 nms_thr: 0.75
 
 # output
-output_dir: outputs/activitynet_tadtr_224_avg_long_cost6_multi_class
+output_dir: outputs/activitynet_tadtr_224_avg_long_cost2_multi_class_dn
