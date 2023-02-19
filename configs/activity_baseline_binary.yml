@@ -45,6 +45,7 @@ mixed_selection: false
 look_forward_twice: false
 # pooler: twpool
 pooler: avg
+slow_upsample: 2
 
 
 
@@ -53,4 +54,4 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/activitynet_tadtr_224_avg_dp01_long_lr_drop_backbone_query50_ffn1024_no_act_reg
+output_dir: outputs/activitynet_tadtr_224_avg_dp01_long_lr_drop_backbone_query50_ffn1024_no_act_reg_upsample2
