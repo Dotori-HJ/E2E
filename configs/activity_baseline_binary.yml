@@ -39,7 +39,7 @@ img_crop_size: 224
 binary: true
 # img_resize: 110
 # img_crop_size: 96
-act_reg: false
+act_reg: true
 two_stage: false
 mixed_selection: false
 look_forward_twice: false
@@ -54,4 +54,4 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/activitynet_tadtr_224_avg_dp01_long_lr_drop_backbone_query50_ffn1024_no_act_reg_upsample2
+output_dir: outputs/activitynet_tadtr_224_avg_dp01_long_lr_drop_backbone_query50_ffn1024_cost6
