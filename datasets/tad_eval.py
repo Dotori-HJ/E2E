@@ -171,8 +171,8 @@ class TADEvaluator(object):
                 dets = dets[:self.topk, :]
 
                 # On ActivityNet, follow the tradition to use external video label
-                # if assign_cls_labels:
-                if self.dataset_name == 'activitynet':
+                if assign_cls_labels:
+                # if self.dataset_name == 'activitynet':
                     topk = 2
 
                     cls_scores = np.asarray(self.cls_scores[video_id])
