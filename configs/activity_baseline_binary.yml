@@ -25,7 +25,7 @@ input_type: image
 lr: 0.00005
 lr_backbone: 0.000001
 batch_size: 4
-set_cost_class: 4
+set_cost_class: 2
 
 fix_encoder: false
 fix_transform: false
@@ -54,4 +54,4 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/activitynet_tadtr_224_avg_dp01_long_lr_drop_backbone_query50_ffn1024_cost4
+output_dir: outputs/activitynet_tadtr_224_avg_dp01_long_lr_drop_backbone_query50_ffn1024_cost2
