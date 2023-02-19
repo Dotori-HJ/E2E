@@ -46,7 +46,7 @@ lr_step: [12]
 img_resize: 110
 img_crop_size: 96
 binary: true
-act_reg: true
+act_reg: false
 two_stage: false
 mixed_selection: false
 look_forward_twice: false
