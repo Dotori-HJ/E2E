@@ -218,6 +218,8 @@ class TADDataset(torch.utils.data.Dataset):
         for vid in self.anno_dict['database'].keys():
             annotations = self.anno_dict['database'][vid]
             valid_annos = []
+            print(annotations)
+            exit()
             for anno in annotations:
                 s, e = anno["segment"]
                 l = anno["label"]
