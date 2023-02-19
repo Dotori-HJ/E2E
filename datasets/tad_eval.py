@@ -190,7 +190,6 @@ class TADEvaluator(object):
 
                 min_score = 0.001
                 dets = dets[dets[:, 2] > min_score]
-                print(dets[:, :2])
 
                 self.all_pred[nms_mode] += [[video_id, k] + det for det in dets.tolist()]
 

@@ -451,6 +451,7 @@ class PostProcess(nn.Module):
         vid_length = target_sizes
         scale_fct = torch.stack([vid_length, vid_length], dim=1)
         segments = segments * scale_fct[:, None, :]
+        segments = torch.clip(segments, 0, vid_length)
 
         results = [{'scores': s, 'labels': l, 'segments': b, 'query_ids': q}
                    for s, l, b, q in zip(scores, labels, segments, query_ids)]
