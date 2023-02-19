@@ -40,7 +40,7 @@ fix_transform: false
 neck: identity
 
 epochs: 16
-lr_step: [12]
+lr_step: [14]
 
 # img_resize: 256
 # img_crop_size: 224
@@ -52,6 +52,7 @@ mixed_selection: false
 look_forward_twice: false
 pooler: avg
 
+nms_thr: 0.8
 
 # Training
 rand_augment_param: rand-m7-n4-mstd0.5-inc1

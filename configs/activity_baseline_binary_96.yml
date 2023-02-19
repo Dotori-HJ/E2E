@@ -40,7 +40,7 @@ fix_transform: false
 neck: identity
 
 epochs: 16
-lr_step: [12]
+lr_step: [14]
 
 
 img_resize: 110
