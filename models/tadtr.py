@@ -615,7 +615,8 @@ def build(args):
     weight_dict = {
         'loss_ce': args.cls_loss_coef,
         'loss_segments': args.seg_loss_coef,
-        'loss_iou': args.iou_loss_coef}
+        'loss_iou': args.iou_loss_coef
+    }
 
     if args.act_reg:
         weight_dict['loss_actionness'] = args.act_loss_coef
