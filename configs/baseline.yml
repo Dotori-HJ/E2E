@@ -59,8 +59,9 @@ img_crop_size: 224
 act_reg: true
 two_stage: false
 mixed_selection: false
-look_forward_twice: false
-pooler: twpool
+look_forward_twice: true
+# pooler: twpool
+pooler: avg
 
 
 # Training
@@ -68,4 +69,4 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/tadtr_224_dn_twpool
+output_dir: outputs/tadtr_96_dn
