@@ -272,7 +272,6 @@ class TADDataset(torch.utils.data.Dataset):
 
         if src_vid_name in self.all_video_data:
             feature_data = self.all_video_data[src_vid_name].T
-
         else:
             feature_data = load_feature(local_ft_path, ft_format, shape)
 
@@ -402,6 +401,8 @@ class TADDataset(torch.utils.data.Dataset):
 
         # normalized the coordinate
         target['segments'] = np.array(target['segments']) / feature_second
+        print(target['segments'])
+        exit()
 
         if len(target['segments']) > 0:
             target['segments'] = segment_t1t2_to_cw(target['segments'])
