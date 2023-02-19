@@ -196,6 +196,8 @@ class TADDataset(torch.utils.data.Dataset):
         logging.info("{} subset video numbers: {}".format(self.subset,len(self.video_list)))
         self.anno_dict = anno_dict
 
+        self.remove_duplicated_and_short()
+
         self.cached_data = {}
 
         # if the features of all videos is saved in one hdf5 file (all in one), e.g. TSP features
@@ -210,6 +212,36 @@ class TADDataset(torch.utils.data.Dataset):
                 self.all_video_data[k] = np.array(data[fn_templ % k]).T
             if not self.online_slice:
                 self.cached_data = self.all_video_data
+
+    def remove_duplicated_and_short(self, eps=0.02):
+        num_removed = 0
+        for vid in self.anno_dict['database'].keys():
+            annotations = self.anno_dict['database'][vid]
+            valid_annos = []
+            for anno in annotations:
+                s, e = anno["segment"]
+                l = anno["label"]
+
+                if (e - s) >= eps:
+                    valid = True
+                else:
+                    valid = False
+                for v_anno in valid_annos:
+                    if ((abs(s - v_anno['segment'][0]) <= eps)
+                        and (abs(e - v_anno['segment'][1]) <= eps)
+                        and (l == v_anno['label'])
+                    ):
+                        valid = False
+                        break
+
+                if valid:
+                    valid_annos.append(anno)
+                else:
+                    num_removed += 1
+
+            self.anno_dict['database'][vid] = valid_annos
+        if num_removed > 0:
+            print(f"Removed {num_removed} duplicated and short annotations")
 
     def __len__(self):
         return len(self.video_list)
