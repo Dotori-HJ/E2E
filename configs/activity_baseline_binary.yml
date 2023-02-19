@@ -25,7 +25,7 @@ input_type: image
 lr: 0.00005
 lr_backbone: 0.000001
 batch_size: 4
-set_cost_class: 2
+set_cost_class: 6
 
 fix_encoder: false
 fix_transform: false
@@ -45,7 +45,7 @@ mixed_selection: false
 look_forward_twice: false
 # pooler: twpool
 pooler: avg
-slow_upsample: 2
+# slow_upsample: 2
 
 
 
