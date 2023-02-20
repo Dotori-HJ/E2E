@@ -175,8 +175,8 @@ class TadTR(nn.Module):
 
         features = self.backbone(samples)
         # pos = [self.position_embedding(features)]
-        pos = [repeat(self.pos_embed.weight, 'c t -> b c t', b=src.size(0))]
         src, mask = features.tensors, features.mask
+        pos = [repeat(self.pos_embed.weight, 'c t -> b c t', b=src.size(0))]
         srcs = [self.input_proj[0](src)]
         masks = [mask]
 
