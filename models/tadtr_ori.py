@@ -18,6 +18,7 @@ import math
 
 import torch
 import torch.nn.functional as F
+from einops import repeat
 from torch import nn
 
 from models.matcher import build_matcher
@@ -76,7 +77,7 @@ class TadTR(nn.Module):
         self.class_embed = nn.Linear(hidden_dim, num_classes)
         self.segment_embed = MLP(hidden_dim, hidden_dim, 2, 3)
         self.query_embed = nn.Embedding(num_queries, hidden_dim*2)
-        self.pos_embed = nn.Embedding(num_seq, hidden_dim)
+        self.pos_embed = nn.Embedding(hidden_dim, num_seq)
 
         self.input_proj = nn.ModuleList([
             nn.Sequential(
@@ -173,9 +174,8 @@ class TadTR(nn.Module):
                 samples = nested_tensor_from_tensor_list(samples)  # (n, c, t)
 
         features = self.backbone(samples)
-        pos = [self.position_embedding(features)]
-        print(pos[0].size())
-        # pos = [self.pos_embed.weight]
+        # pos = [self.position_embedding(features)]
+        pos = [repeat(self.pos_embed.weight, 'c t -> b c t', b=src.size(0))]
         src, mask = features.tensors, features.mask
         srcs = [self.input_proj[0](src)]
         masks = [mask]
