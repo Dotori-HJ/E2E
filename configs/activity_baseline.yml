@@ -15,9 +15,9 @@ pretrained_model: https://download.openmmlab.com/mmaction/recognition/slowfast/s
 # model setting
 enc_layers: 4
 dec_layers: 4
-dim_feedforward: 1024
+dim_feedforward: 2048
 num_queries: 50
-dropout: 0.1
+dropout: 0.0
 temperature: 10000
 
 # data setting
@@ -66,4 +66,4 @@ rand_erase: false
 nms_thr: 0.75
 
 # output
-output_dir: outputs/activitynet_tadtr_224_avg_long_cost2_multi_class_dn
+output_dir: outputs/activitynet_tadtr_224_avg_cost4_dp0
