@@ -400,9 +400,13 @@ class TADDataset(torch.utils.data.Dataset):
             target['labels'].append(label_id)
 
         # normalized the coordinate
+        # if ((np.array(target['segments'])[:, 1] - feature_second) > 0).sum() > 0:
+        #     print(video_name, np.array(target['segments'])[:, 1], feature_second)
         target['segments'] = np.array(target['segments']) / feature_second
-        if (target['segments'] < 0).sum() + (target['segments'] > feature_second).sum() > 0:
-            print("!!!!!, video_name")
+        target['segments'] = np.clip(target['segments'], 0, 1)
+        # if (target['segments'] < 0).sum() + (target['segments'] > 1).sum() > 0:
+        # if (target['segments'] < 0).sum():
+            # print(f"!!!!!, {video_name} {target['segments']}")
 
         if len(target['segments']) > 0:
             target['segments'] = segment_t1t2_to_cw(target['segments'])
@@ -422,6 +426,7 @@ class TADDataset(torch.utils.data.Dataset):
         target =  self._get_train_label(video_name)
 
         return video_data, target
+        # return None, target
 
 
 class GPUAugment:
