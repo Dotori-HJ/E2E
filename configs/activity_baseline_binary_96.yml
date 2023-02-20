@@ -29,9 +29,9 @@ test_slice_overlap: 0
 input_type: image
 
 # training setting (not finialized)
-# lr: 0.00005
-lr: 0.0001
-lr_backbone: 0.00005
+lr: 0.00005
+# lr: 0.0001
+# lr_backbone: 0.00005
 batch_size: 4
 set_cost_class: 4
 
@@ -58,4 +58,4 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/activitynet_tadtr_96_avg_binary_dp01_ffn2048_50query_ori_lr
+output_dir: outputs/activitynet_tadtr_96_avg_binary_dp01_ffn2048_50query_only_lr_drop
