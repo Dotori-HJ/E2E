@@ -36,7 +36,7 @@ neck: identity
 epochs: 12
 lr_step: [9]
 
-img_resize: 224
+img_resize: 256
 img_crop_size: 224
 binary: true
 # img_resize: 110
