@@ -39,8 +39,8 @@ fix_encoder: false
 fix_transform: false
 neck: identity
 
-epochs: 16
-lr_step: [14]
+epochs: 112
+lr_step: [9]
 
 
 img_resize: 110
@@ -58,4 +58,5 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/activitynet_tadtr_96_avg_binary_dp01_ffn2048_50query_ori_lr
+output_dir: outputs/activitynet_tadtr_96_avg_binary_ori_aug
+#dp01_ffn2048_50query_ori_lr

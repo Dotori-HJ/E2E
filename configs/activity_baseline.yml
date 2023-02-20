@@ -66,4 +66,4 @@ rand_erase: false
 nms_thr: 0.75
 
 # output
-output_dir: outputs/activitynet_tadtr_224_avg_cost4_dp0
+output_dir: outputs/activitynet_tadtr_224_avg_cost2
