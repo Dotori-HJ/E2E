@@ -63,7 +63,7 @@ class TADDataset(torch.utils.data.Dataset):
         self.padding = padding
         self.mode = mode
         self.transforms = transforms
-        print('Use data transform {}'.format(self.transforms))
+        # print('Use data transform {}'.format(self.transforms))
         self.binary = binary
         self.is_image_input = input_type == 'image'
         self.mem_cache = mem_cache
