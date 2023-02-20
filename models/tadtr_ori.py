@@ -503,7 +503,8 @@ def build(args):
         num_queries=args.num_queries,
         aux_loss=args.aux_loss,
         with_segment_refine=args.seg_refine,
-        with_act_reg=args.act_reg
+        with_act_reg=args.act_reg,
+        num_seq=args.slice_len
     )
 
     matcher = build_matcher(args)
