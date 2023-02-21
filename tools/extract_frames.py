@@ -85,7 +85,7 @@ def main(subset):
 
     finished = os.listdir('logs/frame_extracted_{}fps'.format(args.fps))
     videos_todo = list(sorted(set(vid_names).difference(finished)))
-    with concurrent.futures.ProcessPoolExecutor(128) as f:
+    with concurrent.futures.ProcessPoolExecutor(256) as f:
         # futures = [f.submit(extract_frames, osp.join(args.video_dir, 'v_' + x + '.mp4'),
         futures = [f.submit(extract_frames, osp.join(args.video_dir, x),
                             osp.join(args.frame_dir, os.path.splitext(x)[0]), args.fps) for x in videos_todo]
