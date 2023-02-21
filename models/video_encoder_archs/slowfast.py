@@ -547,13 +547,9 @@ class ResNet3dSlowFast(nn.Module):
         x_fast = self.fast_path.conv1(x_fast)
         x_fast = self.fast_path.maxpool(x_fast)
 
-        try:
-            if self.slow_path.lateral:
-                x_fast_lateral = self.slow_path.conv1_lateral(x_fast)
-                x_slow = torch.cat((x_slow, x_fast_lateral), dim=1)
-        except:
-            print(x.size())
-            exit()
+        if self.slow_path.lateral:
+            x_fast_lateral = self.slow_path.conv1_lateral(x_fast)
+            x_slow = torch.cat((x_slow, x_fast_lateral), dim=1)
 
         for i, layer_name in enumerate(self.slow_path.res_layers):
             res_layer = getattr(self.slow_path, layer_name)
