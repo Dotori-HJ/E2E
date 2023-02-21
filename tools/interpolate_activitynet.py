@@ -26,8 +26,8 @@ def gen_activitynet_frames_info(src_folder, tgt_folder, target_frames, anno_path
         indices = np.round(indices * (num_frames - 1))
 
         for tgt_idx, src_idx in enumerate(indices):
-            src_path = os.path.join(src_folder, f"img_{int(src_idx + 1):07d}.jpg")
-            tgt_path = os.path.join(tgt_folder, f"img_{tgt_idx + 1:07d}.jpg")
+            src_path = os.path.join(src_vid_folder, f"img_{int(src_idx + 1):07d}.jpg")
+            tgt_path = os.path.join(tgt_vid_folder, f"img_{tgt_idx + 1:07d}.jpg")
             shutil.copy2(src_path, tgt_path)
 
         duration = anno_dict[vid]['duration']
