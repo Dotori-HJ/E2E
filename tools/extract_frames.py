@@ -36,7 +36,7 @@ def extract_frames(video_path, dst_dir, fps):
         # cmd = f'ffmpeg -i "{video_path}" -vf "scale=256:-1, setpts=N/TB" -vframes 384 "{dst_dir}/img_%07d.jpg"'    # ActivityNet v1.3
     else:
         # cmd = f'ffmpeg -i "{video_path}" -vf "scale=-1:256, setpts=N/TB" -vframes 384 -r 1 "{dst_dir}/img_%07d.jpg"'    # ActivityNet v1.3
-        cmd = f'ffmpeg -i "{video_path}" -vf "scale=-1:256"{dst_dir}/img_%07d.jpg"'    # ActivityNet v1.3
+        cmd = f'ffmpeg -i "{video_path}" -vf "scale=-1:256" "{dst_dir}/img_%07d.jpg"'    # ActivityNet v1.3
         # cmd = f'ffmpeg -i "{video_path}" -vf "scale=-1:256, setpts=N/((FRAME_RATE)*TB)" -r 1 -vframes 384 "{dst_dir}/img_%07d.jpg"'    # ActivityNet v1.3
         # cmd = f'ffmpeg -i "{video_path}" -vf "scale=-1:256, setpts=N/TB" -vframes 384 "{dst_dir}/img_%07d.jpg"'    # ActivityNet v1.3
 
