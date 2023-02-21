@@ -9,6 +9,8 @@ if __name__ == '__main__':
     # src_folder = 'data/activitynet/384frames'
     src_folder = 'data/frames/activitynet'
     for vid in anno_dict.keys():
+        if anno_dict[vid]['subset'] == "testing":
+            continue
         src_vid_folder = os.path.join(src_folder, 'v_' + vid)
         frame_names = os.listdir(src_vid_folder)
         num_frames = len(frame_names)
