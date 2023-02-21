@@ -114,7 +114,7 @@ class TADEvaluator(object):
         self.subset = subset
 
         if dataset_name == 'activitynet':
-            with open("data/activitynet/cuhk_results.json", 'rt') as f:
+            with open("data/activitynet/cuhk_val_simp_share.json", 'rt') as f:
                 self.cls_scores = json.load(f)['results']
 
     def _get_classes(self, anno_dict):

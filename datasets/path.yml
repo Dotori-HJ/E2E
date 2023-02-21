@@ -16,7 +16,7 @@ thumos14:
     meta_path_fmt: data/thumos14/metadata_{}.pth
 
 activitynet:
-  ann_file: 'data/activitynet/gt.json'
+  ann_file: 'data/activitynet/activity_net.v1-3.min.json'
   img:
-    local_path: data/activitynet/activitynet_384_frames
+    local_path: data/activitynet/384_frames
     ft_info_file: 'data/activitynet/activitynet_384_info.json'
