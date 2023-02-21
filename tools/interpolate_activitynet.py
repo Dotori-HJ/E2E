@@ -3,6 +3,7 @@ import os
 import shutil
 
 import numpy as np
+from tqdm import tqdm
 
 
 def gen_activitynet_frames_info(src_folder, tgt_folder, target_frames, anno_path):
@@ -10,7 +11,7 @@ def gen_activitynet_frames_info(src_folder, tgt_folder, target_frames, anno_path
         anno_dict = json.load(f)['database']
 
     result_dict = {}
-    for vid in anno_dict.keys():
+    for vid in tqdm(anno_dict.keys()):
         if anno_dict[vid]['subset'] == "testing":
             continue
 
