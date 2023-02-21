@@ -137,7 +137,7 @@ def test(model, criterion, postprocessor, data_loader, base_ds, device, output_d
         samples = samples.to(device)
 
         if samples.tensors.size(2) != 384:
-            with open('t.txt', 'at') as f:
+            with open('t.txt', 'wt') as f:
                 f.write(f"{samples.tensors.size()}, {targets}")
         # outputs, _ = model((samples.tensors, samples.mask))
         outputs = model((samples.tensors, samples.mask))
