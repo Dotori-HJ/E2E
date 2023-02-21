@@ -368,6 +368,11 @@ class TADDataset(torch.utils.data.Dataset):
                     imgs, torch.zeros(c, dst_sample_frames - t, h, w, dtype=imgs.dtype)
                 ), dim=1)
 
+        c, t, h, w = imgs.size()
+        if t < dst_sample_frames:
+            with open("t.txt", 'at') as f:
+                f.write(video_name)
+
         if isinstance(imgs, np.ndarray):
             imgs = torch.from_numpy(np.ascontiguousarray(imgs.transpose([3, 0, 1, 2]))).float()   # thwc -> cthw
         return imgs
