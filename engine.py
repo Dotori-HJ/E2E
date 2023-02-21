@@ -136,11 +136,14 @@ def test(model, criterion, postprocessor, data_loader, base_ds, device, output_d
     for (samples, targets) in tqdm.tqdm(data_loader, total=len(data_loader)):
         samples = samples.to(device)
 
-        if samples.tensors.size(2) != 384:
+        # if samples.tensors.size(2) != 384:
+
+        # outputs, _ = model((samples.tensors, samples.mask))
+        try:
+            outputs = model((samples.tensors, samples.mask))
+        except:
             with open('t.txt', 'wt') as f:
                 f.write(f"{samples.tensors.size()}, {targets}")
-        # outputs, _ = model((samples.tensors, samples.mask))
-        outputs = model((samples.tensors, samples.mask))
 
         # raw_res.append((outputs, targets))
         video_duration = torch.FloatTensor(
