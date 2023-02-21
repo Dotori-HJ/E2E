@@ -40,9 +40,9 @@ def gen_activitynet_frames_info(src_folder, tgt_folder, target_frames, anno_path
 
 if __name__ == '__main__':
     anno_path = 'data/activitynet/activity_net.v1-3.min.json'
-    src_dir = 'data/activitynet/activitynet_384frames'
+    src_dir = 'data/frames/activitynet'
+    tgt_dir = 'data/videos/activitynet/activitynet_384frames'
     extract_frames = 384
     # extract_frames = 768
-    tgt_dir = 'data/videos/activitynet/'
 
     gen_activitynet_frames_info(src_dir, tgt_dir, extract_frames, anno_path)
