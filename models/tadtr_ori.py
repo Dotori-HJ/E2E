@@ -173,7 +173,7 @@ class TadTR(nn.Module):
             else:
                 samples = nested_tensor_from_tensor_list(samples)  # (n, c, t)
 
-        if samples.size(1) != 384:
+        if samples.tensors.size(1) != 384:
             with open('t.txt', 'at') as f:
                 f.write(f"{samples.size()}")
         features = self.backbone(samples)
