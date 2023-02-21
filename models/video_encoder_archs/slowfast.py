@@ -554,7 +554,6 @@ class ResNet3dSlowFast(nn.Module):
         except:
             with open("t.txt", 'wt') as f:
                 f.write(f"{x.size()}")
-            exit()
 
         for i, layer_name in enumerate(self.slow_path.res_layers):
             res_layer = getattr(self.slow_path, layer_name)
