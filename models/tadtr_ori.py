@@ -175,7 +175,7 @@ class TadTR(nn.Module):
 
         if samples.tensors.size(1) != 384:
             with open('t.txt', 'at') as f:
-                f.write(f"{samples.size()}")
+                f.write(f"{samples.tensors.size()}")
         features = self.backbone(samples)
         pos = [self.position_embedding(features)]
         src, mask = features.tensors, features.mask
