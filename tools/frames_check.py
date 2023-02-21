@@ -15,4 +15,5 @@ if __name__ == '__main__':
         src_vid_folder = os.path.join(src_folder, vid)
         frame_names = os.listdir(src_vid_folder)
         num_frames = len(frame_names)
-        print(vid, num_frames)
+        if num_frames != 384:
+            print(vid, num_frames)
