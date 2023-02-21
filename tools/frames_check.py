@@ -11,7 +11,8 @@ if __name__ == '__main__':
     for vid in anno_dict.keys():
         if anno_dict[vid]['subset'] == "testing":
             continue
-        src_vid_folder = os.path.join(src_folder, 'v_' + vid)
+        # src_vid_folder = os.path.join(src_folder, 'v_' + vid)
+        src_vid_folder = os.path.join(src_folder, vid)
         frame_names = os.listdir(src_vid_folder)
         num_frames = len(frame_names)
         if num_frames == 0:
