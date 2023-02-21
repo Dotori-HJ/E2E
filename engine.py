@@ -135,6 +135,10 @@ def test(model, criterion, postprocessor, data_loader, base_ds, device, output_d
     cnt = 0
     for (samples, targets) in tqdm.tqdm(data_loader, total=len(data_loader)):
         samples = samples.to(device)
+
+        if samples.tensors.size(2) != 384:
+            with open('t.txt', 'at') as f:
+                f.write(f"{samples.tensors.size()}, {targets}")
         # outputs, _ = model((samples.tensors, samples.mask))
         outputs = model((samples.tensors, samples.mask))
 
