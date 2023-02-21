@@ -335,9 +335,10 @@ class TADDataset(torch.utils.data.Dataset):
                 self.video_dict[video_name]['feature_second'] = self.slice_len / self.video_dict[video_name]['feature_fps']
         else:
             start_idx = 0
-            video_length = self.video_dict[video_name]['feature_length']
-            dst_clip_length = feature_info.get('num_frames', None)
-            clip_length = min(video_length, dst_clip_length) if dst_clip_length is not None else video_length
+            # video_length = self.video_dict[video_name]['feature_length']
+            # dst_clip_length = feature_info.get('num_frames', None)
+            # clip_length = min(video_length, dst_clip_length) if dst_clip_length is not None else video_length
+            clip_length = self.slice_len
 
             imgs = load_video_frames(frame_dir, start_idx + 1, clip_length, self.img_stride)
 
