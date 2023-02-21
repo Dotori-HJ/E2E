@@ -73,7 +73,7 @@ class TADEvaluator(object):
             self.ignored_videos = ['video_test_0000270', 'video_test_0001292', 'video_test_0001496']
         elif dataset_name == 'activitynet':
             subset_mapping = {'train': 'training', 'val': 'validation'}
-            anno_file = 'data/activitynet/gt.json'
+            anno_file = 'data/activitynet/activity_net.v1-3.min.json'
             self.ignored_videos = []
         else:
             raise NotImplementedError
