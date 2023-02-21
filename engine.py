@@ -42,6 +42,10 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
         targets = [{k: v.to(device) if k in ['segments', 'labels']
                     else v for k, v in t.items()} for t in targets]
 
+
+        if samples.tensors.size(2) != 384:
+            with open('t.txt', 'wt') as f:
+                f.write(f"{samples.tensors.size()}, {targets}")
         if use_dn:
             scalar = 5
             label_noise_scale = 0.2
@@ -135,15 +139,8 @@ def test(model, criterion, postprocessor, data_loader, base_ds, device, output_d
     cnt = 0
     for (samples, targets) in tqdm.tqdm(data_loader, total=len(data_loader)):
         samples = samples.to(device)
-
-        # if samples.tensors.size(2) != 384:
-
         # outputs, _ = model((samples.tensors, samples.mask))
-        try:
-            outputs = model((samples.tensors, samples.mask))
-        except:
-            with open('t.txt', 'wt') as f:
-                f.write(f"{samples.tensors.size()}, {targets}")
+        outputs = model((samples.tensors, samples.mask))
 
         # raw_res.append((outputs, targets))
         video_duration = torch.FloatTensor(
