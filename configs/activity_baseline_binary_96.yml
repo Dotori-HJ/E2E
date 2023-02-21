@@ -39,7 +39,7 @@ fix_encoder: false
 fix_transform: false
 neck: identity
 
-epochs: 112
+epochs: 12
 lr_step: [9]
 
 

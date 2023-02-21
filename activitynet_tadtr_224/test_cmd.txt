@@ -1,1 +1,0 @@
-main.py --cfg configs/activity_baseline.yml --y --num_workers 10 --eval batch_size 2 output_dir activitynet_tadtr_224

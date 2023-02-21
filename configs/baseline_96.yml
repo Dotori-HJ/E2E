@@ -59,7 +59,7 @@ img_crop_size: 96
 act_reg: true
 two_stage: false
 mixed_selection: false
-look_forward_twice: true
+look_forward_twice: false
 pooler: avg
 
 
