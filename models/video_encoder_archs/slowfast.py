@@ -553,6 +553,7 @@ class ResNet3dSlowFast(nn.Module):
                 x_slow = torch.cat((x_slow, x_fast_lateral), dim=1)
         except:
             print(x.size())
+            exit()
 
         for i, layer_name in enumerate(self.slow_path.res_layers):
             res_layer = getattr(self.slow_path, layer_name)
