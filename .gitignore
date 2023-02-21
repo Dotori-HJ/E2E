@@ -146,3 +146,4 @@ checkpoints/
 *.pth
 
 logs/
+ffmpeg_test/

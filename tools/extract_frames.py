@@ -30,11 +30,13 @@ def extract_frames(video_path, dst_dir, fps):
     #     os.system('wget {} -O {} --no-check-certificate'.format(url, video_path))
     # cmd = 'ffmpeg -i "{}"  -filter:v "fps=fps={}" "{}/img_%07d.jpg"'.format(video_path, fps, dst_dir)
     if width > height:
-        cmd = f'ffmpeg -i "{video_path}" -vf "scale=256:-1, setpts=N/TB" -vframes 384 -r 1 "{dst_dir}/img_%07d.jpg"'    # ActivityNet v1.3
+        # cmd = f'ffmpeg -i "{video_path}" -vf "scale=256:-1, setpts=N/TB" -vframes 384 -r 1 "{dst_dir}/img_%07d.jpg"'    # ActivityNet v1.3
+        cmd = f'ffmpeg -i "{video_path}" -vf "scale=256:-1" "{dst_dir}/img_%07d.jpg"'    # ActivityNet v1.3
         # cmd = f'ffmpeg -i "{video_path}" -vf "scale=256:-1, setpts=N/((FRAME_RATE)*TB)" -r 1 -vframes 384 "{dst_dir}/img_%07d.jpg"'    # ActivityNet v1.3
         # cmd = f'ffmpeg -i "{video_path}" -vf "scale=256:-1, setpts=N/TB" -vframes 384 "{dst_dir}/img_%07d.jpg"'    # ActivityNet v1.3
     else:
-        cmd = f'ffmpeg -i "{video_path}" -vf "scale=-1:256, setpts=N/TB" -vframes 384 -r 1 "{dst_dir}/img_%07d.jpg"'    # ActivityNet v1.3
+        # cmd = f'ffmpeg -i "{video_path}" -vf "scale=-1:256, setpts=N/TB" -vframes 384 -r 1 "{dst_dir}/img_%07d.jpg"'    # ActivityNet v1.3
+        cmd = f'ffmpeg -i "{video_path}" -vf "scale=-1:256"{dst_dir}/img_%07d.jpg"'    # ActivityNet v1.3
         # cmd = f'ffmpeg -i "{video_path}" -vf "scale=-1:256, setpts=N/((FRAME_RATE)*TB)" -r 1 -vframes 384 "{dst_dir}/img_%07d.jpg"'    # ActivityNet v1.3
         # cmd = f'ffmpeg -i "{video_path}" -vf "scale=-1:256, setpts=N/TB" -vframes 384 "{dst_dir}/img_%07d.jpg"'    # ActivityNet v1.3
 
@@ -83,7 +85,7 @@ def main(subset):
 
     finished = os.listdir('logs/frame_extracted_{}fps'.format(args.fps))
     videos_todo = list(sorted(set(vid_names).difference(finished)))
-    with concurrent.futures.ProcessPoolExecutor(4) as f:
+    with concurrent.futures.ProcessPoolExecutor(128) as f:
         # futures = [f.submit(extract_frames, osp.join(args.video_dir, 'v_' + x + '.mp4'),
         futures = [f.submit(extract_frames, osp.join(args.video_dir, x),
                             osp.join(args.frame_dir, os.path.splitext(x)[0]), args.fps) for x in videos_todo]
@@ -101,4 +103,5 @@ if __name__ == '__main__':
 # thumos14
 # python tools/extract_frames.py --video_dir data/thumos14/videos --frame_dir data/thumos14/img10fps --fps  10 -e 4
 
+# python tools/extract_frames.py --video_dir /home/ds/HDD2/ActivityNet/archives/v1-3/train_val --frame_dir /home/ds/SSD2/ActivityNet_v1-3_384frames
 # python tools/extract_frames.py --video_dir /home/ds/HDD2/ActivityNet/archives/v1-3/train_val --frame_dir /home/ds/SSD2/ActivityNet_v1-3_384frames
