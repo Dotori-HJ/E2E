@@ -41,7 +41,8 @@ def gen_activitynet_frames_info(src_folder, tgt_folder, target_frames, anno_path
 if __name__ == '__main__':
     anno_path = 'data/activitynet/activity_net.v1-3.min.json'
     src_dir = 'data/frames/activitynet'
-    tgt_dir = 'data/videos/activitynet/activitynet_384frames'
+    tgt_dir = 'data/activitynet/384frames'
+    os.makedirs(tgt_dir, exist_ok=True)
     extract_frames = 384
     # extract_frames = 768
 
