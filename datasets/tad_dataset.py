@@ -339,6 +339,7 @@ class TADDataset(torch.utils.data.Dataset):
             # dst_clip_length = feature_info.get('num_frames', None)
             # clip_length = min(video_length, dst_clip_length) if dst_clip_length is not None else video_length
             clip_length = self.slice_len
+            dst_clip_length = self.slice_len
 
             imgs = load_video_frames(frame_dir, start_idx + 1, clip_length, self.img_stride)
 
