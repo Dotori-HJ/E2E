@@ -6,9 +6,9 @@ pretrained_model: https://download.openmmlab.com/mmaction/recognition/slowfast/s
 # model setting
 enc_layers: 4
 dec_layers: 4
-dim_feedforward: 2048
-num_queries: 10
-dropout: 0.0
+dim_feedforward: 1024
+num_queries: 50
+dropout: 0.1
 temperature: 10000
 
 # data setting
@@ -22,7 +22,7 @@ test_slice_overlap: 0
 input_type: image
 
 # training setting (not finialized)
-lr: 0.0001
+lr: 0.00005
 batch_size: 4
 set_cost_class: 2
 
@@ -52,4 +52,4 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/activitynet_tadtr_224_ours_lr1e-4_long_ffn2048_dp0_ori_aug_query10
+output_dir: outputs/activitynet_tadtr_224_ours_lr1e-4_long_ffn1024_dp01_ori_aug_query50
