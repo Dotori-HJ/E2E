@@ -52,4 +52,4 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/activitynet_tadtr_224_ours_lr1e-4_long_ffn2048_dp0_ori_aug
+output_dir: outputs/activitynet_tadtr_224_ours_lr1e-4_long_ffn2048_dp0_ori_aug_query50
