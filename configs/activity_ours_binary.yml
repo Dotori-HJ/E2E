@@ -31,7 +31,7 @@ fix_transform: false
 neck: identity
 
 epochs: 16
-lr_step: [12]
+lr_step: [14]
 
 img_resize: 256
 img_crop_size: 224
@@ -52,4 +52,4 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/activitynet_tadtr_224_ours_long_ffn1024_dp01_ori_aug_query50
+output_dir: outputs/activitynet_tadtr_224_ours_long_ori_aug_query50
