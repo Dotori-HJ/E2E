@@ -8,7 +8,7 @@ enc_layers: 4
 dec_layers: 4
 dim_feedforward: 1024
 num_queries: 50
-dropout: 0.1
+dropout: 0.0
 temperature: 10000
 
 # data setting
@@ -52,4 +52,4 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/activitynet_tadtr_224_ours_long_ori_aug_query50
+output_dir: outputs/activitynet_tadtr_224_ours_long_ori_aug_query50_dp0
