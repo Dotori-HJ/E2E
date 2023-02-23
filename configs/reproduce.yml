@@ -54,9 +54,24 @@ look_forward_twice: false
 
 pooler: twpool
 
+pooler_args:
+   - {
+       input_dim: 2048,
+       base_dim: 512,
+       num_layers: 4,
+       output_dim: 2048
+   }
+   - {
+       input_dim: 256,
+       base_dim: 64,
+       num_layers: 4,
+       output_dim: 256
+   }
+
+
 # Training
 rand_augment_param: rand-m7-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/tadtr_224_twpool_no_pos
+output_dir: outputs/tadtr_224_twpool
