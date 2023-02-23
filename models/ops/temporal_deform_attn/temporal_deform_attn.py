@@ -145,13 +145,13 @@ class DeformAttn(nn.Module):
             raise ValueError(
                 'Last dim of reference_points must be 1 or 2, but get {} instead.'.format(reference_points.shape[-1]))
         if cfg.dfm_att_backend == 'pytorch' or cfg.disable_cuda:
-        #     # Implementation with PyTorch grid_sample operator. 
-        #     # Note that grid_sample only supports image inputs. We need to view the sequence as an image with height=1
+            # Implementation with PyTorch grid_sample operator. 
+            # Note that grid_sample only supports image inputs. We need to view the sequence as an image with height=1
             sampling_locations = torch.cat((sampling_locations, torch.ones_like(sampling_locations)*0.5), dim=-1)
             input_spatial_shapes = torch.stack((torch.ones_like(input_temporal_lens), input_temporal_lens), dim=-1)
             output = deform_attn_core_pytorch(value, input_spatial_shapes, sampling_locations, attention_weights)
         else:
-            # raise NotImplementedError
+            raise NotImplementedError
             # # CUDA implementation. You will get identical results with the pytorch implementation
         # sampling_locations = torch.cat((sampling_locations, torch.ones_like(sampling_locations)*0.5), dim=-1)
         # input_spatial_shapes = torch.stack((torch.ones_like(input_temporal_lens), input_temporal_lens), dim=-1)
