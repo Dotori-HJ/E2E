@@ -207,6 +207,7 @@ def main(args):
 
     if args.eval and not args.resume:
         args.resume = osp.join(output_dir, 'model_best.pth')
+        # args.resume = osp.join(output_dir, 'checkpoint0013.pth')
 
     # start training from this epoch. You do not to set this option.
     start_epoch = 0
@@ -218,7 +219,7 @@ def main(args):
         else:
             checkpoint = torch.load(args.resume, map_location='cpu')
 
-        model_without_ddp.load_state_dict(checkpoint['model'], strict=False)
+        model_without_ddp.load_state_dict(checkpoint['model'], strict=True)
 
         if 'epoch' in checkpoint:
             start_epoch = checkpoint['epoch'] + 1

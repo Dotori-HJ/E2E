@@ -33,15 +33,15 @@ def load_video_frames(frame_dir, start, seq_len, stride=1, fn_tmpl='img_%07d.jpg
         #     # img = img[:, :, [2, 1, 0]]  # BGR => RGB, moved to video_transforms.Normalize
         #     # img = (img/255.)*2 - 1
         #     frames.append(img)
-        frames = [cv2.imread(os.path.join(frame_dir, fn_tmpl % i))
-            for i in range(start + stride // 2, start + seq_len, stride)]
-        # frames = [Image.open(os.path.join(frame_dir, fn_tmpl % i))
+        # frames = [cv2.imread(os.path.join(frame_dir, fn_tmpl % i))
         #     for i in range(start + stride // 2, start + seq_len, stride)]
+        frames = [Image.open(os.path.join(frame_dir, fn_tmpl % i))
+            for i in range(start + stride // 2, start + seq_len, stride)]
     else:
         # load all frames
         num_imgs = len(os.listdir(frame_dir))
-        frames = [cv2.imread(os.path.join(frame_dir, fn_tmpl % (i+1))) for i in range(num_imgs)]
-        # frames = [Image.open(os.path.join(frame_dir, fn_tmpl % (i+1))) for i in range(num_imgs)]
+        # frames = [cv2.imread(os.path.join(frame_dir, fn_tmpl % (i+1))) for i in range(num_imgs)]
+        frames = [Image.open(os.path.join(frame_dir, fn_tmpl % (i+1))) for i in range(num_imgs)]
     if isinstance(frames[0], np.ndarray):
         return np.asarray(frames, dtype=np.float32)  # NHWC
     else:
