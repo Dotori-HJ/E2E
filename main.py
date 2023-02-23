@@ -77,8 +77,8 @@ def main(args):
 
     # fix the seed
     # print(utils.get_rank())
-    # seed = args.seed + utils.get_rank()
-    seed = args.seed + int(os.environ['LOCAL_RANK'])
+    seed = args.seed + utils.get_rank()
+    # seed = args.seed + int(os.environ['LOCAL_RANK'])
     torch.manual_seed(seed)
     np.random.seed(seed)
     random.seed(seed)
@@ -86,8 +86,8 @@ def main(args):
     # torch.use_deterministic_algorithms(True)
     torch.cuda.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
-    cudnn.benchmark = False
-    cudnn.deterministic = True
+    # cudnn.benchmark = False
+    # cudnn.deterministic = True
 
     # if cfg.input_type == 'image':
     #     # We plan to support image input in the future

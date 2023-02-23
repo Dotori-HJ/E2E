@@ -9,18 +9,13 @@
 # Modified from https://github.com/chengdazhi/Deformable-Convolution-V2-PyTorch/tree/pytorch_1.0.0
 # ------------------------------------------------------------------------------------------------
 
-import os
 import glob
+import os
 import pdb
 
 import torch
-
-from torch.utils.cpp_extension import CUDA_HOME
-from torch.utils.cpp_extension import CppExtension
-from torch.utils.cpp_extension import CUDAExtension
-
-from setuptools import find_packages
-from setuptools import setup
+from setuptools import find_packages, setup
+from torch.utils.cpp_extension import CUDA_HOME, CppExtension, CUDAExtension
 
 requirements = ["torch", "torchvision"]
 
@@ -34,7 +29,7 @@ def get_sources(extensions_dir):
 
 def get_extensions():
     this_dir = os.path.dirname(os.path.abspath(__file__))
-   
+
     extra_compile_args = {"cxx": []}
     define_macros = []
 
@@ -47,18 +42,24 @@ def get_extensions():
             "-D__CUDA_NO_HALF2_OPERATORS__",
         ]
     else:
-        raise NotImplementedError('Cuda is not availabel')
-
+        raise NotImplementedError('Cuda is not available')
 
     ext_modules = [
         # Temporal Deformable Attention, optional
+        CUDAExtension(
+            "temporal_deform_attn.TemporalDeformableAttention",
+            get_sources(os.path.join(this_dir, "temporal_deform_attn/src")),
+            include_dirs=[os.path.join(this_dir, "temporal_deform_attn/src")],
+            define_macros=define_macros,
+            extra_compile_args=extra_compile_args
+        ),
         # CUDAExtension(
-        #     "temporal_deform_attn.TemporalDeformableAttention",
-        #     get_sources(os.path.join(this_dir, "temporal_deform_attn/src")),
-        #     include_dirs=[os.path.join(this_dir, "temporal_deform_attn/src")],
+        #     "MultiScaleDeformableAttention",
+        #     sources,
+        #     include_dirs=include_dirs,
         #     define_macros=define_macros,
-        #     extra_compile_args=extra_compile_args
-        # ),
+        #     extra_compile_args=extra_compile_args,
+        # )
 
         CUDAExtension('roi_align.Align1D', [
             'roi_align/src/roi_align_cuda.cpp',

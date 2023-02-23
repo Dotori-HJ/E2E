@@ -1,0 +1,7 @@
+torch.Size([2, 3, 256, 96, 96]), [{'segments': tensor([[0.1465, 0.2930],
+        [0.1465, 0.2930],
+        [0.5898, 0.2422],
+        [0.5898, 0.2422]], device='cuda:0'), 'labels': tensor([4, 7, 4, 7], device='cuda:0'), 'orig_labels': [4, 7, 4, 7], 'video_id': 'video_validation_0000167_window_320_576', 'video_duration': 25.6, 'feature_fps': 10}, {'segments': tensor([[0.1348, 0.1914],
+        [0.3398, 0.1953],
+        [0.5684, 0.1758],
+        [0.7539, 0.1641]], device='cuda:0'), 'labels': tensor([10, 10, 10, 10], device='cuda:0'), 'orig_labels': [10, 10, 10, 10], 'video_id': 'video_validation_0000318_window_576_832', 'video_duration': 25.6, 'feature_fps': 10}]

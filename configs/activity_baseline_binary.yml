@@ -27,7 +27,7 @@ lr: 0.00005
 # lr_backbone: 0.00005
 # lr_backbone: 0.000001
 batch_size: 4
-set_cost_class: 2
+set_cost_class: 4
 
 fix_encoder: false
 fix_transform: false
