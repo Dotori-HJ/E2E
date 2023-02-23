@@ -1,4 +1,2 @@
-torch.Size([2, 3, 256, 96, 96]), [{'segments': tensor([[0.2324, 0.0742],
-        [0.4629, 0.1367],
-        [0.5938, 0.1172]], device='cuda:1'), 'labels': tensor([11, 11, 11], device='cuda:1'), 'orig_labels': [11, 11, 11], 'video_id': 'video_validation_0000361_window_1472_1728', 'video_duration': 25.600000000000023, 'feature_fps': 10}, {'segments': tensor([[0.1836, 0.3672],
-        [0.7383, 0.4219]], device='cuda:1'), 'labels': tensor([14, 14], device='cuda:1'), 'orig_labels': [14, 14], 'video_id': 'video_validation_0000666_window_4416_4672', 'video_duration': 25.599999999999966, 'feature_fps': 10}]
+torch.Size([2, 3, 256, 96, 96]), [{'segments': tensor([[0.4609, 0.2500],
+        [0.7988, 0.1133]], device='cuda:1'), 'labels': tensor([12, 12], device='cuda:1'), 'orig_labels': [12, 12], 'video_id': 'video_validation_0000418_window_960_1216', 'video_duration': 25.599999999999994, 'feature_fps': 10}, {'segments': tensor([[0.2012, 0.4023]], device='cuda:1'), 'labels': tensor([14], device='cuda:1'), 'orig_labels': [14], 'video_id': 'video_validation_0000666_window_5696_5952', 'video_duration': 25.600000000000023, 'feature_fps': 10}]

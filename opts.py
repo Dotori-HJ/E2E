@@ -126,7 +126,20 @@ cfg.mixed_selection = False
 cfg.temperature = 10000
 
 cfg.pooler = 'twpool'
-
+cfg.pooler_args = [
+    {
+        'input_dim': 2048,
+        'base_dim': 512,
+        'num_layers': 4,
+        'output_dim': 2048
+    },
+    {
+        'input_dim': 256,
+        'base_dim': 64,
+        'num_layers': 4,
+        'output_dim': 256
+    }
+]
 
 # ----- Loss and matcher setting -------
 # Enable auxiliary decoding losses (loss at each layer)

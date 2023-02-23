@@ -439,8 +439,18 @@ class ResNet3dSlowFast(nn.Module):
                  freeze_bn_affine=False,
                  slow_upsample=8,
                  frozen_stages=-1,
-                 pooler='twpool'
-                 ):
+                 pooler='twpool',
+                 pooler_args=[
+                     {'input_dim': 2048,
+                     'base_dim': 512,
+                     'num_layers': 4,
+                     'output_dim': 2048},
+                     {'input_dim': 256,
+                     'base_dim': 64,
+                     'num_layers': 4,
+                     'output_dim': 256}
+                 ],
+        ):
         super().__init__()
         slow_pathway['depth'] = depth
         fast_pathway['depth'] = depth
@@ -461,19 +471,16 @@ class ResNet3dSlowFast(nn.Module):
         self.slow_path = build_pathway(slow_pathway)
         self.fast_path = build_pathway(fast_pathway)
         self.out_indices = (3, )
+
+        self.slow_poolers = nn.ModuleList([SpatialPooler(pooler, **pooler_args[0])])
+        self.fast_poolers = nn.ModuleList([SpatialPooler(pooler, **pooler_args[1])])
         if pooler == 'avg':
-            self.slow_poolers = nn.ModuleList([SpatialPooler('avg')])
-            self.fast_poolers = nn.ModuleList([SpatialPooler('avg')])
             self.num_channels = 2304
         elif pooler == 'twpool':
-            # self.slow_poolers = nn.ModuleList([SpatialPooler('twpool', input_dim=2048, base_dim=512, num_layers=4)])
-            self.slow_poolers = nn.ModuleList([SpatialPooler('twpool', input_dim=2048, base_dim=512, num_layers=4, output_dim=2048)])
-            # self.fast_poolers = nn.ModuleList([SpatialPooler('twpool', input_dim=256, base_dim=64, num_layers=4)])
-            self.fast_poolers = nn.ModuleList([SpatialPooler('twpool', input_dim=256, base_dim=64, num_layers=4, output_dim=256)])
-            self.num_channels = 2304
-            # self.num_channels = 576
-            # self.num_channels = 288
-            # self.num_channels = 1152
+            if 'output_dim' in pooler_args[0].keys():
+                self.num_channels = pooler_args[0]['output_dim'] + pooler_args[1]['output_dim']
+            else:
+                self.num_channels = pooler_args[0]['input_dim'] + pooler_args[1]['input_dim']
         else:
             assert NotImplementedError
         # self.slow_poolers = nn.ModuleList([SimpleConvPooler(2048, 512)])
