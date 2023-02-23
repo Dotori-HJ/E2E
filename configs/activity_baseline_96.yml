@@ -15,7 +15,7 @@ enc_layers: 4
 dec_layers: 4
 dim_feedforward: 1024
 num_queries: 50
-dropout: 0.0
+dropout: 0.1
 temperature: 10000
 
 # data setting
@@ -29,9 +29,9 @@ test_slice_overlap: 0
 input_type: image
 
 # training setting (not finialized)
-# lr: 0.00005
-lr: 0.0001
-# lr_backbone: 0.000001
+lr: 0.00005
+# lr: 0.0001
+lr_backbone: 0.000001
 batch_size: 4
 set_cost_class: 4
 
@@ -40,7 +40,7 @@ fix_transform: false
 neck: identity
 
 epochs: 16
-lr_step: [12]
+lr_step: [14]
 
 # img_resize: 256
 # img_crop_size: 224
@@ -52,7 +52,7 @@ mixed_selection: false
 look_forward_twice: false
 pooler: avg
 
-# nms_thr: 0.8
+nms_thr: 0.75
 
 # Training
 rand_augment_param: rand-m7-n4-mstd0.5-inc1
