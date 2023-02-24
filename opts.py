@@ -131,13 +131,15 @@ cfg.pooler_args = [
         'input_dim': 2048,
         'base_dim': 512,
         'num_layers': 4,
-        'output_dim': 2048
+        'output_dim': 2048,
+        'input_token': 7,
     },
     {
         'input_dim': 256,
         'base_dim': 64,
         'num_layers': 4,
-        'output_dim': 256
+        'output_dim': 256,
+        'input_token': 7,
     }
 ]
 

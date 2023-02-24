@@ -100,6 +100,7 @@ class SpatialAttention(nn.Module):
         num_heads,
         qkv_bias=True,
         drop_rate=0.0,
+        input_tokens=7,
     ):
         super().__init__()
 
@@ -115,7 +116,7 @@ class SpatialAttention(nn.Module):
         if drop_rate > 0.0:
             self.proj_drop = nn.Dropout(drop_rate)
 
-        rel_sp_dim = 2 * 7 - 1
+        rel_sp_dim = 2 * input_tokens - 1    # if is not matched, they will be resized.
         self.rel_pos_h = nn.Parameter(torch.zeros(rel_sp_dim, head_dim))
         self.rel_pos_w = nn.Parameter(torch.zeros(rel_sp_dim, head_dim))
 
@@ -157,7 +158,8 @@ class AttentionLayer(nn.Module):
         drop_rate=0.0,
         drop_path=0.0,
         act_layer=nn.GELU,
-        norm_layer=nn.LayerNorm
+        norm_layer=nn.LayerNorm,
+        input_tokens=7,
     ):
         super().__init__()
 
@@ -166,7 +168,7 @@ class AttentionLayer(nn.Module):
         self.mlp_ratio = mlp_ratio
 
         self.norm1 = norm_layer(base_dim)
-        self.attn = SpatialAttention(base_dim, num_heads, qkv_bias=qkv_bias, drop_rate=drop_rate)
+        self.attn = SpatialAttention(base_dim, num_heads, qkv_bias=qkv_bias, drop_rate=drop_rate, input_tokens=input_tokens)
         self.norm2 = norm_layer(base_dim)
         self.mlp = Mlp(base_dim, int(base_dim * mlp_ratio), act_layer=act_layer, drop_rate=drop_rate)
         self.drop_path = DropPath(drop_path) if drop_path > 0.0 else nn.Identity()
@@ -190,7 +192,8 @@ class TemporalWiseAttentionPooling(nn.Module):
         act_layer=nn.GELU,
         norm_layer=nn.LayerNorm,
         num_layers=4,
-        skip='max'
+        skip='max',
+        input_tokens=7,
     ):
         super().__init__()
         self.input_dim = input_dim
@@ -212,7 +215,8 @@ class TemporalWiseAttentionPooling(nn.Module):
                 drop_rate=drop_rate,
                 drop_path=drop_path,
                 act_layer=act_layer,
-                norm_layer=norm_layer
+                norm_layer=norm_layer,
+                input_tokens=input_tokens,
             )
             for i in range(num_layers)
         ])
