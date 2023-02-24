@@ -54,7 +54,6 @@ two_stage: false
 mixed_selection: false
 look_forward_twice: false
 # slow_upsample: 2
-# slow_upsample: 2
 pooler: twpool
 # pooler: avg
 
