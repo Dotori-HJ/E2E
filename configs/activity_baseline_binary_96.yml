@@ -15,7 +15,7 @@ enc_layers: 4
 dec_layers: 4
 dim_feedforward: 1024
 num_queries: 50
-dropout: 0.0
+dropout: 0.1
 temperature: 10000
 
 # data setting
@@ -39,8 +39,8 @@ fix_encoder: false
 fix_transform: false
 neck: identity
 
-epochs: 16
-lr_step: [14]
+epochs: 12
+lr_step: [9]
 
 
 img_resize: 110
@@ -58,5 +58,5 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/activitynet_tadtr_96_avg_binary_dp0
+output_dir: outputs/activitynet_tadtr_96_avg_binary
 #dp01_ffn2048_50query_ori_lr
