@@ -256,7 +256,7 @@ class TemporalWiseAttentionPooling(nn.Module):
         x = x[:, :, 0]
         x = self.output_proj(x)
         if self.skip is not None:
-            x + pool_skip
+            x = x + pool_skip
         x = rearrange(x, 'b t c -> b c t')
 
         return x
