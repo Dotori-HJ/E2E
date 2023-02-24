@@ -8,7 +8,7 @@ enc_layers: 4
 dec_layers: 4
 dim_feedforward: 1024
 num_queries: 50
-dropout: 0.0
+dropout: 0.1
 temperature: 10000
 
 # data setting
@@ -30,8 +30,10 @@ fix_encoder: false
 fix_transform: false
 neck: identity
 
-epochs: 16
-lr_step: [14]
+# epochs: 16
+epochs: 12
+lr_step: [9]
+# lr_step: [14]
 
 img_resize: 256
 img_crop_size: 224
@@ -45,6 +47,19 @@ look_forward_twice: false
 pooler: twpool
 # pooler: avg
 
+pooler_args:
+   - {
+       input_dim: 2048,
+       base_dim: 512,
+       num_layers: 4,
+       output_dim: 2048
+   }
+   - {
+       input_dim: 256,
+       base_dim: 64,
+       num_layers: 4,
+       output_dim: 256
+   }
 
 
 # Training
@@ -52,4 +67,4 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/activitynet_tadtr_224_ours_long_ori_aug_query50_dp0
+output_dir: outputs/activitynet_tadtr_224_ours
