@@ -194,8 +194,8 @@ class TADEvaluator(object):
                     topk_cls_idx = np.argsort(cls_scores)[::-1][:topk]
                     dets = np.concatenate([dets[dets[:, 3] != idx] for idx in topk_cls_idx])
 
-                min_score = 0.001
-                dets = dets[dets[:, 2] > min_score]
+                # min_score = 0.001
+                # dets = dets[dets[:, 2] > min_score]
 
                 self.all_pred[nms_mode] += [[video_id, k] + det for det in dets.tolist()]
 

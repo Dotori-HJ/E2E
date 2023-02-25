@@ -28,7 +28,7 @@ pooler_args:
        input_dim: 2048,
        base_dim: 512,
        num_layers: 4,
-      #  output_dim: 2048
+       output_dim: 2048
    }
    - {
        input_dim: 256,
@@ -46,4 +46,4 @@ img_resize: 256
 img_crop_size: 224
 
 # output
-output_dir: best/tadtr_224_twpool_1
+output_dir: best/tadtr_224_twpool_0
