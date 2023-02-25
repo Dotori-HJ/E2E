@@ -477,7 +477,7 @@ class ResNet3dSlowFast(nn.Module):
         if pooler == 'avg':
             self.num_channels = 2304
         elif pooler == 'twpool':
-            self.num_channels = self.slow_poolers[0].output_dim + self.fast_poolers[0].output_dim
+            self.num_channels = self.slow_poolers[0].pooler.output_dim + self.fast_poolers[0].pooler.output_dim
         else:
             assert NotImplementedError
         # self.slow_poolers = nn.ModuleList([SimpleConvPooler(2048, 512)])
