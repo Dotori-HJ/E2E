@@ -28,13 +28,15 @@ pooler_args:
        input_dim: 2048,
        base_dim: 512,
        num_layers: 4,
-       output_dim: 2048
+       skip: 'avg',
+    #    output_dim: 2048
    }
    - {
        input_dim: 256,
        base_dim: 64,
        num_layers: 4,
-       output_dim: 256
+       skip: 'avg',
+    #    output_dim: 256
    }
 
 fix_encoder: false

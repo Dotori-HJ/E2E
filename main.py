@@ -192,7 +192,8 @@ def main(args):
                                        batch_sampler=batch_sampler_train,
                                        collate_fn=utils.collate_fn, num_workers=args.num_workers, pin_memory=True)
 
-    data_loader_val = DataLoader(dataset_val, cfg.batch_size, sampler=sampler_val,
+    # data_loader_val = DataLoader(dataset_val, cfg.batch_size, sampler=sampler_val,
+    data_loader_val = DataLoader(dataset_val, int(cfg.batch_size * 4), sampler=sampler_val,
                                  drop_last=False, collate_fn=utils.collate_fn, num_workers=args.num_workers, pin_memory=True)
 
     base_ds = dataset_val.video_dict
