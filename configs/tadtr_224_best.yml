@@ -48,4 +48,4 @@ img_resize: 256
 img_crop_size: 224
 
 # output
-output_dir: best/tadtr_224_twpool_3
+output_dir: best/tadtr_224_twpool_4
