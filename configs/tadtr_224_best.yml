@@ -28,23 +28,23 @@ pooler_args:
    - {
        input_dim: 2048,
        base_dim: 512,
-       num_layers: 2,
+       num_layers: 4,
     #    output_dim: 2048
    }
    - {
        input_dim: 256,
        base_dim: 64,
-       num_layers: 2,
+       num_layers: 4,
     #    output_dim: 256
    }
 
 fix_encoder: false
 fix_transform: false
-act_reg: true
+act_reg: false
 pooler: twpool
 
 img_resize: 256
 img_crop_size: 224
 
 # output
-output_dir: best/tadtr_224_twpool_9_layer2
+output_dir: best/tadtr_224_twpool_10
