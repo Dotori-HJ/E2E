@@ -48,3 +48,4 @@ img_crop_size: 224
 
 # output
 output_dir: best/tadtr_224_twpool_11_up
+# output_dir: randaug/tadtr_224_m7-n4
