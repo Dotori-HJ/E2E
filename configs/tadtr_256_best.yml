@@ -26,7 +26,7 @@ batch_size: 4
 
 fix_encoder: false
 fix_transform: false
-act_reg: true
+act_reg: false
 pooler: twpool
 pooler_args:
    - {
