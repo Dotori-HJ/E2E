@@ -66,4 +66,4 @@ rand_erase: false
 nms_thr: 0.75
 
 # output
-output_dir: outputs/activitynet_tadtr_224_avg_multi_class
+output_dir: outputs/activitynet_tadtr_224_avg_multi_class_0
