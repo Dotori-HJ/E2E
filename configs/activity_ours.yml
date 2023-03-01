@@ -13,8 +13,8 @@ pretrained_model: https://download.openmmlab.com/mmaction/recognition/slowfast/s
 
 
 # model setting
-enc_layers: 6
-dec_layers: 6
+enc_layers: 4
+dec_layers: 4
 dim_feedforward: 2048
 num_queries: 50
 dropout: 0.0
@@ -82,4 +82,4 @@ rand_erase: false
 nms_thr: 0.75
 
 # output
-output_dir: outputs/activitynet_tadtr_224_twpool_multi_class_50query_deep
+output_dir: outputs/activitynet_tadtr_224_twpool_multi_class_50query
