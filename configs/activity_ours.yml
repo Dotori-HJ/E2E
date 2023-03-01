@@ -33,7 +33,7 @@ input_type: image
 # training setting (not finialized)
 # lr: 0.00005
 lr: 0.00005
-# lr_backbone: 0.000001
+lr_backbone: 0.000001
 # lr_backbone: 0.00001
 batch_size: 4
 # set_cost_class: 6
@@ -82,4 +82,4 @@ rand_erase: false
 nms_thr: 0.75
 
 # output
-output_dir: outputs/activitynet_tadtr_224_twpool_multi_class_50query
+output_dir: outputs/activitynet_tadtr_224_twpool_multi_class_50query_backbone_drop
