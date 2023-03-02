@@ -51,7 +51,7 @@ mixed_selection: false
 look_forward_twice: false
 pooler: avg
 
-
+nms_thr: 0.75
 # Training
 rand_augment_param: rand-m7-n4-mstd0.5-inc1
 rand_erase: false
