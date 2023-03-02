@@ -230,7 +230,8 @@ def main(args):
 
     if args.eval:
         test_stats = test(model, criterion, postprocessors,
-                          data_loader_val, base_ds, device, cfg.output_dir, cfg, subset=cfg.test_set, epoch=checkpoint['epoch'], test_mode=True)
+                        #   data_loader_val, base_ds, device, cfg.output_dir, cfg, subset=cfg.test_set, epoch=checkpoint['epoch'], test_mode=True)
+                          data_loader_val, base_ds, device, cfg.output_dir, cfg, subset=cfg.test_set, epoch=checkpoint['epoch'], test_mode=False)
                         #   data_loader_val, base_ds, device, cfg.output_dir, cfg, subset=cfg.test_set, epoch=0, test_mode=True)
 
         return
