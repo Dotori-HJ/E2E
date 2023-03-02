@@ -173,7 +173,7 @@ class TADEvaluator(object):
 
                 # On ActivityNet, follow the tradition to use external video label
                 if assign_cls_labels:
-                    topk = 2
+                    topk = 1
 
                     cls_scores = np.asarray(self.cls_scores[video_id])
                     topk_cls_idx = np.argsort(cls_scores)[::-1][:topk]
