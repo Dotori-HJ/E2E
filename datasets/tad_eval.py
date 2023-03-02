@@ -161,19 +161,21 @@ class TADEvaluator(object):
             for nms_mode in self.nms_mode:
                 input_dets = np.copy(this_dets)
                 # if nms_mode == 'nms' and not (cfg.TEST_SLICE_OVERLAP > 0 and self.dataset_name == 'thumos14'):  # when cfg.TEST_SLICE_OVERLAP > 0, only do nms at summarization
-                if nms_mode == 'nms':
-                    dets = apply_nms(input_dets, nms_thr=cfg.nms_thr, use_soft_nms=self.dataset_name=='activitynet' and assign_cls_labels)
-                else:
-                # if True:
-                    sort_idx = input_dets[:, 2].argsort()[::-1]
-                    dets = input_dets[sort_idx, :]
+                # if nms_mode == 'nms':
+                #     dets = apply_nms(input_dets, nms_thr=cfg.nms_thr, use_soft_nms=self.dataset_name=='activitynet' and assign_cls_labels)
+                # else:
+                # # if True:
+                #     sort_idx = input_dets[:, 2].argsort()[::-1]
+                #     dets = input_dets[sort_idx, :]
 
-                # only keep top 300 detections per video
-                dets = dets[:self.topk, :]
+                # # only keep top 300 detections per video
+                # dets = dets[:self.topk, :]
+                sort_idx = input_dets[:, 2].argsort()[::-1]
+                dets = input_dets[sort_idx, :]
 
                 # On ActivityNet, follow the tradition to use external video label
                 if assign_cls_labels:
-                    topk = 1
+                    topk = 2
 
                     cls_scores = np.asarray(self.cls_scores[video_id])
                     topk_cls_idx = np.argsort(cls_scores)[::-1][:topk]
@@ -196,6 +198,12 @@ class TADEvaluator(object):
 
                 # min_score = 0.001
                 # dets = dets[dets[:, 2] > min_score]
+
+                if nms_mode == 'nms':
+                    dets = apply_nms(dets, nms_thr=cfg.nms_thr, use_soft_nms=self.dataset_name=='activitynet' and assign_cls_labels)
+
+                # only keep top 300 detections per video
+                dets = dets[:self.topk, :]
 
                 self.all_pred[nms_mode] += [[video_id, k] + det for det in dets.tolist()]
 
