@@ -190,8 +190,8 @@ class TADEvaluator(object):
                     new_pred_segment = np.tile(dets[:, :2], (topk, 1))
                     new_pred_label = np.tile(topk_cls_idx[:, None], (1, len(dets))).flatten()[:, None]
                     dets = np.concatenate((new_pred_segment, new_pred_score, new_pred_label), axis=-1)
-                    min_score = 0.001
-                    dets = dets[dets[:, 2] > min_score]
+                    # min_score = 0.001
+                    # dets = dets[dets[:, 2] > min_score]
                 elif self.dataset_name == 'activitynet':
                     topk = 2
 
