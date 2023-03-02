@@ -41,13 +41,10 @@ lr_step: [9]
 img_resize: 256
 img_crop_size: 224
 binary: true
-# img_resize: 110
-# img_crop_size: 96
 act_reg: true
 two_stage: false
 mixed_selection: false
 look_forward_twice: false
-# pooler: twpool
 pooler: avg
 # slow_upsample: 2
 
@@ -58,4 +55,4 @@ rand_augment_param: rand-m8-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/activitynet_tadtr_224_avg
+output_dir: outputs/activitynet_tadtr_224_avg_ffn2048_dp0
