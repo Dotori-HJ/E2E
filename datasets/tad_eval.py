@@ -171,7 +171,7 @@ class TADEvaluator(object):
 
 
                 sort_idx = input_dets[:, 2].argsort()[::-1]
-                dets = input_des[sort_idx, :]
+                dets = input_dets[sort_idx, :]
                 # # only keep top 300 detections per video
                 dets = dets[:self.topk, :]
                 # sort_idx = input_dets[:, 2].argsort()[::-1]
