@@ -161,17 +161,14 @@ class TADEvaluator(object):
             for nms_mode in self.nms_mode:
                 input_dets = np.copy(this_dets)
                 # if nms_mode == 'nms' and not (cfg.TEST_SLICE_OVERLAP > 0 and self.dataset_name == 'thumos14'):  # when cfg.TEST_SLICE_OVERLAP > 0, only do nms at summarization
-                # if nms_mode == 'nms':
-                #     dets = apply_nms(input_dets, nms_thr=cfg.nms_thr, use_soft_nms=self.dataset_name=='activitynet' and assign_cls_labels)
+                if nms_mode == 'nms':
+                    dets = apply_nms(input_dets, nms_thr=cfg.nms_thr, use_soft_nms=self.dataset_name=='activitynet' and assign_cls_labels)
                 #     # dets = apply_nms(input_dets, nms_thr=cfg.nms_thr, use_soft_nms=False)
                 #     # dets = apply_nms(input_dets, nms_thr=cfg.nms_thr, use_soft_nms=self.dataset_name=='activitynet')
-                # else:
-                #     sort_idx = input_dets[:, 2].argsort()[::-1]
-                #     dets = input_dets[sort_idx, :]
+                else:
+                    sort_idx = input_dets[:, 2].argsort()[::-1]
+                    dets = input_dets[sort_idx, :]
 
-
-                sort_idx = input_dets[:, 2].argsort()[::-1]
-                dets = input_dets[sort_idx, :]
                 # # only keep top 300 detections per video
                 dets = dets[:self.topk, :]
                 # sort_idx = input_dets[:, 2].argsort()[::-1]
@@ -193,8 +190,8 @@ class TADEvaluator(object):
                     new_pred_segment = np.tile(dets[:, :2], (topk, 1))
                     new_pred_label = np.tile(topk_cls_idx[:, None], (1, len(dets))).flatten()[:, None]
                     dets = np.concatenate((new_pred_segment, new_pred_score, new_pred_label), axis=-1)
-                    # min_score = 0.001
-                    # dets = dets[dets[:, 2] > min_score]
+                    min_score = 0.001
+                    dets = dets[dets[:, 2] > min_score]
                 elif self.dataset_name == 'activitynet':
                     topk = 2
 
@@ -205,8 +202,8 @@ class TADEvaluator(object):
                     min_score = 0.001
                     dets = dets[dets[:, 2] > min_score]
 
-                if nms_mode == 'nms':
-                    dets = apply_nms(dets, nms_thr=cfg.nms_thr, use_soft_nms=self.dataset_name=='activitynet' and assign_cls_labels)
+                # if nms_mode == 'nms':
+                #     dets = apply_nms(dets, nms_thr=cfg.nms_thr, use_soft_nms=self.dataset_name=='activitynet' and assign_cls_labels)
                     # dets = apply_nms(input_dets, nms_thr=cfg.nms_thr, use_soft_nms=False)
                     # dets = apply_nms(input_dets, nms_thr=cfg.nms_thr, use_soft_nms=self.dataset_name=='activitynet')
 
