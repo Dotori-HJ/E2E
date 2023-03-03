@@ -89,7 +89,7 @@ if __name__ == '__main__':
     # gen_thumos14_frames_info(frame_dir, 15)
     anno_path = 'data/activitynet/activity_net.v1-3.min.json'
     target_path = 'data/activitynet/gt.json'
-    frame_dir = 'data/activitynet/activitynet_384_frames'
+    frame_dir = 'data/activitynet/activitynet_768_frames'
     # convert_gt(anno_path, target_path)
     # exit()
 
@@ -104,4 +104,4 @@ if __name__ == '__main__':
     #     for video_name in video_names:
     #         video_paths.append(os.path.join(video_dir, video_name))
 
-    gen_activitynet_frames_info(frame_dir, video_paths, 384, target_path)
+    gen_activitynet_frames_info(frame_dir, video_paths, 768, target_path)
