@@ -240,8 +240,8 @@ class TADEvaluator(object):
                     else:
                         dets = new_dets
 
-                    # min_score = 0.001
-                    # dets = dets[dets[:, 2] > min_score]
+                    min_score = 0.001
+                    dets = dets[dets[:, 2] > min_score]
                 elif self.dataset_name == 'activitynet':
                     topk = 2
 
