@@ -200,11 +200,11 @@ class TADEvaluator(object):
                 seg_areas = input_dets[:, 1] - input_dets[:, 0]
                 keep = seg_areas > 0.001 if self.dataset_name == 'activitynet' else 0.05
                 input_dets = input_dets[keep]
-                # if nms_mode == 'nms' and not (cfg.TEST_SLICE_OVERLAP > 0 and self.dataset_name == 'thumos14'):  # when cfg.TEST_SLICE_OVERLAP > 0, only do nms at summarization
+                # if nms_mode == 'nms' and not (cfg.test_slice_overlap > 0 and self.dataset_name == 'thumos14'):
                 if nms_mode == 'nms':
                     dets = apply_nms(input_dets, nms_thr=cfg.nms_thr, use_soft_nms=self.dataset_name=='activitynet' and assign_cls_labels)
-                #     # dets = apply_nms(input_dets, nms_thr=cfg.nms_thr, use_soft_nms=False)
-                #     # dets = apply_nms(input_dets, nms_thr=cfg.nms_thr, use_soft_nms=self.dataset_name=='activitynet')
+                    # dets = apply_nms(input_dets, nms_thr=cfg.nms_thr, use_soft_nms=False)
+                    # dets = apply_nms(input_dets, nms_thr=cfg.nms_thr, use_soft_nms=self.dataset_name=='activitynet')
                 else:
                     sort_idx = input_dets[:, 2].argsort()[::-1]
                     dets = input_dets[sort_idx, :]
@@ -221,15 +221,15 @@ class TADEvaluator(object):
                     # min_score = 0.001
                     # dets = dets[dets[:, 2] > min_score]
 
-                    # voting_thresh = 0.8
-                    # if voting_thresh > 0:
-                    #     new_dets = seg_voting(
-                    #         dets[:, :2],
-                    #         input_dets[:, :2],
-                    #         input_dets[:, 2],
-                    #         voting_thresh
-                    #     )
-                    #     dets = np.concatenate((new_dets, dets[:, 2:]), axis=1)
+                    voting_thresh = 0.9
+                    if voting_thresh > 0:
+                        new_dets = seg_voting(
+                            dets[:, :2],
+                            input_dets[:, :2],
+                            input_dets[:, 2],
+                            voting_thresh
+                        )
+                        dets = np.concatenate((new_dets, dets[:, 2:]), axis=1)
 
                     cls_scores = np.asarray(self.cls_scores[video_id])
                     topk_cls_idx = np.argsort(cls_scores)[::-1][:topk]
@@ -243,9 +243,6 @@ class TADEvaluator(object):
                     new_pred_segment = np.tile(dets[:, :2], (topk, 1))
                     new_pred_label = np.tile(topk_cls_idx[:, None], (1, len(dets))).flatten()[:, None]
                     dets = np.concatenate((new_pred_segment, new_pred_score, new_pred_label), axis=-1)
-
-
-
                 elif self.dataset_name == 'activitynet':
                     topk = 2
 
