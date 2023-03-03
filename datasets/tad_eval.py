@@ -228,6 +228,32 @@ class TADEvaluator(object):
                     new_pred_label = np.tile(topk_cls_idx[:, None], (1, len(dets))).flatten()[:, None]
                     new_dets = np.concatenate((new_pred_segment, new_pred_score, new_pred_label), axis=-1)
 
+                    min_score = 0.001
+                    new_dets = new_dets[new_dets[:, 2] > min_score]
+
+                    voting_thresh = 0.75
+                    if voting_thresh > 0:
+                        new_segs = seg_voting(
+                            new_dets[:, :2],
+                            input_dets[:, :2],
+                            input_dets[:, 2],
+                            voting_thresh
+                        )
+                        dets = np.concatenate((new_segs, new_dets[:, 2:]), axis=1)
+                    else:
+                        dets = new_dets
+
+
+                elif self.dataset_name == 'activitynet':
+                    topk = 2
+
+                    cls_scores = np.asarray(self.cls_scores[video_id])
+                    topk_cls_idx = np.argsort(cls_scores)[::-1][:topk]
+                    dets = np.concatenate([dets[dets[:, 3] != idx] for idx in topk_cls_idx])
+
+                    min_score = 0.001
+                    new_dets = dets[dets[:, 2] > min_score]
+
                     voting_thresh = 0.75
                     if voting_thresh > 0:
                         new_segs = seg_voting(
@@ -239,19 +265,6 @@ class TADEvaluator(object):
                         dets = np.concatenate((new_segs, new_dets[:, 2:]), axis=1)
                     else:
                         dets = new_dets
-
-                    min_score = 0.001
-                    dets = dets[dets[:, 2] > min_score]
-                elif self.dataset_name == 'activitynet':
-                    topk = 2
-
-                    cls_scores = np.asarray(self.cls_scores[video_id])
-                    topk_cls_idx = np.argsort(cls_scores)[::-1][:topk]
-                    dets = np.concatenate([dets[dets[:, 3] != idx] for idx in topk_cls_idx])
-
-                    min_score = 0.001
-                    dets = dets[dets[:, 2] > min_score]
-
                 # if nms_mode == 'nms':
                 #     dets = apply_nms(dets, nms_thr=cfg.nms_thr, use_soft_nms=self.dataset_name=='activitynet' and assign_cls_labels)
                     # dets = apply_nms(input_dets, nms_thr=cfg.nms_thr, use_soft_nms=False)
