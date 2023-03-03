@@ -72,7 +72,7 @@ def seg_voting(nms_segs, all_segs, all_scores, iou_threshold, score_offset=1.5):
     # compute intersection
     left = np.maximum(ex_nms_segs[:, :, 0], ex_all_segs[:, :, 0])
     right = np.minimum(ex_nms_segs[:, :, 1], ex_all_segs[:, :, 1])
-    inter = (right-left).clamp(min=0)
+    inter = np.clip(right-left, 0, None)
 
     # lens of all segments
     nms_seg_lens = ex_nms_segs[:, :, 1] - ex_nms_segs[:, :, 0]
