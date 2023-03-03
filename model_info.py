@@ -90,5 +90,3 @@ if __name__ == '__main__':
         flops += k.flops
     print(f'The number of GPU meory: {(after - before) / 1024 / 1024 / 1024} GB')
     print(f'Total FLOPs: {flops / 1000 / 1000}M')
-
-
