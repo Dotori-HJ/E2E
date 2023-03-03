@@ -198,7 +198,7 @@ class TADEvaluator(object):
             for nms_mode in self.nms_mode:
                 input_dets = np.copy(this_dets)
                 seg_areas = input_dets[:, 1] - input_dets[:, 0]
-                keep = seg_areas > 0.001 if self.dataset_name = 'activitynet' else 0.05
+                keep = seg_areas > 0.001 if self.dataset_name == 'activitynet' else 0.05
                 input_dets = input_dets[keep]
                 # if nms_mode == 'nms' and not (cfg.TEST_SLICE_OVERLAP > 0 and self.dataset_name == 'thumos14'):  # when cfg.TEST_SLICE_OVERLAP > 0, only do nms at summarization
                 if nms_mode == 'nms':
