@@ -218,7 +218,7 @@ class TADEvaluator(object):
                     # min_score = 0.001
                     # dets = dets[dets[:, 2] > min_score]
 
-                    voting_thresh = 0.5
+                    voting_thresh = 0.8
                     if voting_thresh > 0:
                         new_dets = seg_voting(
                             dets[:, :2],
