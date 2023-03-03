@@ -50,6 +50,41 @@ def apply_nms(dets_arr, nms_thr=0.4, use_soft_nms=False, min_score=0.001):
     output_dets = output_dets[sort_idx, :]
     return output_dets
 
+def seg_voting(nms_segs, all_segs, all_scores, iou_threshold, score_offset=1.5):
+    """
+        blur localization results by incorporating side segs.
+        this is known as bounding box voting in object detection literature.
+        slightly boost the performance around iou_threshold
+    """
+
+    # *_segs : N_i x 2, all_scores: N,
+    # apply offset
+    offset_scores = all_scores + score_offset
+
+    # computer overlap between nms and all segs
+    # construct the distance matrix of # N_nms x # N_all
+    num_nms_segs, num_all_segs = nms_segs.shape[0], all_segs.shape[0]
+    ex_nms_segs = nms_segs[:, None].expand(num_nms_segs, num_all_segs, 2)
+    ex_all_segs = all_segs[None, :].expand(num_nms_segs, num_all_segs, 2)
+
+    # compute intersection
+    left = np.maximum(ex_nms_segs[:, :, 0], ex_all_segs[:, :, 0])
+    right = np.minimum(ex_nms_segs[:, :, 1], ex_all_segs[:, :, 1])
+    inter = (right-left).clamp(min=0)
+
+    # lens of all segments
+    nms_seg_lens = ex_nms_segs[:, :, 1] - ex_nms_segs[:, :, 0]
+    all_seg_lens = ex_all_segs[:, :, 1] - ex_all_segs[:, :, 0]
+
+    # iou
+    iou = inter / (nms_seg_lens + all_seg_lens - inter)
+
+    # get neighbors (# N_nms x # N_all) / weights
+    seg_weights = (iou >= iou_threshold).to(all_scores.dtype) * all_scores[None, :] * iou
+    seg_weights /= np.sum(seg_weights, dim=1, keepdim=True)
+    refined_segs = seg_weights @ all_segs
+
+    return refined_segs
 
 class TADEvaluator(object):
     def __init__(self, dataset_name, subset, video_dict=None, nms_mode=['raw'], iou_range=[0.5], epoch=None, num_workers=None, topk=200):
@@ -189,7 +224,20 @@ class TADEvaluator(object):
                     new_pred_score = np.sqrt(topk_cls_score[:, None] @ dets[:, 2][None, :]).flatten()[:, None]
                     new_pred_segment = np.tile(dets[:, :2], (topk, 1))
                     new_pred_label = np.tile(topk_cls_idx[:, None], (1, len(dets))).flatten()[:, None]
-                    dets = np.concatenate((new_pred_segment, new_pred_score, new_pred_label), axis=-1)
+                    new_dets = np.concatenate((new_pred_segment, new_pred_score, new_pred_label), axis=-1)
+
+                    voting_thresh = 0.75
+                    if voting_thresh > 0:
+                        voting = seg_voting(
+                            new_dets[:, :2],
+                            dets[:, :2],
+                            dets[:, 2],
+                            voting_thresh
+                        )
+                        print(voting)
+                        print(voting.shape)
+                        exit()
+
                     # min_score = 0.001
                     # dets = dets[dets[:, 2] > min_score]
                 elif self.dataset_name == 'activitynet':
