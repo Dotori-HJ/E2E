@@ -64,8 +64,10 @@ def seg_voting(nms_segs, all_segs, all_scores, iou_threshold, score_offset=1.5):
     # computer overlap between nms and all segs
     # construct the distance matrix of # N_nms x # N_all
     num_nms_segs, num_all_segs = nms_segs.shape[0], all_segs.shape[0]
-    ex_nms_segs = nms_segs[:, None].expand(num_nms_segs, num_all_segs, 2)
-    ex_all_segs = all_segs[None, :].expand(num_nms_segs, num_all_segs, 2)
+    # ex_nms_segs = nms_segs[:, None].expand(num_nms_segs, num_all_segs, 2)
+    ex_nms_segs = np.broadcast_to(nms_segs[:, np.new_axis], (num_nms_segs, num_all_segs, 2))
+    # ex_all_segs = all_segs[None, :].expand(num_nms_segs, num_all_segs, 2)
+    ex_all_segs = np.broadcast_to(all_segs[np.new_axis, :], (num_nms_segs, num_all_segs, 2))
 
     # compute intersection
     left = np.maximum(ex_nms_segs[:, :, 0], ex_all_segs[:, :, 0])
