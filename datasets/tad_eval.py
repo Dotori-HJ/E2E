@@ -245,7 +245,7 @@ class TADEvaluator(object):
                     dets = np.concatenate((new_pred_segment, new_pred_score, new_pred_label), axis=-1)
 
                     sort_idx = dets[:, 2].argsort()[::-1]
-                    dets = input_dets[sort_idx, :]
+                    dets = dets[sort_idx, :]
 
                     # only keep top 300 detections per video
                     dets = dets[:50, :]
