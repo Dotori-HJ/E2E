@@ -230,15 +230,15 @@ class TADEvaluator(object):
 
                     voting_thresh = 0.75
                     if voting_thresh > 0:
-                        voting = seg_voting(
+                        new_segs = seg_voting(
                             new_dets[:, :2],
                             dets[:, :2],
                             dets[:, 2],
                             voting_thresh
                         )
-                        print(voting)
-                        print(voting.shape)
-                        exit()
+                        dets = np.concatnate((new_segs, new_dets[:, 2:]), axis=1)
+                    else:
+                        dets = new_dets
 
                     # min_score = 0.001
                     # dets = dets[dets[:, 2] > min_score]
