@@ -221,15 +221,15 @@ class TADEvaluator(object):
                     # min_score = 0.001
                     # dets = dets[dets[:, 2] > min_score]
 
-                    voting_thresh = 0.8
-                    if voting_thresh > 0:
-                        new_dets = seg_voting(
-                            dets[:, :2],
-                            input_dets[:, :2],
-                            input_dets[:, 2],
-                            voting_thresh
-                        )
-                        dets = np.concatenate((new_dets, dets[:, 2:]), axis=1)
+                    # voting_thresh = 0.8
+                    # if voting_thresh > 0:
+                    #     new_dets = seg_voting(
+                    #         dets[:, :2],
+                    #         input_dets[:, :2],
+                    #         input_dets[:, 2],
+                    #         voting_thresh
+                    #     )
+                    #     dets = np.concatenate((new_dets, dets[:, 2:]), axis=1)
 
                     cls_scores = np.asarray(self.cls_scores[video_id])
                     topk_cls_idx = np.argsort(cls_scores)[::-1][:topk]
