@@ -244,11 +244,11 @@ class TADEvaluator(object):
                     new_pred_label = np.tile(topk_cls_idx[:, None], (1, len(dets))).flatten()[:, None]
                     dets = np.concatenate((new_pred_segment, new_pred_score, new_pred_label), axis=-1)
 
-                    sort_idx = dets[:, 2].argsort()[::-1]
-                    dets = dets[sort_idx, :]
+                    # sort_idx = dets[:, 2].argsort()[::-1]
+                    # dets = dets[sort_idx, :]
 
-                    # only keep top 300 detections per video
-                    dets = dets[:80, :]
+                    # # only keep top 300 detections per video
+                    # dets = dets[:80, :]
                 elif self.dataset_name == 'activitynet':
                     topk = 2
 
