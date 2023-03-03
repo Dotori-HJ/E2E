@@ -8,7 +8,7 @@ enc_layers: 4
 dec_layers: 4
 dim_feedforward: 1024
 num_queries: 50
-dropout: 0.1
+dropout: 0.0
 temperature: 10000
 
 # data setting
@@ -33,10 +33,10 @@ fix_encoder: false
 fix_transform: false
 neck: identity
 
-# epochs: 16
-epochs: 12
-# lr_step: [14]
-lr_step: [9]
+epochs: 16
+lr_step: [14]
+# epochs: 12
+# lr_step: [9]
 
 img_resize: 256
 img_crop_size: 224
@@ -55,4 +55,4 @@ rand_augment_param: rand-m8-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/activitynet_tadtr_224_avg_voting
+output_dir: outputs/activitynet_tadtr_224_avg_long
