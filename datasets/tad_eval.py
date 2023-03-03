@@ -228,6 +228,7 @@ class TADEvaluator(object):
                     new_pred_label = np.tile(topk_cls_idx[:, None], (1, len(dets))).flatten()[:, None]
                     new_dets = np.concatenate((new_pred_segment, new_pred_score, new_pred_label), axis=-1)
 
+
                     voting_thresh = 0.75
                     if voting_thresh > 0:
                         new_segs = seg_voting(
