@@ -68,4 +68,4 @@ rand_augment_param: rand-m8-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/activitynet_tadtr_224_ours_binary_act_reg_2layer
+output_dir: outputs/activitynet_tadtr_224_ours_binary_act_reg
