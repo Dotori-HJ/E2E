@@ -218,7 +218,7 @@ class TADEvaluator(object):
                     # min_score = 0.001
                     # dets = dets[dets[:, 2] > min_score]
 
-                    voting_thresh = 0.75
+                    voting_thresh = 0.5
                     if voting_thresh > 0:
                         new_dets = seg_voting(
                             dets[:, :2],
@@ -250,8 +250,8 @@ class TADEvaluator(object):
                     topk_cls_idx = np.argsort(cls_scores)[::-1][:topk]
                     dets = np.concatenate([dets[dets[:, 3] != idx] for idx in topk_cls_idx])
 
-                    min_score = 0.001
-                    new_dets = dets[dets[:, 2] > min_score]
+                    # min_score = 0.001
+                    # new_dets = dets[dets[:, 2] > min_score]
 
                     # voting_thresh = 0.75
                     # if voting_thresh > 0:
