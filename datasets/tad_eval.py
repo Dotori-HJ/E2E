@@ -216,7 +216,7 @@ class TADEvaluator(object):
                     topk = 2
 
                     min_score = 0.001
-                    new_dets = new_dets[dets[:, 2] > min_score]
+                    new_dets = dets[dets[:, 2] > min_score]
 
                     voting_thresh = 0.75
                     if voting_thresh > 0:
