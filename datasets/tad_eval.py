@@ -248,7 +248,7 @@ class TADEvaluator(object):
                     dets = dets[sort_idx, :]
 
                     # only keep top 300 detections per video
-                    dets = dets[:50, :]
+                    dets = dets[:80, :]
                 elif self.dataset_name == 'activitynet':
                     topk = 2
 
