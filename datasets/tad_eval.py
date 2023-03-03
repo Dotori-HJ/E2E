@@ -215,21 +215,8 @@ class TADEvaluator(object):
                 if assign_cls_labels:
                     topk = 2
 
-                    cls_scores = np.asarray(self.cls_scores[video_id])
-                    topk_cls_idx = np.argsort(cls_scores)[::-1][:topk]
-                    topk_cls_score = cls_scores[topk_cls_idx]
-                    # num_segs = min(num_pred, len(dets))
-
-                    # duplicate all segment and assign the topk labels
-                    # K x 1 @ 1 N -> K x N -> KN
-                    # multiply the scores
-                    new_pred_score = np.sqrt(topk_cls_score[:, None] @ dets[:, 2][None, :]).flatten()[:, None]
-                    new_pred_segment = np.tile(dets[:, :2], (topk, 1))
-                    new_pred_label = np.tile(topk_cls_idx[:, None], (1, len(dets))).flatten()[:, None]
-                    new_dets = np.concatenate((new_pred_segment, new_pred_score, new_pred_label), axis=-1)
-
                     min_score = 0.001
-                    new_dets = new_dets[new_dets[:, 2] > min_score]
+                    new_dets = new_dets[dets[:, 2] > min_score]
 
                     voting_thresh = 0.75
                     if voting_thresh > 0:
@@ -242,6 +229,20 @@ class TADEvaluator(object):
                         dets = np.concatenate((new_segs, new_dets[:, 2:]), axis=1)
                     else:
                         dets = new_dets
+
+                    cls_scores = np.asarray(self.cls_scores[video_id])
+                    topk_cls_idx = np.argsort(cls_scores)[::-1][:topk]
+                    topk_cls_score = cls_scores[topk_cls_idx]
+                    # num_segs = min(num_pred, len(dets))
+
+                    # duplicate all segment and assign the topk labels
+                    # K x 1 @ 1 N -> K x N -> KN
+                    # multiply the scores
+                    new_pred_score = np.sqrt(topk_cls_score[:, None] @ dets[:, 2][None, :]).flatten()[:, None]
+                    new_pred_segment = np.tile(dets[:, :2], (topk, 1))
+                    new_pred_label = np.tile(topk_cls_idx[:, None], (1, len(dets))).flatten()[:, None]
+                    dets = np.concatenate((new_pred_segment, new_pred_score, new_pred_label), axis=-1)
+
 
 
                 elif self.dataset_name == 'activitynet':
