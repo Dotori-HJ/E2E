@@ -83,7 +83,7 @@ def seg_voting(nms_segs, all_segs, all_scores, iou_threshold, score_offset=1.5):
 
     # get neighbors (# N_nms x # N_all) / weights
     seg_weights = (iou >= iou_threshold).astype(all_scores.dtype) * all_scores[np.newaxis, :] * iou
-    seg_weights /= np.sum(seg_weights, dim=1, keepdim=True)
+    seg_weights /= np.sum(seg_weights, axis=1, keepdim=True)
     refined_segs = seg_weights @ all_segs
 
     return refined_segs
