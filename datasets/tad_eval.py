@@ -42,7 +42,7 @@ def apply_nms(dets_arr, nms_thr=0.4, use_soft_nms=False, min_score=0.001):
             this_cls_dets_kept = temporal_nms(this_cls_dets, nms_thr)
         else:
             classes = this_cls_dets[:, [3]]
-            this_cls_dets_kept = soft_nms(this_cls_dets, 0.8, 0, 0, 100)
+            this_cls_dets_kept = soft_nms(this_cls_dets, 0.5, 0, 0, 100)
             this_cls_dets_kept = np.concatenate((this_cls_dets_kept, classes), -1)
         output_dets.append(this_cls_dets_kept)
     output_dets = np.concatenate(output_dets, axis=0)
@@ -221,15 +221,15 @@ class TADEvaluator(object):
                     # min_score = 0.001
                     # dets = dets[dets[:, 2] > min_score]
 
-                    voting_thresh = 0.9
-                    if voting_thresh > 0:
-                        new_dets = seg_voting(
-                            dets[:, :2],
-                            input_dets[:, :2],
-                            input_dets[:, 2],
-                            voting_thresh
-                        )
-                        dets = np.concatenate((new_dets, dets[:, 2:]), axis=1)
+                    # voting_thresh = 0.9
+                    # if voting_thresh > 0:
+                    #     new_dets = seg_voting(
+                    #         dets[:, :2],
+                    #         input_dets[:, :2],
+                    #         input_dets[:, 2],
+                    #         voting_thresh
+                    #     )
+                    #     dets = np.concatenate((new_dets, dets[:, 2:]), axis=1)
 
                     cls_scores = np.asarray(self.cls_scores[video_id])
                     topk_cls_idx = np.argsort(cls_scores)[::-1][:topk]
