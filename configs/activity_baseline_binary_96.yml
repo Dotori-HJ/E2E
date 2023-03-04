@@ -11,8 +11,8 @@ pretrained_model: https://download.openmmlab.com/mmaction/recognition/slowfast/s
 # pretrained_model: https://github.com/SwinTransformer/storage/releases/download/v1.0.4/swin_base_patch244_window877_kinetics600_22k.pth
 
 # model setting
-enc_layers: 4
-dec_layers: 4
+enc_layers: 2
+dec_layers: 2
 dim_feedforward: 1024
 num_queries: 50
 dropout: 0.0
@@ -57,5 +57,5 @@ rand_augment_param: rand-m7-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/activitynet_tadtr_96_avg_binary_long
+output_dir: outputs/activitynet_tadtr_96_avg_binary_long_layer2
 #dp01_ffn2048_50query_ori_lr
