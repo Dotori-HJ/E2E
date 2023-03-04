@@ -4,8 +4,8 @@ slowfast_depth: 50
 pretrained_model: https://download.openmmlab.com/mmaction/recognition/slowfast/slowfast_r50_256p_4x16x1_256e_kinetics400_rgb/slowfast_r50_256p_4x16x1_256e_kinetics400_rgb_20200728-145f1097.pth
 
 # model setting
-enc_layers: 2
-dec_layers: 2
+enc_layers: 4
+dec_layers: 4
 dim_feedforward: 1024
 num_queries: 50
 dropout: 0.0
@@ -14,11 +14,11 @@ temperature: 10000
 # data setting
 dataset_name: activitynet
 # feature: img10fps
-feature: 384frames
-# feature: 768frames
+# feature: 384frames
+feature: 768frames
 online_slice: false
-slice_len: 384
-# slice_len: 768
+# slice_len: 384
+slice_len: 768
 slice_overlap: 0
 test_slice_overlap: 0
 input_type: image
@@ -57,4 +57,4 @@ rand_augment_param: rand-m8-n4-mstd0.5-inc1
 rand_erase: false
 
 # output
-output_dir: outputs/activitynet_tadtr_224_avg_long_layer2
+output_dir: outputs/activitynet_tadtr_224_avg_long_768

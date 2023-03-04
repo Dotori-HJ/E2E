@@ -224,9 +224,11 @@ def get_dataset_info(dataset, feature):
         subset_mapping = {'train': 'training', 'val': 'validation'}
         ann_file = path_info['activitynet']['ann_file']
 
-        feature_info = {'local_path': path_info['activitynet']['img']['local_path'],
-        'format': 'jpg', 'fn_templ': '%s', 'img_fn_templ': '/img_%07d.jpg', 'num_frames':384}
-        ft_info_file = path_info['activitynet']['img']['ft_info_file']
+        pos = feature.find('frames')
+        num_frames = int(feature[:pos])
+        feature_info = {'local_path': path_info['activitynet']['img']['local_path'].format(num_frames),
+        'format': 'jpg', 'fn_templ': '%s', 'img_fn_templ': '/img_%07d.jpg', 'num_frames':int(num_frames)}
+        ft_info_file = path_info['activitynet']['img']['ft_info_file'].format(num_frames)
 
 
     elif dataset == 'hacs':

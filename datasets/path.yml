@@ -18,5 +18,5 @@ thumos14:
 activitynet:
   ann_file: 'data/activitynet/activity_net.v1-3.min.json'
   img:
-    local_path: data/activitynet/384frames
-    ft_info_file: 'data/activitynet/activitynet_384_info.json'
+    local_path: data/activitynet/{}frames
+    ft_info_file: 'data/activitynet/activitynet_{}_info.json'
