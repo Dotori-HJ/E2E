@@ -215,7 +215,8 @@ class TADDataset(torch.utils.data.Dataset):
 
     def remove_duplicated_and_short(self, eps=0.02):
         num_removed = 0
-        for vid in self.anno_dict['database'].keys():
+        # for vid in self.anno_dict['database'].keys():
+        for vid in self.video_list:
             annotations = self.anno_dict['database'][vid]['annotations']
             valid_annos = []
 
