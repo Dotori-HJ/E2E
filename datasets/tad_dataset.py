@@ -196,7 +196,8 @@ class TADDataset(torch.utils.data.Dataset):
         logging.info("{} subset video numbers: {}".format(self.subset,len(self.video_list)))
         self.anno_dict = anno_dict
 
-        self.remove_duplicated_and_short()
+        if self.subset == 'training':
+            self.remove_duplicated_and_short()
 
         self.cached_data = {}
 
