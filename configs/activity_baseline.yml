@@ -23,11 +23,11 @@ temperature: 10000
 # data setting
 dataset_name: activitynet
 # feature: img10fps
-feature: 384frames
-# feature: 768frames
+# feature: 384frames
+feature: 768frames
 online_slice: false
-slice_len: 384
-# slice_len: 768
+# slice_len: 384
+slice_len: 768
 slice_overlap: 0
 test_slice_overlap: 0
 input_type: image
@@ -68,4 +68,4 @@ rand_erase: false
 nms_thr: 0.75
 
 # output
-output_dir: outputs/activitynet_tadtr_224_avg_multi_class_0
+output_dir: outputs/activitynet_tadtr_224_avg_multi_class_768
