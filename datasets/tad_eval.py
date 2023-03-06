@@ -257,7 +257,7 @@ class TADEvaluator(object):
 
                     cls_scores = np.asarray(self.cls_scores[video_id])
                     topk_cls_idx = np.argsort(cls_scores)[::-1][:topk]
-                    dets = np.concatenate([dets[dets[:, 3] != idx] for idx in topk_cls_idx])
+                    dets = np.concatenate([dets[dets[:, 3] == idx] for idx in topk_cls_idx])
 
                     # min_score = 0.001
                     # new_dets = dets[dets[:, 2] > min_score]
