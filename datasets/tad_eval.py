@@ -204,6 +204,8 @@ class TADEvaluator(object):
                 if nms_mode == 'nms':
                     # dets = apply_nms(input_dets, nms_thr=cfg.nms_thr, use_soft_nms=self.dataset_name=='activitynet' and assign_cls_labels)
                     dets = apply_nms(input_dets, nms_thr=cfg.nms_thr, use_soft_nms=self.dataset_name=='activitynet')
+                    min_score = 0.001
+                    dets = dets[dets[:, 2] > min_score]
                     # dets = apply_nms(input_dets, nms_thr=cfg.nms_thr, use_soft_nms=False)
                     # dets = apply_nms(input_dets, nms_thr=cfg.nms_thr, use_soft_nms=self.dataset_name=='activitynet')
                 else:
