@@ -198,16 +198,14 @@ class TADEvaluator(object):
             for nms_mode in self.nms_mode:
                 input_dets = np.copy(this_dets)
                 seg_areas = input_dets[:, 1] - input_dets[:, 0]
-                keep = seg_areas > 0.001 if self.dataset_name == 'activitynet' else 0.05
-                print(keep)
-                exit()
+                keep = seg_areas > 0.001 if self.dataset_name == 'activitynet' else seg_areas > 0.05
                 input_dets = input_dets[keep]
                 # if nms_mode == 'nms' and not (cfg.test_slice_overlap > 0 and self.dataset_name == 'thumos14'):
                 if nms_mode == 'nms':
-                    # dets = apply_nms(input_dets, nms_thr=cfg.nms_thr, use_soft_nms=self.dataset_name=='activitynet' and assign_cls_labels)
-                    dets = apply_nms(input_dets, nms_thr=cfg.nms_thr, use_soft_nms=self.dataset_name=='activitynet')
-                    min_score = 0.001
-                    dets = dets[dets[:, 2] > min_score]
+                    dets = apply_nms(input_dets, nms_thr=cfg.nms_thr, use_soft_nms=self.dataset_name=='activitynet' and assign_cls_labels)
+                    # dets = apply_nms(input_dets, nms_thr=cfg.nms_thr, use_soft_nms=self.dataset_name=='activitynet')
+                    # min_score = 0.001
+                    # dets = dets[dets[:, 2] > min_score]
                     # dets = apply_nms(input_dets, nms_thr=cfg.nms_thr, use_soft_nms=False)
                     # dets = apply_nms(input_dets, nms_thr=cfg.nms_thr, use_soft_nms=self.dataset_name=='activitynet')
                 else:
