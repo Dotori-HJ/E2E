@@ -202,7 +202,8 @@ class TADEvaluator(object):
                 input_dets = input_dets[keep]
                 # if nms_mode == 'nms' and not (cfg.test_slice_overlap > 0 and self.dataset_name == 'thumos14'):
                 if nms_mode == 'nms':
-                    dets = apply_nms(input_dets, nms_thr=cfg.nms_thr, use_soft_nms=self.dataset_name=='activitynet' and assign_cls_labels)
+                    # dets = apply_nms(input_dets, nms_thr=cfg.nms_thr, use_soft_nms=self.dataset_name=='activitynet' and assign_cls_labels)
+                    dets = apply_nms(input_dets, nms_thr=cfg.nms_thr, use_soft_nms=self.dataset_name=='activitynet')
                     # dets = apply_nms(input_dets, nms_thr=cfg.nms_thr, use_soft_nms=False)
                     # dets = apply_nms(input_dets, nms_thr=cfg.nms_thr, use_soft_nms=self.dataset_name=='activitynet')
                 else:

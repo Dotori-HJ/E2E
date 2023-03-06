@@ -65,7 +65,7 @@ rand_augment_param: rand-m8-n4-mstd0.5-inc1
 rand_erase: false
 
 # Test
-nms_thr: 0.75
+nms_thr: 0.8
 
 # output
 output_dir: outputs/activitynet_tadtr_224_avg_multi_class_768
