@@ -13,8 +13,8 @@ pretrained_model: https://download.openmmlab.com/mmaction/recognition/slowfast/s
 
 
 # model setting
-enc_layers: 4
-dec_layers: 4
+enc_layers: 6
+dec_layers: 6
 dim_feedforward: 1024
 num_queries: 50
 dropout: 0.0
@@ -23,11 +23,11 @@ temperature: 10000
 # data setting
 dataset_name: activitynet
 # feature: img10fps
-# feature: 384frames
-feature: 768frames
+feature: 384frames
+# feature: 768frames
 online_slice: false
-# slice_len: 384
-slice_len: 768
+slice_len: 384
+# slice_len: 768
 slice_overlap: 0
 test_slice_overlap: 0
 input_type: image
@@ -65,7 +65,7 @@ rand_augment_param: rand-m8-n4-mstd0.5-inc1
 rand_erase: false
 
 # Test
-nms_thr: 0.8
+nms_thr: 0.75
 
 # output
-output_dir: outputs/activitynet_tadtr_224_avg_multi_class_768
+output_dir: outputs/activitynet_tadtr_224_avg_multi_class_0
