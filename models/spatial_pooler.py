@@ -147,7 +147,7 @@ class SpatialAttention(nn.Module):
         if self.drop_rate > 0.0:
             x = self.proj_drop(x)
 
-        return x, attn
+        return x
 
 class AttentionLayer(nn.Module):
     def __init__(
@@ -175,10 +175,10 @@ class AttentionLayer(nn.Module):
         self.drop_path = DropPath(drop_path) if drop_path > 0.0 else nn.Identity()
 
     def forward(self, x, h, w):
-        x_, attn = self.attn(self.norm1(x), h, w)
-        x = self.drop_path(x_) + x
+        # x_, attn = self.attn(self.norm1(x), h, w)
+        x = self.drop_path(self.attn(self.norm1(x), h, w)) + x
         x = self.drop_path(self.mlp(self.norm2(x))) + x
-        return x, attn
+        return x
 
 class TemporalWiseAttentionPooling(nn.Module):
     def __init__(
@@ -256,14 +256,14 @@ class TemporalWiseAttentionPooling(nn.Module):
         # x = x + pos
 
         for layer in self.layers:
-            x, attn = layer(x, h, w)
+            x = layer(x, h, w)
 
-        attn = attn[:, :, 0, 1:]
-        attn = attn.view(-1, 8, h, w)
-        attn = attn.sum(dim=1, keepdim=True)
+        # attn = attn[:, :, 0, 1:]
+        # attn = attn.view(-1, 8, h, w)
+        # attn = attn.sum(dim=1, keepdim=True)
         # attn = attn / attn.sum(dim=1, keepdim=True)
 
-        attn = F.interpolate(attn, (256, 256), mode='bilinear')
+        # attn = F.interpolate(attn, (256, 256), mode='bilinear'
         x = self.norm(x)
         x = x[:, :, 0]
         x = self.output_proj(x)
@@ -271,7 +271,7 @@ class TemporalWiseAttentionPooling(nn.Module):
             x = x + pool_skip
         x = rearrange(x, 'b t c -> b c t')
 
-        return x, attn
+        return x
 
 
 
