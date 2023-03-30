@@ -20,6 +20,7 @@ import random
 import re
 import sys
 import time
+from copy import copy
 from pathlib import Path
 
 import numpy as np
