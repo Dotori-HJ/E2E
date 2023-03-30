@@ -124,11 +124,13 @@ class TADEvaluator(object):
 
         unique_video_list = [x for x in database if database[x]['subset'] in subset_mapping[subset]]
 
+        self.durations = {}
         for vid in unique_video_list:
             if vid in self.ignored_videos:
                 continue
             this_gts = [x for x in database[vid]['annotations'] if x['label'] != 'Ambiguous']
             all_gt += [[vid, classes.index(x['label']), x['segment'][0], x['segment'][1]] for x in this_gts]
+            self.durations[vid] = database[vid]['duration']
 
         all_gt = pd.DataFrame(all_gt, columns=["video-id", "cls","t-start", "t-end"])
         self.video_ids = all_gt['video-id'].unique().tolist()
