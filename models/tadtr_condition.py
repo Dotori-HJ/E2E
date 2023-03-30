@@ -124,7 +124,7 @@ class TadTR(nn.Module):
         self.backbone = backbone
         self.input_proj = nn.ModuleList([
             nn.Sequential(
-                nn.Conv1d(feature_dim, hidden_dim, kernel_size=3, padding=1),
+                nn.Conv1d(backbone.num_channels, hidden_dim, kernel_size=3, padding=1),
                 nn.GroupNorm(32, hidden_dim),
             )
         ])
