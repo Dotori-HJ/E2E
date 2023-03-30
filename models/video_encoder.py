@@ -463,7 +463,7 @@ class VideoEncoder(nn.Module):
         # self.pyramid_channels = [256 for i in indices]
 
 
-    def forward(self, tensor_list):
+    def forward(self, tensor_list, get_attn=False):
         '''tensor_list: tensors+mask'''
         if not isinstance(tensor_list, NestedTensor):
             b, t = tensor_list.shape[0], tensor_list.shape[2]
@@ -487,7 +487,10 @@ class VideoEncoder(nn.Module):
                 video_ft = video_ft_fold.transpose(1, 2)
             else:
                 # fully convolutional feature extraction
-                video_ft = self.backbone(tensor_list.tensors)  # [n,c,t, h, w]
+                if get_attn:
+                    video_ft, attn = self.backbone(tensor_list.tensors, get_attn=get_attn)  # [n,c,t, h, w]
+                else:
+                    video_ft = self.backbone(tensor_list.tensors)  # [n,c,t, h, w]
 
             # video_ft = self.neck(video_ft)
             # video_ft = self.fpn(self.tdm(video_ft))
@@ -513,7 +516,10 @@ class VideoEncoder(nn.Module):
             video_ft = tensors
             out = NestedTensor(video_ft, mask)
 
-        return out
+        if get_attn:
+            return out, attn
+        else:
+            return out
 
     def _fix_encoder(self):
         logging.info('freezing the backbone')

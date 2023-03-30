@@ -15,12 +15,12 @@ pretrained_model: https://download.openmmlab.com/mmaction/recognition/slowfast/s
 # model setting
 enc_layers: 4
 dec_layers: 4
-dim_feedforward: 1024
+dim_feedforward: 2048
 # dim_feedforward: 2048
-num_queries: 40
+num_queries: 100
 # num_queries: 100
 # dropout: 0.1
-dropout: 0.1
+dropout: 0.0
 # temperature: 10000
 temperature: 10000
 
@@ -32,8 +32,8 @@ online_slice: true
 slice_len: 256
 # slice_len: 384
 # slice_len: 768
-slice_overlap: 0.75
-test_slice_overlap: 0.25
+slice_overlap: 0.8
+test_slice_overlap: 0.8
 input_type: image
 
 # training setting (not finialized)
@@ -54,12 +54,14 @@ neck: identity
 # img_crop_size: 96
 img_resize: 256
 img_crop_size: 224
+
 act_reg: true
+seg_refine: true
 two_stage: false
 mixed_selection: false
-look_forward_twice: false
-pooler: twpool
-
+look_forward_twice: true
+pooler: avg
+nms_thr: 0.5
 
 # Training
 # activation: 'gelu'

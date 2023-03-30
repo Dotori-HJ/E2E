@@ -281,12 +281,25 @@ class TADEvaluator(object):
                 self.all_pred[nms_mode] += [[video_id, k] + det for det in dets.tolist()]
 
     def nms_whole_dataset(self):
-        video_ids = list(set([v['src_vid_name'] for k, v in self.video_dict.items()]))
+        # video_ids = list(set([v['src_vid_name'] for k, v in self.video_dict.items()]))
+        video_ids = self.all_pred['nms']['video-id'].unique()
+        # video_ids = self.video_ids
         all_pred = []
         for vid in video_ids:
             this_dets = self.all_pred['nms'][self.all_pred['nms']['video-id'] == vid][['t-start', 't-end', 'score', 'cls']].values
+            # num_queries = len(this_dets)
 
-            this_dets = apply_nms(this_dets)[:self.topk, ...]
+            this_dets = this_dets[this_dets[..., 0] < self.durations[vid]]
+            this_dets = this_dets[this_dets[..., 1] > 0]
+            this_dets = np.clip(this_dets, a_min=0, a_max=self.durations[vid])
+            # this_dets = this_dets[this_dets[..., 1] - this_dets[..., 0] > 0.1]
+            # min_score = 0.001
+            # this_dets = this_dets[this_dets[..., 2] > min_score]
+
+            this_dets = apply_nms(this_dets, nms_thr=cfg.nms_thr)
+            if self.topk > 0:
+                this_dets = this_dets[:self.topk, ...]
+            # this_dets = this_dets[:num_queries // 5, ...]
             this_dets = [[vid] + x.tolist() for x in this_dets]
             all_pred += this_dets
         self.all_pred['nms'] = pd.DataFrame(all_pred, columns=["video-id", "t-start", "t-end", "score", "cls"])

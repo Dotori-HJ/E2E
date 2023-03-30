@@ -32,6 +32,24 @@ def segment_cw_to_t1t2(x):
         return np.concatenate(b, axis=-1)
 
 
+def segment_clr_to_t1t2(x):
+    '''corresponds to box_cxcywh_to_xyxy in detr
+    Params:
+        x: segments in (center, width) format, shape=(*, 2)
+    Returns:
+        segments in (t_start, t_end) format, shape=(*, 2)
+    '''
+    if not isinstance(x, np.ndarray):
+        x_c, l, r = x.unbind(-1)
+        b = [(x_c - l), (x_c + r)]
+        return torch.stack(b, dim=-1)
+    else:
+        x_c, l, r = x[..., 0], x[..., 1], x[..., 2]
+        b = [(x_c - l)[..., None], (x_c + r)[..., None]]
+        return np.concatenate(b, axis=-1)
+
+
+
 def segment_t1t2_to_cw(x):
     '''corresponds to box_xyxy_to_cxcywh in detr
     Params:

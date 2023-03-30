@@ -1,9 +1,13 @@
 import random
 
+import cv2
 import numpy as np
 import torch
 import torch.nn as nn
+from PIL import Image
 from torch.utils.data import DataLoader, DistributedSampler
+from torchvision.transforms.functional import to_pil_image
+from torchvision.utils import save_image
 from tqdm import tqdm
 
 import util.misc as utils
@@ -75,13 +79,44 @@ def main(args):
                                        batch_sampler=batch_sampler_train,
                                        collate_fn=utils.collate_fn, num_workers=args.num_workers, pin_memory=True)
 
-    data_loader_val = DataLoader(dataset_val, int(cfg.batch_size * 4), sampler=sampler_val,
+    data_loader_val = DataLoader(dataset_val, 1, sampler=sampler_val,
                                  drop_last=False, collate_fn=utils.collate_fn, num_workers=args.num_workers, pin_memory=True)
 
-    for (samples, targets) in tqdm(data_loader_val, total=len(data_loader_val)):
+    torch.set_grad_enabled(False)
+    mean = torch.tensor([0.485, 0.456, 0.406]).view(-1, 1, 1).cuda()
+    std = torch.tensor([0.229, 0.224, 0.225]).view(-1, 1, 1).cuda()
+    for i, (samples, targets) in tqdm(enumerate(data_loader_val), total=len(data_loader_val)):
+
         samples = samples.to(device)
         # outputs, _ = model((samples.tensors, samples.mask))
-        outputs = model((samples.tensors, samples.mask))
+        outputs, attn = model.backbone(samples.tensors, get_attn=True)
+        imgs = []
+        for j, (s, a) in enumerate(zip(samples.tensors[0].permute(1, 0, 2, 3), attn)):
+            if j % 4 != 0:
+                continue
+            a = ((a - a.min()) / (a.max() - a.min())) * 255
+            a = a.clip(0, 255)
+            a = a.cpu().numpy()
+            a = np.transpose(a, (1, 2, 0))
+            a = a.astype(np.uint8)
+            a = cv2.cvtColor(a, cv2.COLOR_RGB2BGR)
+            a = cv2.applyColorMap(a, cv2.COLORMAP_JET)
+
+            s = ((s * std) + mean) * 255
+            s = s.clip(0, 255)
+            s = s.cpu().numpy()
+            s = np.transpose(s, (1, 2, 0))
+            s = s.astype(np.uint8)
+            s = cv2.cvtColor(s, cv2.COLOR_RGB2BGR)
+
+            overlay = cv2.addWeighted(s, 0.6, a, 0.4, 0)
+            # cv2.imwrite(f'outputs/frames/{i:04d}_{j:04d}.png', overlay)
+            imgs.append(overlay)
+
+        stack = np.concatenate([np.concatenate(imgs[i*16:(i+1) * 16], axis=1) for i in range(4)], axis=0)
+        # stack = np.concatenate([np.concatenate([imgs[i*8:(i+1) * 8] for i in range(8)], axis=1)], axis=0)
+        # imgs = np.concatenate(imgs, axis=1)
+        cv2.imwrite(f'outputs/frames/{i:04d}.png', stack)
 
 
 if __name__ == '__main__':

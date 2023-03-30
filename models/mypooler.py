@@ -129,7 +129,7 @@ class AdaptivePoolAttention(nn.Module):
         # if self.pool_size[1] != 1 or self.pool_size[2] != 1:
         #     x = rearrange(x, "b (t h w) c -> b t h w c", h=self.pool_size[1], w=self.pool_size[2])
 
-        return x
+        return x, attn
 
 class AdaptivePooler(nn.Module):
     def __init__(
@@ -217,11 +217,12 @@ class AdaptivePooler(nn.Module):
     def forward(self, x):
         pool_skip = self.pool_skip(x).flatten(2).transpose(-2, -1)
         x = rearrange(x, "b c ... -> b ... c")
-        x = self.drop_path(self.attn(self.norm1(x))) + self.pool_proj(pool_skip)
+        x, attn = self.attn(self.norm1(x))
+        x = self.drop_path(x) + self.pool_proj(pool_skip)
         x = self.drop_path(self.mlp(self.norm2(x))) + self.proj(x)
         x = self.proj_norm(x)
         x = rearrange(x, "b ... c -> b c ...")
-        return x
+        return x, attn
 
 
 class SimpleConvPooler(nn.Module):

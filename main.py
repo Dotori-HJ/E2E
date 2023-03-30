@@ -37,6 +37,32 @@ if cfg.tensorboard:
     from torch.utils.tensorboard import SummaryWriter
 
 
+
+class ModelEma(torch.nn.Module):
+    def __init__(self, model, decay=0.999, device=None):
+        super().__init__()
+        # make a copy of the model for accumulating moving average of weights
+        self.module = deepcopy(model)
+        self.module.eval()
+        self.decay = decay
+        self.device = device  # perform ema on different device from model if set
+        if self.device is not None:
+            self.module.to(device=device)
+
+    def _update(self, model, update_fn):
+        with torch.no_grad():
+            for ema_v, model_v in zip(self.module.state_dict().values(), model.state_dict().values()):
+                if self.device is not None:
+                    model_v = model_v.to(device=self.device)
+                ema_v.copy_(update_fn(ema_v, model_v))
+
+    def update(self, model):
+        self._update(model, update_fn=lambda e, m: self.decay * e + (1. - self.decay) * m)
+
+    def set(self, model):
+        self._update(model, update_fn=lambda e, m: m)
+
+
 def main(args):
     from util.logger import setup_logger
 
@@ -109,6 +135,8 @@ def main(args):
         model = torch.nn.DataParallel(model)
         model_without_ddp = model.module
 
+
+    model_ema = ModelEma(model, decay=cfg.ema_decay) if cfg.ema else None
     n_parameters = sum(p.numel() for p in model.parameters())
     logging.info('number of params: {}'.format(n_parameters))
 
@@ -151,7 +179,10 @@ def main(args):
     if args.resume == 'latest':
         args.resume = osp.join(cfg.output_dir, 'checkpoint.pth')
     elif args.resume == 'best':
-        args.resume = osp.join(cfg.output_dir, 'model_best.pth')
+        if args.ema:
+            args.resume = osp.join(cfg.output_dir, 'model_best.pth')
+        else:
+            args.resume = osp.join(cfg.output_dir, 'model_best_ema.pth')
 
     if 'model_best.pth' in os.listdir(cfg.output_dir) and not args.resume and not args.eval and not args.y:
         # for many times, my trained models were accidentally overwrittern by new models😂. So I add this to avoid that
@@ -204,7 +235,9 @@ def main(args):
         smry_writer = None
 
     best_metric = -1
+    best_metric_ema = -1
     best_metric_txt = ''
+    best_metric_ema_txt = ''
 
     if args.eval and not args.resume:
         args.resume = osp.join(output_dir, 'model_best.pth')
@@ -221,6 +254,8 @@ def main(args):
             checkpoint = torch.load(args.resume, map_location='cpu')
 
         model_without_ddp.load_state_dict(checkpoint['model'], strict=True)
+        if 'model_ema' in checkpoint:
+            model_ema.module.load_state_dict(checkpoint['model_ema'], strict=False)
 
         if 'epoch' in checkpoint:
             start_epoch = checkpoint['epoch'] + 1
@@ -228,11 +263,18 @@ def main(args):
         if 'best_metric' in checkpoint:
             best_metric = checkpoint['best_metric']
 
+        if 'best_metric_ema' in checkpoint:
+            best_metric_ema = checkpoint['best_metric_ema']
+
     if args.eval:
         test_stats = test(model, criterion, postprocessors,
                         #   data_loader_val, base_ds, device, cfg.output_dir, cfg, subset=cfg.test_set, epoch=checkpoint['epoch'], test_mode=True)
                           data_loader_val, base_ds, device, cfg.output_dir, cfg, subset=cfg.test_set, epoch=checkpoint['epoch'], test_mode=False)
                         #   data_loader_val, base_ds, device, cfg.output_dir, cfg, subset=cfg.test_set, epoch=0, test_mode=True)
+        if model_ema is not None:
+            test_stats = test(model_ema.module, criterion, postprocessors,
+                            #   data_loader_val, base_ds, device, cfg.output_dir, cfg, subset=cfg.test_set, epoch=checkpoint['epoch'], test_mode=True, postproc_ins_topk=cfg.postproc_ins_topk)
+                            data_loader_val, base_ds, device, cfg.output_dir, cfg, subset=cfg.test_set, epoch=checkpoint['epoch'], test_mode=False, postproc_ins_topk=cfg.postproc_ins_topk)
 
         return
 
@@ -259,10 +301,12 @@ def main(args):
                     output_dir / f'checkpoint{epoch:04}.pth')
             ckpt = {
                 'model': model_without_ddp.state_dict(),
+                'model_ema': model_ema.module.state_dict(),
                 'epoch': epoch,
                 'args': args,
                 'cfg': cfg,
                 'best_metric': best_metric,
+                'best_metric_ema': best_metric_ema,
             }
             for checkpoint_path in checkpoint_paths:
                 utils.save_on_master(ckpt, checkpoint_path)
@@ -271,7 +315,7 @@ def main(args):
             test_stats = test(
                 model, criterion, postprocessors, data_loader_val, base_ds, device, cfg.output_dir, cfg, epoch=epoch
             )
-            prime_metric = 'mAP_raw'
+            prime_metric = 'mAP_nms'
             if test_stats[prime_metric] > best_metric:
                 best_metric = test_stats[prime_metric]
                 best_metric_txt = test_stats['stats_summary']
@@ -281,7 +325,19 @@ def main(args):
                     ckpt['best_metric'] = best_metric
                     best_ckpt_path = output_dir / 'model_best.pth'
                     utils.save_on_master(ckpt, best_ckpt_path)
-
+            if model_ema is not None:
+                test_stats = test(
+                    model_ema.module, criterion, postprocessors, data_loader_val, base_ds, device, cfg.output_dir, cfg, epoch=epoch
+                )
+                if test_stats[prime_metric] > best_metric_ema:
+                    best_metric_ema = test_stats[prime_metric]
+                    best_metric_ema_txt = test_stats['stats_summary']
+                    logging.info(
+                        'new best metric {:.4f}@epoch{}'.format(best_metric, epoch))
+                    if cfg.output_dir:
+                        ckpt['best_metric_ema'] = best_metric_ema
+                        best_ckpt_path = output_dir / 'model_best_ema.pth'
+                        utils.save_on_master(ckpt, best_ckpt_path)
         else:
             test_stats = {}
 
@@ -310,6 +366,8 @@ def main(args):
         if smry_writer is not None:
             smry_writer.close()
     logging.info('best det result\n{}'.format(best_metric_txt))
+    if model_ema is not None:
+        logging.info('best det result\n{}'.format(best_metric_ema_txt))
     logging.info(log_path)
 
 

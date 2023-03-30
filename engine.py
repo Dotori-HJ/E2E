@@ -24,7 +24,7 @@ from datasets.tad_eval import TADEvaluator
 
 def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
                     data_loader: Iterable, optimizer: torch.optim.Optimizer,
-                    device: torch.device, epoch: int, cfg, max_norm: float = 0, gpu_transforms=None, use_dn=False):
+                    device: torch.device, epoch: int, cfg, max_norm: float = 0, gpu_transforms=None, use_dn=False, model_ema: torch.nn.Module=None):
     model.train()
     criterion.train()
 
@@ -81,6 +81,7 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
             logging.info(str(loss_dict_reduced))
             sys.exit(1)
 
+        optimizer.zero_grad()
         losses.backward()
         if (cnt + 1) % cfg.iter_size == 0:
             # scale gradients when iter size is functioning
@@ -92,7 +93,8 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
             if max_norm > 0:
                 torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm)
             optimizer.step()
-            optimizer.zero_grad()
+            if model_ema is not None:
+                model_ema.update(model)
 
         metric_logger.update(
             loss=loss_value, **loss_dict_reduced_scaled, **loss_dict_reduced_unscaled)
@@ -132,7 +134,8 @@ def test(model, criterion, postprocessor, data_loader, base_ds, device, output_d
     # logging.info('iou range {}'.format(iou_range))
 
     # action_evaluator = None
-    nms_mode = ['nms', 'raw'] if cfg.dataset_name == 'activitynet' else ['raw']
+    # nms_mode = ['nms', 'raw'] if cfg.dataset_name == 'activitynet' else ['raw']
+    nms_mode = ['nms']
     action_evaluator = TADEvaluator(cfg.dataset_name, subset, base_ds, nms_mode=nms_mode, iou_range=iou_range, epoch=epoch, topk=cfg.postproc_ins_topk)
 
     # raw_res = []

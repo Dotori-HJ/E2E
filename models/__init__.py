@@ -5,7 +5,7 @@
 
 '''build models'''
 
-from .tadtr_ori import build
+from .tadtr_condition import build
 
 # from .tadtr import build
 

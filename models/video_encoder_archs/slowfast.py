@@ -529,7 +529,7 @@ class ResNet3dSlowFast(nn.Module):
                         m.weight.requires_grad_(False)
                         m.bias.requires_grad_(False)
 
-    def forward(self, x):
+    def forward(self, x, get_attn=False):
         """Defines the computation performed at every call.
 
         Args:
@@ -570,11 +570,13 @@ class ResNet3dSlowFast(nn.Module):
                 x_fast_lateral = conv_lateral(x_fast)
                 x_slow = torch.cat((x_slow, x_fast_lateral), dim=1)
 
+
+        x_fast, attn = self.fast_poolers[0](x_fast)
         # x_slow = F.adaptive_avg_pool3d(x_slow, (None, 1, 1)).flatten(2)
-        x_slow = self.slow_poolers[0](x_slow)
+        x_slow, _ = self.slow_poolers[0](x_slow)
 
         # x_fast = F.adaptive_avg_pool3d(x_fast, (None, 1, 1)).flatten(2)
-        x_fast = self.fast_poolers[0](x_fast)
+
 
         # # output stride = 1
         if self.slow_upsample == 8:
@@ -594,7 +596,10 @@ class ResNet3dSlowFast(nn.Module):
         # return outs
         # return [x_fast, x_slow]
         # return [out]
-        return out
+        if get_attn:
+            return out, attn
+        else:
+            return out
 
 if __name__ == '__main__':
     # from flop_count import flop_count

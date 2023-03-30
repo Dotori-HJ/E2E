@@ -232,17 +232,21 @@ cfg.snippet_stride = 4
 # How to rank the predicted instances. 
 # 1: for each query, generate a instance for each class; then pick top-scored instance from the whole set
 # 2: pick top classes for each query
-cfg.postproc_rank = 1
+cfg.postproc_rank = 2
 # for each query, pick top k classes; keep all queries
 # this setting is useful for debug
 cfg.postproc_cls_topk = 1
 # for each video, pick topk detections
-cfg.postproc_ins_topk = 200
+cfg.postproc_ins_topk = -1
 # IoU threshold for NMS. Note that NMS is not necessary.
 cfg.nms_thr = 0.4
 
 cfg.rand_augment_param = "rand-m7-n4-mstd0.5-inc1"
 cfg.rand_erase = False
+# ---- Trick ----
+cfg.ema = True
+cfg.ema_decay = 0.999
+
 
 def update_cfg_with_args(cfg, arg_list):
     from ast import literal_eval
