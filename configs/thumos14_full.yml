@@ -63,6 +63,9 @@ look_forward_twice: true
 pooler: avg
 nms_thr: 0.5
 
+epochs: 36
+lr_step: [-1]
+
 # Training
 # activation: 'gelu'
 rand_augment_param: rand-m7-n4-mstd0.5-inc1
