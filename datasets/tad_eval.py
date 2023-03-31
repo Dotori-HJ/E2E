@@ -384,10 +384,10 @@ class TADEvaluator(object):
 
     def synchronize_between_processes(self):
         mode = self.nms_mode[0]
-        print(
-            len(self.all_pred[mode]),
-            len({x[0] for x in self.all_pred[mode]})
-        )
+        # print(
+        #     len(self.all_pred[mode]),
+        #     len({x[0] for x in self.all_pred[mode]})
+        # )
         self.all_pred = merge_distributed(self.all_pred)
 
     def summarize(self):
