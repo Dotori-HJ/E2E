@@ -65,11 +65,13 @@ nms_thr: 0.5
 
 epochs: 36
 lr_step: [-1]
+test_interval: 1
 
 # Training
 # activation: 'gelu'
 rand_augment_param: rand-m7-n4-mstd0.5-inc1
 rand_erase: false
+
 
 # output
 output_dir: outputs/thumos14_e2e_slowfast_10fps_condition_long
