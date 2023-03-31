@@ -73,4 +73,4 @@ rand_erase: false
 
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_10fps_condition
+output_dir: outputs/thumos14_e2e_slowfast_10fps_condition_batch8
