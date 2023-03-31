@@ -290,7 +290,7 @@ def main(args):
             logging.info('lr={}'.format(group['lr']))
         train_stats = train_one_epoch(
             model, criterion, data_loader_train, optimizer, device, epoch, cfg,
-            cfg.clip_max_norm, gpu_transforms)
+            cfg.clip_max_norm, gpu_transforms, model_ema=model_ema)
 
         lr_scheduler.step()
 
