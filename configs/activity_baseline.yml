@@ -15,8 +15,8 @@ pretrained_model: https://download.openmmlab.com/mmaction/recognition/slowfast/s
 # model setting
 enc_layers: 6
 dec_layers: 6
-dim_feedforward: 1024
-num_queries: 50
+dim_feedforward: 2048
+num_queries: 150
 dropout: 0.0
 temperature: 10000
 
@@ -52,9 +52,10 @@ img_crop_size: 224
 # img_resize: 110
 # img_crop_size: 96
 act_reg: true
+seg_refine: true
 two_stage: false
+look_forward_twice: true
 mixed_selection: false
-look_forward_twice: false
 # slow_upsample: 2
 # slow_upsample: 2
 # pooler: twpool
@@ -65,7 +66,7 @@ rand_augment_param: rand-m8-n4-mstd0.5-inc1
 rand_erase: false
 
 # Test
-nms_thr: 0.75
+nms_thr: 0.6
 
 # output
-output_dir: outputs/activitynet_tadtr_224_avg_multi_class_768
+output_dir: outputs/activitynet_tadtr_condition_224_avg_multi_class_768

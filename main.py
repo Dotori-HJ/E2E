@@ -334,7 +334,7 @@ def main(args):
                     best_metric_ema = test_stats[prime_metric]
                     best_metric_ema_txt = test_stats['stats_summary']
                     logging.info(
-                        'new best metric {:.4f}@epoch{}'.format(best_metric, epoch))
+                        'new best metric {:.4f}@epoch{}'.format(best_metric_ema, epoch))
                     if cfg.output_dir:
                         ckpt['best_metric_ema'] = best_metric_ema
                         best_ckpt_path = output_dir / 'model_best_ema.pth'
