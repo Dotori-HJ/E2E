@@ -6,9 +6,14 @@ pretrained_model: https://download.openmmlab.com/mmaction/recognition/slowfast/s
 # model setting
 enc_layers: 4
 dec_layers: 4
-dim_feedforward: 1024
-num_queries: 40
-dropout: 0.1
+dim_feedforward: 2048
+# dim_feedforward: 2048
+num_queries: 100
+# num_queries: 100
+# dropout: 0.1
+dropout: 0.0
+# temperature: 10000
+temperature: 10000
 
 # data setting
 dataset_name: thumos14
@@ -38,14 +43,20 @@ pooler_args:
        output_dim: 256
    }
 
+act_reg: true
+seg_refine: true
+two_stage: false
+mixed_selection: false
+look_forward_twice: true
+
 fix_encoder: false
 fix_transform: false
-act_reg: false
 pooler: twpool
 
 img_resize: 256
 img_crop_size: 224
+nms_thr: 0.5
 
 # output
-output_dir: best/tadtr_224_twpool_11_up
+output_dir: outputs/tadtr_224_twpool_condition
 # output_dir: randaug/tadtr_224_m7-n4
