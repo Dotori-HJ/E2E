@@ -13,11 +13,11 @@ pretrained_model: https://download.openmmlab.com/mmaction/recognition/slowfast/s
 
 
 # model setting
-enc_layers: 4
-dec_layers: 4
+enc_layers: 2
+dec_layers: 6
 dim_feedforward: 2048
 # dim_feedforward: 2048
-num_queries: 100
+num_queries: 200
 # num_queries: 100
 # dropout: 0.1
 dropout: 0.0
@@ -50,10 +50,10 @@ neck: identity
 # Image
 # img_resize: 440
 # img_crop_size: 384
-img_resize: 110
-img_crop_size: 96
-# img_resize: 256
-# img_crop_size: 224
+# img_resize: 110
+# img_crop_size: 96
+img_resize: 256
+img_crop_size: 224
 
 act_reg: true
 seg_refine: true
@@ -74,4 +74,4 @@ rand_erase: false
 # hidden_dim: 256
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_10fps_condition_batch8_96
+output_dir: outputs/thumos14_e2e_slowfast_10fps_condition_batch8_224
