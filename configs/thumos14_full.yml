@@ -13,8 +13,8 @@ pretrained_model: https://download.openmmlab.com/mmaction/recognition/slowfast/s
 
 
 # model setting
-enc_layers: 2
-dec_layers: 6
+enc_layers: 4
+dec_layers: 4
 dim_feedforward: 2048
 # dim_feedforward: 2048
 num_queries: 200
@@ -74,4 +74,4 @@ rand_erase: false
 hidden_dim: 512
 
 # output
-output_dir: outputs/thumos14_e2e_slowfast_10fps_condition_batch8_224_hidden512
+output_dir: outputs/thumos14_e2e_slowfast_10fps_condition_batch8_224_hidden512_layer4
