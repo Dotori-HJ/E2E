@@ -51,12 +51,13 @@ look_forward_twice: true
 
 fix_encoder: false
 fix_transform: false
-pooler: twpool
+pooler: avg
 
 img_resize: 256
 img_crop_size: 224
 nms_thr: 0.5
 
 # output
-output_dir: outputs/tadtr_224_twpool_timesformer
+# output_dir: outputs/tadtr_224_twpool
+output_dir: outputs/tadtr_224_avg
 # output_dir: randaug/tadtr_224_m7-n4
