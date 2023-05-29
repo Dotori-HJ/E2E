@@ -174,16 +174,16 @@ class AttentionLayer(nn.Module):
         self.norm2 = norm_layer(base_dim)
         self.mlp = Mlp(base_dim, int(base_dim * mlp_ratio), act_layer=act_layer, drop_rate=drop_rate)
         self.drop_path = DropPath(drop_path) if drop_path > 0.0 else nn.Identity()
-        self.attn2 = nn.MultiheadAttention(base_dim, num_heads, add_bias_kv=qkv_bias)
-        self.norm3 = norm_layer(base_dim)
+        # self.attn2 = nn.MultiheadAttention(base_dim, num_heads, add_bias_kv=qkv_bias)
+        # self.norm3 = norm_layer(base_dim)
 
     def forward(self, x, h, w):
         # x_, attn = self.attn(self.norm1(x), h, w)
         x = self.drop_path(self.attn(self.norm1(x), h, w)) + x
         # x = self.drop_path(self.attn(self.norm1(x))) + x
-        bs, t, n, d = x.size()
-        norm_x = self.norm3(x).transpose(2, 1).view(bs * n, t, d)
-        x = self.drop_path(self.attn2(norm_x, norm_x, norm_x).view(bs, n, t, d).transpose(2, 1)) + x
+        # bs, t, n, d = x.size()
+        # norm_x = self.norm3(x).transpose(2, 1).view(bs * n, t, d)
+        # x = self.drop_path(self.attn2(norm_x, norm_x, norm_x).view(bs, n, t, d).transpose(2, 1)) + x
         x = self.drop_path(self.mlp(self.norm2(x))) + x
         return x
 
