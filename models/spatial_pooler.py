@@ -181,7 +181,7 @@ class AttentionLayer(nn.Module):
         # x_, attn = self.attn(self.norm1(x), h, w)
         x = self.drop_path(self.attn(self.norm1(x), h, w)) + x
         # x = self.drop_path(self.attn(self.norm1(x))) + x
-        norm_x = self.norm3(x, x, x).transpose(2, 1)
+        norm_x = self.norm3(x).transpose(2, 1)
         x = self.drop_path(self.attn2(norm_x, norm_x, norm_x).transpose(2, 1)) + x
         x = self.drop_path(self.mlp(self.norm2(x))) + x
         return x
