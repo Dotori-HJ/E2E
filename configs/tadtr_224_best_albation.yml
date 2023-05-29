@@ -58,5 +58,5 @@ img_crop_size: 224
 nms_thr: 0.5
 
 # output
-output_dir: outputs/tadtr_224_twpool_reproduce
+output_dir: outputs/tadtr_224_twpool_timesformer
 # output_dir: randaug/tadtr_224_m7-n4
