@@ -176,7 +176,7 @@ class AttentionLayer(nn.Module):
 
     def forward(self, x, h, w):
         # x_, attn = self.attn(self.norm1(x), h, w)
-        x = self.drop_path(self.attn(self.norm1(x), h, w)) + x
+        # x = self.drop_path(self.attn(self.norm1(x), h, w)) + x
         x = self.drop_path(self.mlp(self.norm2(x))) + x
         return x
 
