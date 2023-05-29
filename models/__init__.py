@@ -5,9 +5,9 @@
 
 '''build models'''
 
-from .tadtr_condition import build
+# from .tadtr_condition import build
 
-# from .tadtr import build
+from .tadtr import build
 
 
 def build_model(args):
