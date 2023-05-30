@@ -286,7 +286,7 @@ class TemporalWiseAttentionPooling(nn.Module):
 
 
     def forward(self, x):
-        x = self.pool_skip(x)
+        x = self.pool_skip(x).unsqueeze(-1).unsqueeze(-1)
         x = rearrange(x, 'b c ... -> b ... c')
         x = self.pool_proj(x)
         b, c, t, h, w = x.size()
