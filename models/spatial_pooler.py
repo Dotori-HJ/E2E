@@ -205,6 +205,8 @@ class TemporalWiseAttentionPooling(nn.Module):
         input_tokens=7,
     ):
         super().__init__()
+        skip = 'avg'
+        input_tokens = 1
         self.input_dim = input_dim
         self.base_dim = base_dim
         self.output_dim = base_dim if output_dim is None else output_dim
@@ -284,6 +286,9 @@ class TemporalWiseAttentionPooling(nn.Module):
 
 
     def forward(self, x):
+        x = self.pool_skip(x)
+        x = rearrange(x, 'b c ... -> b ... c')
+        x = self.pool_proj(x)
         b, c, t, h, w = x.size()
 
         # if self.skip is not None:
