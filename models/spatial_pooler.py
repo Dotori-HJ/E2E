@@ -247,13 +247,49 @@ class TemporalWiseAttentionPooling(nn.Module):
             self.output_proj = nn.Identity()
 
 
+    # def forward(self, x):
+    #     b, c, t, h, w = x.size()
+
+    #     if self.skip is not None:
+    #         pool_skip = self.pool_skip(x)
+    #         pool_skip = rearrange(pool_skip, 'b c ... -> b ... c')
+    #         pool_skip = self.pool_proj(pool_skip)
+    #     x = rearrange(x, 'b c t h w -> b t (h w) c')
+    #     x = self.proj(x)
+
+    #     cls_token = repeat(self.cls_token.weight, 'b c -> (b b1) t () c', b1=b, t=t)
+    #     x = torch.cat([cls_token, x], dim=2)
+    #     # pos = repeat(self.learnable_pos.weight, 'n c -> b t n c', b=b, t=t)
+    #     # x = x + pos
+
+    #     for layer in self.layers:
+    #         x = layer(x, h, w)
+
+    #     # attn = attn[:, :, 0, 1:]
+    #     # attn = attn.view(-1, 8, h, w)
+    #     # attn = attn.sum(dim=1, keepdim=True)
+    #     # attn = attn / attn.sum(dim=1, keepdim=True)
+
+    #     # attn = F.interpolate(attn, (256, 256), mode='bilinear'
+    #     x = self.norm(x)
+    #     x = x[:, :, 0]
+    #     x = self.output_proj(x)
+    #     if self.skip is not None:
+    #         x = x + pool_skip
+    #     x = rearrange(x, 'b t c -> b c t')
+
+    #     return x
+
+
+
+
     def forward(self, x):
         b, c, t, h, w = x.size()
 
-        if self.skip is not None:
-            pool_skip = self.pool_skip(x)
-            pool_skip = rearrange(pool_skip, 'b c ... -> b ... c')
-            pool_skip = self.pool_proj(pool_skip)
+        # if self.skip is not None:
+        #     pool_skip = self.pool_skip(x)
+        #     pool_skip = rearrange(pool_skip, 'b c ... -> b ... c')
+        #     pool_skip = self.pool_proj(pool_skip)
         x = rearrange(x, 'b c t h w -> b t (h w) c')
         x = self.proj(x)
 
@@ -272,13 +308,11 @@ class TemporalWiseAttentionPooling(nn.Module):
 
         # attn = F.interpolate(attn, (256, 256), mode='bilinear'
         x = self.norm(x)
-        x = x[:, :, 0]
+        # x = x[:, :, 0]
         x = self.output_proj(x)
-        if self.skip is not None:
-            x = x + pool_skip
+        x = self.pool_skip(x)
+        # if self.skip is not None:
+        #     x = x + pool_skip
         x = rearrange(x, 'b t c -> b c t')
 
         return x
-
-
-
