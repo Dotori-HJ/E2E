@@ -37,10 +37,6 @@ class _Align1D(Function):
         )
         return grad_input, None, None, None, None
 
-
-align1d = _Align1D.apply
-
-
 class ROIAlign(nn.Module):
     def __init__(self, feature_dim, ratio=0):
         super(ROIAlign, self).__init__()
@@ -48,17 +44,11 @@ class ROIAlign(nn.Module):
         self.ratio = ratio
 
     def forward(self, input, rois):
-        # print('- input shape is', input.shape)
-        # print('- input mean is', input.mean())
-        # print('- rois shape is', rois.shape)
-        # print('- rois is on', rois.get_device())
         assert input.device==rois.device, 'Align operation requires ' + \
 			'both feature and roi are on the same device! ' + \
             'Get feature on {} but roi on {}'.format(input.device,rois.device)
 
-        out = align1d(input, rois, self.feature_dim, self.ratio)
-        # print('- output shape is', out.shape)
-        # print('- output mean is', out.mean())
+        out = _Align1D.apply(input, rois, self.feature_dim, self.ratio)
         return out
 
     def __repr__(self):

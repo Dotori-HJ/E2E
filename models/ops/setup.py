@@ -49,9 +49,9 @@ def get_extensions():
         CUDAExtension(
             "temporal_deform_attn.TemporalDeformableAttention",
             get_sources(os.path.join(this_dir, "temporal_deform_attn/src")),
-            include_dirs=[os.path.join(this_dir, "temporal_deform_attn/src")],
-            define_macros=define_macros,
-            extra_compile_args=extra_compile_args
+            # include_dirs=[os.path.join(this_dir, "temporal_deform_attn/src")],
+            # define_macros=define_macros,
+            # extra_compile_args=extra_compile_args
         ),
         # CUDAExtension(
         #     "MultiScaleDeformableAttention",

@@ -268,7 +268,7 @@ __global__ void ms_deformable_im2col_gpu_kernel(const int n,
     const int qid_stride = num_heads * channels;
     const int data_value_ptr_init_offset = b_col * spatial_size * qid_stride;
     scalar_t col = 0;
-    
+
     for (int l_col=0; l_col < num_levels; ++l_col)
     {
       const int level_start_id = data_level_start_index[l_col];
