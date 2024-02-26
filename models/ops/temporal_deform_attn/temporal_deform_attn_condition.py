@@ -22,10 +22,10 @@ from torch.nn.init import constant_, xavier_uniform_
 
 from opts import cfg
 
-if not cfg.disable_cuda:
-    from .functions import TDA
-else:
-    from .functions import deform_attn_core_pytorch
+# if not cfg.disable_cuda:
+#     from .functions import TDA
+# else:
+#     from .functions import deform_attn_core_pytorch
 
 
 
