@@ -24,11 +24,10 @@ from opts import cfg
 
 # from .functions import MSDeformAttnFunction
 
-# if not cfg.disable_cuda:
-#     from .functions import TDAFunction
-
-
-
+if not cfg.disable_cuda:
+    from .functions import TDA
+else:
+    from .functions import deform_attn_core_pytorch
 
 
 def _is_power_of_2(n):
@@ -151,12 +150,11 @@ class DeformAttn(nn.Module):
             input_spatial_shapes = torch.stack((torch.ones_like(input_temporal_lens), input_temporal_lens), dim=-1)
             output = deform_attn_core_pytorch(value, input_spatial_shapes, sampling_locations, attention_weights)
         else:
-            raise NotImplementedError
+            # raise NotImplementedError
             # # CUDA implementation. You will get identical results with the pytorch implementation
         # sampling_locations = torch.cat((sampling_locations, torch.ones_like(sampling_locations)*0.5), dim=-1)
         # input_spatial_shapes = torch.stack((torch.ones_like(input_temporal_lens), input_temporal_lens), dim=-1)
-        # output = MSDeformAttnFunction.apply(
-                # value, input_spatial_shapes, input_level_start_index, sampling_locations, attention_weights, self.seq2col_step)
+            output = TDA.apply(value, input_spatial_shapes, input_level_start_index, sampling_locations, attention_weights, self.seq2col_step)
         output = self.output_proj(output)
         return output, (sampling_locations, attention_weights)
 

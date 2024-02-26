@@ -22,10 +22,10 @@ from torch.nn.init import constant_, xavier_uniform_
 
 from opts import cfg
 
-if not cfg.disable_cuda:
-    from .functions import TDA
-else:
-    from .functions import deform_attn_core_pytorch
+# from .functions import MSDeformAttnFunction
+
+# if not cfg.disable_cuda:
+#     from .functions import TDAFunction
 
 
 
@@ -38,7 +38,7 @@ def _is_power_of_2(n):
     return (n & (n-1) == 0) and n != 0
 
 
-class DeformAttnCondition(nn.Module):
+class DeformAttn(nn.Module):
     def __init__(self, d_model=256, n_levels=1, n_heads=8, n_points=4):
         """
         Deformable Attention Module
@@ -90,7 +90,6 @@ class DeformAttnCondition(nn.Module):
 
         with torch.no_grad():
             self.sampling_offsets.bias = nn.Parameter(grid_init.view(-1))
-
         constant_(self.attention_weights.weight.data, 0.)
         constant_(self.attention_weights.bias.data, 0.)
         xavier_uniform_(self.value_proj.weight.data)
@@ -136,33 +135,11 @@ class DeformAttnCondition(nn.Module):
                 + sampling_offsets / \
                 offset_normalizer[None, None, None, :, None, :]
         # deform attention in the l-th (l >= 2) decoder layer when segment refinement is enabled
-        elif reference_points.shape[-1] == 3:
-            # offset_normalizer = input_temporal_lens[..., None]
-            # # (N, Length_{query}, n_heads, n_levels, n_points, 1)
-            # sampling_locations = reference_points[:, :, None, :, None, [0]] \
-            #     + sampling_offsets / \
-            #     offset_normalizer[None, None, None, :, None, :]
+        elif reference_points.shape[-1] == 2:
             # offsets are related with the size of the reference segment
-            # sampling_locations = reference_points[:, :, None, :, None, :1] \
-            #     + sampling_offsets / self.n_points * \
-            #     reference_points[:, :, None, :, None, 1:] * 0.5
-            # print(sampling_offsets.size())
-
-            # sampling_locations = reference_points[:, :, None, :, None, [0]] + torch.cat([
-            #     sampling_offsets[:, :, [i]] / self.n_points *
-            #     reference_points[:, :, None, :, None, [1]]
-            #     if i in [0, 3, 4, 7]
-            #     else sampling_offsets[:, :, [i]] / self.n_points * \
-            #     reference_points[:, :, None, :, None, [2]]
-            #     for i in range(8)
-            # ], dim=2)
-            sampling_offsets = sampling_offsets / self.n_points
-            sampling_locations = reference_points[:, :, None, :, None, [0]] + torch.where(
-                sampling_offsets < 0,
-                sampling_offsets * reference_points[:, :, None, :, None, [1]],    # left
-                sampling_offsets * reference_points[:, :, None, :, None, [2]]     # right
-            )
-                # reference_points[:, :, None, :, None, [2]] * 0.5
+            sampling_locations = reference_points[:, :, None, :, None, :1] \
+                + sampling_offsets / self.n_points * \
+                reference_points[:, :, None, :, None, 1:] * 0.5
 
         else:
             raise ValueError(
@@ -174,30 +151,33 @@ class DeformAttnCondition(nn.Module):
             input_spatial_shapes = torch.stack((torch.ones_like(input_temporal_lens), input_temporal_lens), dim=-1)
             output = deform_attn_core_pytorch(value, input_spatial_shapes, sampling_locations, attention_weights)
         else:
-            # raise NotImplementedError
+            raise NotImplementedError
             # # CUDA implementation. You will get identical results with the pytorch implementation
-            output = TDA.apply(value, input_temporal_lens, input_level_start_index, sampling_locations, attention_weights, self.seq2col_step)
+        # sampling_locations = torch.cat((sampling_locations, torch.ones_like(sampling_locations)*0.5), dim=-1)
+        # input_spatial_shapes = torch.stack((torch.ones_like(input_temporal_lens), input_temporal_lens), dim=-1)
+        # output = MSDeformAttnFunction.apply(
+                # value, input_spatial_shapes, input_level_start_index, sampling_locations, attention_weights, self.seq2col_step)
         output = self.output_proj(output)
         return output, (sampling_locations, attention_weights)
 
 
-# def deform_attn_core_pytorch(value, value_spatial_shapes, sampling_locations, attention_weights):
-#     '''deformable attention implemeted with grid_sample.'''
-#     N_, S_, M_, D_ = value.shape
-#     _, Lq_, M_, L_, P_, _ = sampling_locations.shape
-#     value_list = value.split([H_ * W_ for H_, W_ in value_spatial_shapes], dim=1)
-#     sampling_grids = 2 * sampling_locations - 1
-#     sampling_value_list = []
-#     for lid_, (H_, W_) in enumerate(value_spatial_shapes):
-#         # N_, H_*W_, M_, D_ -> N_, H_*W_, M_*D_ -> N_, M_*D_, H_*W_ -> N_*M_, D_, H_, W_
-#         value_l_ = value_list[lid_].flatten(2).transpose(1, 2).reshape(N_*M_, D_, H_, W_)
-#         # N_, Lq_, M_, P_, 2 -> N_, M_, Lq_, P_, 2 -> N_*M_, Lq_, P_, 2
-#         sampling_grid_l_ = sampling_grids[:, :, :, lid_].transpose(1, 2).flatten(0, 1)
-#         # N_*M_, D_, Lq_, P_
-#         sampling_value_l_ = F.grid_sample(value_l_, sampling_grid_l_,
-#                                           mode='bilinear', padding_mode='zeros', align_corners=False)
-#         sampling_value_list.append(sampling_value_l_)
-#     # (N_, Lq_, M_, L_, P_) -> (N_, M_, Lq_, L_, P_) -> (N_, M_, 1, Lq_, L_*P_)
-#     attention_weights = attention_weights.transpose(1, 2).reshape(N_*M_, 1, Lq_, L_*P_)
-#     output = (torch.stack(sampling_value_list, dim=-2).flatten(-2) * attention_weights).sum(-1).view(N_, M_*D_, Lq_)
-#     return output.transpose(1, 2).contiguous()
+def deform_attn_core_pytorch(value, value_spatial_shapes, sampling_locations, attention_weights):
+    '''deformable attention implemeted with grid_sample.'''
+    N_, S_, M_, D_ = value.shape
+    _, Lq_, M_, L_, P_, _ = sampling_locations.shape
+    value_list = value.split([H_ * W_ for H_, W_ in value_spatial_shapes], dim=1)
+    sampling_grids = 2 * sampling_locations - 1
+    sampling_value_list = []
+    for lid_, (H_, W_) in enumerate(value_spatial_shapes):
+        # N_, H_*W_, M_, D_ -> N_, H_*W_, M_*D_ -> N_, M_*D_, H_*W_ -> N_*M_, D_, H_, W_
+        value_l_ = value_list[lid_].flatten(2).transpose(1, 2).reshape(N_*M_, D_, H_, W_)
+        # N_, Lq_, M_, P_, 2 -> N_, M_, Lq_, P_, 2 -> N_*M_, Lq_, P_, 2
+        sampling_grid_l_ = sampling_grids[:, :, :, lid_].transpose(1, 2).flatten(0, 1)
+        # N_*M_, D_, Lq_, P_
+        sampling_value_l_ = F.grid_sample(value_l_, sampling_grid_l_,
+                                          mode='bilinear', padding_mode='zeros', align_corners=False)
+        sampling_value_list.append(sampling_value_l_)
+    # (N_, Lq_, M_, L_, P_) -> (N_, M_, Lq_, L_, P_) -> (N_, M_, 1, Lq_, L_*P_)
+    attention_weights = attention_weights.transpose(1, 2).reshape(N_*M_, 1, Lq_, L_*P_)
+    output = (torch.stack(sampling_value_list, dim=-2).flatten(-2) * attention_weights).sum(-1).view(N_, M_*D_, Lq_)
+    return output.transpose(1, 2).contiguous()
