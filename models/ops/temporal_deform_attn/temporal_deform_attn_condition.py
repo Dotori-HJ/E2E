@@ -22,10 +22,8 @@ from torch.nn.init import constant_, xavier_uniform_
 
 from opts import cfg
 
-if not cfg.disable_cuda:
-    from .functions import TDA
-else:
-    from .functions import deform_attn_core_pytorch
+# if not cfg.disable_cuda:
+#     from .functions import TDAFunction
 
 
 
@@ -174,30 +172,31 @@ class DeformAttnCondition(nn.Module):
             input_spatial_shapes = torch.stack((torch.ones_like(input_temporal_lens), input_temporal_lens), dim=-1)
             output = deform_attn_core_pytorch(value, input_spatial_shapes, sampling_locations, attention_weights)
         else:
-            # raise NotImplementedError
+            raise NotImplementedError
             # # CUDA implementation. You will get identical results with the pytorch implementation
-            output = TDA.apply(value, input_temporal_lens, input_level_start_index, sampling_locations, attention_weights, self.seq2col_step)
+            # output = TDAFunction.apply(
+            #     value, input_temporal_lens, input_level_start_index, sampling_locations, attention_weights, self.seq2col_step)
         output = self.output_proj(output)
         return output, (sampling_locations, attention_weights)
 
 
-# def deform_attn_core_pytorch(value, value_spatial_shapes, sampling_locations, attention_weights):
-#     '''deformable attention implemeted with grid_sample.'''
-#     N_, S_, M_, D_ = value.shape
-#     _, Lq_, M_, L_, P_, _ = sampling_locations.shape
-#     value_list = value.split([H_ * W_ for H_, W_ in value_spatial_shapes], dim=1)
-#     sampling_grids = 2 * sampling_locations - 1
-#     sampling_value_list = []
-#     for lid_, (H_, W_) in enumerate(value_spatial_shapes):
-#         # N_, H_*W_, M_, D_ -> N_, H_*W_, M_*D_ -> N_, M_*D_, H_*W_ -> N_*M_, D_, H_, W_
-#         value_l_ = value_list[lid_].flatten(2).transpose(1, 2).reshape(N_*M_, D_, H_, W_)
-#         # N_, Lq_, M_, P_, 2 -> N_, M_, Lq_, P_, 2 -> N_*M_, Lq_, P_, 2
-#         sampling_grid_l_ = sampling_grids[:, :, :, lid_].transpose(1, 2).flatten(0, 1)
-#         # N_*M_, D_, Lq_, P_
-#         sampling_value_l_ = F.grid_sample(value_l_, sampling_grid_l_,
-#                                           mode='bilinear', padding_mode='zeros', align_corners=False)
-#         sampling_value_list.append(sampling_value_l_)
-#     # (N_, Lq_, M_, L_, P_) -> (N_, M_, Lq_, L_, P_) -> (N_, M_, 1, Lq_, L_*P_)
-#     attention_weights = attention_weights.transpose(1, 2).reshape(N_*M_, 1, Lq_, L_*P_)
-#     output = (torch.stack(sampling_value_list, dim=-2).flatten(-2) * attention_weights).sum(-1).view(N_, M_*D_, Lq_)
-#     return output.transpose(1, 2).contiguous()
+def deform_attn_core_pytorch(value, value_spatial_shapes, sampling_locations, attention_weights):
+    '''deformable attention implemeted with grid_sample.'''
+    N_, S_, M_, D_ = value.shape
+    _, Lq_, M_, L_, P_, _ = sampling_locations.shape
+    value_list = value.split([H_ * W_ for H_, W_ in value_spatial_shapes], dim=1)
+    sampling_grids = 2 * sampling_locations - 1
+    sampling_value_list = []
+    for lid_, (H_, W_) in enumerate(value_spatial_shapes):
+        # N_, H_*W_, M_, D_ -> N_, H_*W_, M_*D_ -> N_, M_*D_, H_*W_ -> N_*M_, D_, H_, W_
+        value_l_ = value_list[lid_].flatten(2).transpose(1, 2).reshape(N_*M_, D_, H_, W_)
+        # N_, Lq_, M_, P_, 2 -> N_, M_, Lq_, P_, 2 -> N_*M_, Lq_, P_, 2
+        sampling_grid_l_ = sampling_grids[:, :, :, lid_].transpose(1, 2).flatten(0, 1)
+        # N_*M_, D_, Lq_, P_
+        sampling_value_l_ = F.grid_sample(value_l_, sampling_grid_l_,
+                                          mode='bilinear', padding_mode='zeros', align_corners=False)
+        sampling_value_list.append(sampling_value_l_)
+    # (N_, Lq_, M_, L_, P_) -> (N_, M_, Lq_, L_, P_) -> (N_, M_, 1, Lq_, L_*P_)
+    attention_weights = attention_weights.transpose(1, 2).reshape(N_*M_, 1, Lq_, L_*P_)
+    output = (torch.stack(sampling_value_list, dim=-2).flatten(-2) * attention_weights).sum(-1).view(N_, M_*D_, Lq_)
+    return output.transpose(1, 2).contiguous()

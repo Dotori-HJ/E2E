@@ -22,11 +22,12 @@ from torch.nn.init import constant_, xavier_uniform_
 
 from opts import cfg
 
-# if not cfg.disable_cuda:
-#     from .functions import TDAFunction
+# from .functions import MSDeformAttnFunction
 
-
-
+if not cfg.disable_cuda:
+    from .functions import TDA
+else:
+    from .functions import deform_attn_core_pytorch
 
 
 def _is_power_of_2(n):
@@ -36,7 +37,7 @@ def _is_power_of_2(n):
     return (n & (n-1) == 0) and n != 0
 
 
-class DeformAttnCondition(nn.Module):
+class DeformAttn(nn.Module):
     def __init__(self, d_model=256, n_levels=1, n_heads=8, n_points=4):
         """
         Deformable Attention Module
@@ -88,7 +89,6 @@ class DeformAttnCondition(nn.Module):
 
         with torch.no_grad():
             self.sampling_offsets.bias = nn.Parameter(grid_init.view(-1))
-
         constant_(self.attention_weights.weight.data, 0.)
         constant_(self.attention_weights.bias.data, 0.)
         xavier_uniform_(self.value_proj.weight.data)
@@ -134,33 +134,11 @@ class DeformAttnCondition(nn.Module):
                 + sampling_offsets / \
                 offset_normalizer[None, None, None, :, None, :]
         # deform attention in the l-th (l >= 2) decoder layer when segment refinement is enabled
-        elif reference_points.shape[-1] == 3:
-            # offset_normalizer = input_temporal_lens[..., None]
-            # # (N, Length_{query}, n_heads, n_levels, n_points, 1)
-            # sampling_locations = reference_points[:, :, None, :, None, [0]] \
-            #     + sampling_offsets / \
-            #     offset_normalizer[None, None, None, :, None, :]
+        elif reference_points.shape[-1] == 2:
             # offsets are related with the size of the reference segment
-            # sampling_locations = reference_points[:, :, None, :, None, :1] \
-            #     + sampling_offsets / self.n_points * \
-            #     reference_points[:, :, None, :, None, 1:] * 0.5
-            # print(sampling_offsets.size())
-
-            # sampling_locations = reference_points[:, :, None, :, None, [0]] + torch.cat([
-            #     sampling_offsets[:, :, [i]] / self.n_points *
-            #     reference_points[:, :, None, :, None, [1]]
-            #     if i in [0, 3, 4, 7]
-            #     else sampling_offsets[:, :, [i]] / self.n_points * \
-            #     reference_points[:, :, None, :, None, [2]]
-            #     for i in range(8)
-            # ], dim=2)
-            sampling_offsets = sampling_offsets / self.n_points
-            sampling_locations = reference_points[:, :, None, :, None, [0]] + torch.where(
-                sampling_offsets < 0,
-                sampling_offsets * reference_points[:, :, None, :, None, [1]],    # left
-                sampling_offsets * reference_points[:, :, None, :, None, [2]]     # right
-            )
-                # reference_points[:, :, None, :, None, [2]] * 0.5
+            sampling_locations = reference_points[:, :, None, :, None, :1] \
+                + sampling_offsets / self.n_points * \
+                reference_points[:, :, None, :, None, 1:] * 0.5
 
         else:
             raise ValueError(
@@ -172,10 +150,11 @@ class DeformAttnCondition(nn.Module):
             input_spatial_shapes = torch.stack((torch.ones_like(input_temporal_lens), input_temporal_lens), dim=-1)
             output = deform_attn_core_pytorch(value, input_spatial_shapes, sampling_locations, attention_weights)
         else:
-            raise NotImplementedError
+            # raise NotImplementedError
             # # CUDA implementation. You will get identical results with the pytorch implementation
-            # output = TDAFunction.apply(
-            #     value, input_temporal_lens, input_level_start_index, sampling_locations, attention_weights, self.seq2col_step)
+        # sampling_locations = torch.cat((sampling_locations, torch.ones_like(sampling_locations)*0.5), dim=-1)
+        # input_spatial_shapes = torch.stack((torch.ones_like(input_temporal_lens), input_temporal_lens), dim=-1)
+            output = TDA.apply(value, input_spatial_shapes, input_level_start_index, sampling_locations, attention_weights, self.seq2col_step)
         output = self.output_proj(output)
         return output, (sampling_locations, attention_weights)
 
