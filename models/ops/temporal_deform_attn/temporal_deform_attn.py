@@ -24,10 +24,10 @@ from opts import cfg
 
 # from .functions import MSDeformAttnFunction
 
-if not cfg.disable_cuda:
-    from .functions import TDA
-else:
-    from .functions import deform_attn_core_pytorch
+# if not cfg.disable_cuda:
+#     from .functions import TDA
+# else:
+#     from .functions import deform_attn_core_pytorch
 
 
 def _is_power_of_2(n):
