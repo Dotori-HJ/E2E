@@ -150,6 +150,7 @@ def test(model, criterion, postprocessor, data_loader, base_ds, device, output_d
     current_video_id = None
     current_samples = []
     inf_times = []
+    i = 0
     for (samples, targets) in tqdm.tqdm(data_loader):
         samples = samples.to(device)
         model((samples.tensors, samples.mask))
@@ -157,13 +158,13 @@ def test(model, criterion, postprocessor, data_loader, base_ds, device, output_d
         model((samples.tensors, samples.mask))
         inf_time = time.time() - st
         inf_times.append(inf_time)
-        
-        flops, params = profile(model, inputs=((samples.tensors, samples.mask),))
-        break
+        i += 1
+        if i > 50:
+            break
+            # inf_times.append(inf_time)
     
-    flops = flops / 1e9  # GigaFLOPs로 변환
-    params = params / 1e6  # Millions로 변환
-    print(f"FLOPs: {flops:.2f} GFLOPs, Params: {params:.2f} M")
+    inf_times = np.array(inf_times) * 1000
+    print(f"Mean times: {inf_times.mean():.8f}, Std times: {inf_times.std():.8f}")
     exit()
 
         # inf_time = time.time() - st
