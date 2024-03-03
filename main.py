@@ -270,8 +270,8 @@ def main(args):
     if args.eval:
         test_stats = test(model, criterion, postprocessors,
                         #   data_loader_val, base_ds, device, cfg.output_dir, cfg, subset=cfg.test_set, epoch=checkpoint['epoch'], test_mode=True)
-                          data_loader_val, base_ds, device, cfg.output_dir, cfg, subset=cfg.test_set, epoch=checkpoint['epoch'], test_mode=False)
-                        #   data_loader_val, base_ds, device, cfg.output_dir, cfg, subset=cfg.test_set, epoch=0, test_mode=True)
+                        #   data_loader_val, base_ds, device, cfg.output_dir, cfg, subset=cfg.test_set, epoch=checkpoint['epoch'], test_mode=False)
+                          data_loader_val, base_ds, device, cfg.output_dir, cfg, subset=cfg.test_set, epoch=0, test_mode=True)
         if model_ema is not None:
             test_stats = test(model_ema.module, criterion, postprocessors,
                             #   data_loader_val, base_ds, device, cfg.output_dir, cfg, subset=cfg.test_set, epoch=checkpoint['epoch'], test_mode=True, postproc_ins_topk=cfg.postproc_ins_topk)
