@@ -35,67 +35,6 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
     print_freq = 50
     cnt = 0
 
-    from thop import profile
-    import numpy as np
-    import time
-    import torch.autograd.profiler as profiler
-    total_flops = 0
-    flops_list = []
-    flops_per_video = {}
-    current_video_id = None
-    current_samples = []
-    inf_times = []
-    for (samples, targets) in tqdm.tqdm(data_loader):
-        # samples = samples.to(device)
-        # model((samples.tensors, samples.mask))
-        # st = time.time()
-
-        # inf_time = time.time() - st
-        # print(inf_time * 1000)
-        # exit()
-        video_id = '_'.join(targets[0]['video_id'].split('_')[:3])
-        if current_video_id is None or current_video_id == video_id:
-            current_video_id = video_id
-            current_samples.append(samples)
-        else:
-            if len(current_samples) > 0:
-                tensors = torch.cat([x.tensors for x in current_samples], dim=0).to(device)
-                masks = torch.cat([x.mask for x in current_samples], dim=0).to(device)
-                
-                # with profiler.profile(with_stack=True, use_cuda=True, profile_memory=True) as prof:
-                #     model((tensors, masks))
-                # print(prof.key_averages().table(sort_by="cuda_time_total", row_limit=10))
-                # exit()
-                
-                model((tensors, masks))
-                st = time.time()
-                _, inf_time = model((tensors, masks))
-                # inf_time = time.time() - st
-                inf_times.append(inf_time)
-                
-                # flops, params = profile(model, inputs=((tensors, masks),))
-                # if video_id not in flops_per_video:
-                #     flops_per_video[current_video_id] = flops
-
-            current_video_id = video_id
-            current_samples = []
-
-        # flops_per_video[video_id] += flops
-            # flops_list.append(flops)
-
-
-    import numpy as np
-    inf_times = np.array(inf_times) * 1000
-    print(f"Mean times: {inf_times.mean():.8f}, Std times: {inf_times.std():.8f}")
-    exit()
-    flops = total_flops / 1e9  # GigaFLOPs로 변환
-    params = params / 1e6  # Millions로 변환
-    flops_list = list(flops_per_video.values())
-    print(f"FLOPs: {flops:.2f} GFLOPs, Params: {params:.2f} M")
-    print(f"Min FLOPs: {min(flops_list)/ 1e9:.2f}, Min FLOPs: {max(flops_list)/ 1e9:.2f}")
-    print(f"Mean FLOPs: {np.array(flops_list).mean()/ 1e9:.2f}, Std FLOPs: {np.array(flops_list).std()/ 1e9:.2f}")
-    print(f"Median FLOPs: {np.median(np.array(flops_list))/ 1e9:.2f}")
-    exit()
 
     for samples, targets in metric_logger.log_every(data_loader, print_freq, header):
         samples = samples.to(device)
@@ -199,6 +138,69 @@ def test(model, criterion, postprocessor, data_loader, base_ds, device, output_d
     # nms_mode = ['nms', 'raw'] if cfg.dataset_name == 'activitynet' else ['raw']
     nms_mode = ['nms']
     action_evaluator = TADEvaluator(cfg.dataset_name, subset, base_ds, nms_mode=nms_mode, iou_range=iou_range, epoch=epoch, topk=cfg.postproc_ins_topk)
+
+
+    from thop import profile
+    import numpy as np
+    import time
+    import torch.autograd.profiler as profiler
+    total_flops = 0
+    flops_list = []
+    flops_per_video = {}
+    current_video_id = None
+    current_samples = []
+    inf_times = []
+    for (samples, targets) in tqdm.tqdm(data_loader):
+        # samples = samples.to(device)
+        # model((samples.tensors, samples.mask))
+        # st = time.time()
+
+        # inf_time = time.time() - st
+        # print(inf_time * 1000)
+        # exit()
+        video_id = '_'.join(targets[0]['video_id'].split('_')[:3])
+        if current_video_id is None or current_video_id == video_id:
+            current_video_id = video_id
+            current_samples.append(samples)
+        else:
+            if len(current_samples) > 0:
+                tensors = torch.cat([x.tensors for x in current_samples], dim=0).to(device)
+                masks = torch.cat([x.mask for x in current_samples], dim=0).to(device)
+                
+                # with profiler.profile(with_stack=True, use_cuda=True, profile_memory=True) as prof:
+                #     model((tensors, masks))
+                # print(prof.key_averages().table(sort_by="cuda_time_total", row_limit=10))
+                # exit()
+                
+                model((tensors, masks))
+                st = time.time()
+                _, inf_time = model((tensors, masks))
+                # inf_time = time.time() - st
+                inf_times.append(inf_time)
+                
+                # flops, params = profile(model, inputs=((tensors, masks),))
+                # if video_id not in flops_per_video:
+                #     flops_per_video[current_video_id] = flops
+
+            current_video_id = video_id
+            current_samples = []
+
+        # flops_per_video[video_id] += flops
+            # flops_list.append(flops)
+
+
+    import numpy as np
+    inf_times = np.array(inf_times) * 1000
+    print(f"Mean times: {inf_times.mean():.8f}, Std times: {inf_times.std():.8f}")
+    exit()
+    flops = total_flops / 1e9  # GigaFLOPs로 변환
+    params = params / 1e6  # Millions로 변환
+    flops_list = list(flops_per_video.values())
+    print(f"FLOPs: {flops:.2f} GFLOPs, Params: {params:.2f} M")
+    print(f"Min FLOPs: {min(flops_list)/ 1e9:.2f}, Min FLOPs: {max(flops_list)/ 1e9:.2f}")
+    print(f"Mean FLOPs: {np.array(flops_list).mean()/ 1e9:.2f}, Std FLOPs: {np.array(flops_list).std()/ 1e9:.2f}")
+    print(f"Median FLOPs: {np.median(np.array(flops_list))/ 1e9:.2f}")
+    exit()
 
     # raw_res = []
     cnt = 0
