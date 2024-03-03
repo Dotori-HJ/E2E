@@ -151,39 +151,39 @@ def test(model, criterion, postprocessor, data_loader, base_ds, device, output_d
     current_samples = []
     inf_times = []
     for (samples, targets) in tqdm.tqdm(data_loader):
-        # samples = samples.to(device)
-        # model((samples.tensors, samples.mask))
+        samples = samples.to(device)
+        model((samples.tensors, samples.mask))
         # st = time.time()
 
         # inf_time = time.time() - st
         # print(inf_time * 1000)
         # exit()
-        video_id = '_'.join(targets[0]['video_id'].split('_')[:3])
-        if current_video_id is None or current_video_id == video_id:
-            current_video_id = video_id
-            current_samples.append(samples)
-        else:
-            if len(current_samples) > 0:
-                tensors = torch.cat([x.tensors for x in current_samples], dim=0).to(device)
-                masks = torch.cat([x.mask for x in current_samples], dim=0).to(device)
+        # video_id = '_'.join(targets[0]['video_id'].split('_')[:3])
+        # if current_video_id is None or current_video_id == video_id:
+        #     current_video_id = video_id
+        #     current_samples.append(samples)
+        # else:
+        #     if len(current_samples) > 0:
+        #         tensors = torch.cat([x.tensors for x in current_samples], dim=0).to(device)
+        #         masks = torch.cat([x.mask for x in current_samples], dim=0).to(device)
                 
                 # with profiler.profile(with_stack=True, use_cuda=True, profile_memory=True) as prof:
                 #     model((tensors, masks))
                 # print(prof.key_averages().table(sort_by="cuda_time_total", row_limit=10))
                 # exit()
                 
-                model((tensors, masks))
-                st = time.time()
-                _, inf_time = model((tensors, masks))
+                # model((tensors, masks))
+                # st = time.time()
+                # _, inf_time = model((tensors, masks))
                 # inf_time = time.time() - st
-                inf_times.append(inf_time)
+                # inf_times.append(inf_time)
                 
                 # flops, params = profile(model, inputs=((tensors, masks),))
                 # if video_id not in flops_per_video:
                 #     flops_per_video[current_video_id] = flops
 
-            current_video_id = video_id
-            current_samples = []
+            # current_video_id = video_id
+            # current_samples = []
 
         # flops_per_video[video_id] += flops
             # flops_list.append(flops)
