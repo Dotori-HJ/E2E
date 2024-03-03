@@ -153,7 +153,13 @@ def test(model, criterion, postprocessor, data_loader, base_ds, device, output_d
     for (samples, targets) in tqdm.tqdm(data_loader):
         samples = samples.to(device)
         model((samples.tensors, samples.mask))
-        # st = time.time()
+        st = time.time()
+        model((samples.tensors, samples.mask))
+        inf_time = time.time() - st
+        inf_times.append(inf_time)
+        
+        flops, params = profile(model, inputs=((samples.tensors, samples.mask),))
+        print(flops, params)
 
         # inf_time = time.time() - st
         # print(inf_time * 1000)
@@ -178,7 +184,6 @@ def test(model, criterion, postprocessor, data_loader, base_ds, device, output_d
                 # inf_time = time.time() - st
                 # inf_times.append(inf_time)
                 
-                # flops, params = profile(model, inputs=((tensors, masks),))
                 # if video_id not in flops_per_video:
                 #     flops_per_video[current_video_id] = flops
 
