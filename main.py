@@ -240,8 +240,8 @@ def main(args):
     best_metric_txt = ''
     best_metric_ema_txt = ''
 
-    if args.eval and not args.resume:
-        args.resume = osp.join(output_dir, 'model_best.pth')
+    # if args.eval and not args.resume:
+    #     args.resume = osp.join(output_dir, 'model_best.pth')
         # args.resume = osp.join(output_dir, 'checkpoint0013.pth')
 
     # start training from this epoch. You do not to set this option.
