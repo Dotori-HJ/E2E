@@ -159,7 +159,12 @@ def test(model, criterion, postprocessor, data_loader, base_ds, device, output_d
         inf_times.append(inf_time)
         
         flops, params = profile(model, inputs=((samples.tensors, samples.mask),))
-        print(flops, params)
+        break
+    
+    flops = flops / 1e9  # GigaFLOPs로 변환
+    params = params / 1e6  # Millions로 변환
+    print(f"FLOPs: {flops:.2f} GFLOPs, Params: {params:.2f} M")
+    exit()
 
         # inf_time = time.time() - st
         # print(inf_time * 1000)
