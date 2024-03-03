@@ -33,14 +33,14 @@ pooler_args:
    - {
        input_dim: 2048,
       #  base_dim: 256,
-       base_dim: 512,
+       base_dim: 1024,
        num_layers: 4,
        output_dim: 2048
    }
    - {
        input_dim: 256,
       #  base_dim: 32,
-       base_dim: 64,
+       base_dim: 128,
        num_layers: 4,
        output_dim: 256
    }
