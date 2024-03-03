@@ -32,14 +32,14 @@ batch_size: 4
 pooler_args:
    - {
        input_dim: 2048,
-       base_dim: 1024,
+       base_dim: 256,
       #  base_dim: 512,
        num_layers: 4,
        output_dim: 2048
    }
    - {
        input_dim: 256,
-       base_dim: 128,
+       base_dim: 32,
       #  base_dim: 64,
        num_layers: 4,
        output_dim: 256
